@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "noEmitOnError": true,
+    "rootDir": "chapter-01-first-command",
+    "outDir": "dist"
+  },
+  "include": [
+    "chapter-01-first-command/cli.ts"
+  ]
+}
