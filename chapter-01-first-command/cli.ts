@@ -14,10 +14,10 @@
  *                                  | 不支持的参数  -> 报错，结束
  *
  * 两个概念：CLI 是命令行界面；入口文件是 Node 开始执行程序的文件。
- * npm link 或全局安装时，npm 根据 package.json 的 bin 创建命令入口。
+ * 构建脚本会自动注册命令；npm 根据 package.json 的 bin 将命令名连接到入口文件。
  * 第一行的 #!/usr/bin/env node 让类 Unix 系统通过 PATH 找到 Node 执行它。
  *
- * 首次在项目根目录安装依赖，执行 npm run build，再用 npm link 注册本地命令。
+ * 在项目根目录执行 npm run build，一次完成依赖安装、编译与本地命令注册。
  * 准备完成后直接运行以下命令；修改源码后重新构建即可：
  *   hello-my-agent           -> 显示欢迎语
  *   hello-my-agent --help    -> 显示帮助
@@ -56,7 +56,7 @@ program
   // 把 () => { ... } 这个函数交给 Commander，等解析参数后再决定是否调用。
   // 按本章规则，无参数启动时执行这里；请求帮助或版本时不会执行。下一章在此接入模型。
   .action(() => {
-    console.log("你好，我的 Agent！");
+    console.log("Hello，My Agent！");
     console.log("命令已启动。下一章，我们会给它接上模型。");
   });
 

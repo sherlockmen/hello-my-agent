@@ -49,7 +49,7 @@
  * 本文件保留完整实现，可以单独阅读；下一章仍从正式的 cli.ts 继续。
  *
  * 在独立跟写项目中，把本文件内容写入 chapter-01-first-command/cli.ts。
- * 在该项目根目录执行 npm run build 和 npm link，之后直接运行：
+ * 在该项目根目录执行 npm run build，自动安装依赖、编译并注册命令，之后直接运行：
  *   hello-my-agent --doctor -> 输出 Node、Platform、Working directory
  *   hello-my-agent          -> 仍显示欢迎语
  * 配套仓库的正式入口没有 --doctor；该选项只在完成练习后的版本中可用。
@@ -99,7 +99,7 @@ program
     }
 
     // 未传 --doctor 时保持主线行为，增加练习功能不能破坏原来的启动方式。
-    console.log("你好，我的 Agent！");
+    console.log("Hello，My Agent！");
     console.log("命令已启动。下一章，我们会给它接上模型。");
   });
 
@@ -117,10 +117,9 @@ program.parse();
 
 ```bash
 npm run build
-npm link
 ```
 
-在当前 npm 环境中，`npm link` 将命令入口连接到这份跟写项目。之后修改此项目的源码，只需重新执行 `npm run build`。
+`npm run build` 会先按锁文件安装依赖，编译完成后自动把命令入口连接到这份跟写项目。之后修改源码或切换项目，仍然只需执行这一条命令。
 
 现在直接运行：
 
@@ -148,7 +147,7 @@ hello-my-agent --version
 
 无参数时仍显示欢迎语；帮助中增加 `--doctor`；版本仍是包清单中的值。
 
-要切回配套仓库的正式主线，在配套仓库根目录重新执行 `npm run build` 和 `npm link`。正式主线不包含 `--doctor`，下一章从该版本继续。
+要切回配套仓库的正式主线，在配套仓库根目录重新执行 `npm run build`。正式主线不包含 `--doctor`，下一章从该版本继续。
 
 ## 常见错误
 
@@ -156,6 +155,6 @@ hello-my-agent --version
 - 在 `.action()` 回调之外、`.parse()` 之前直接读取选项：此时参数尚未解析。把判断放入回调，等解析完成后再执行。
 - 忘记 `return`：诊断后还会显示默认欢迎语。
 - 修改源码后没有重新构建：先执行 `npm run build`，确保命令运行的是新产物。
-- 正式主线提示未知选项：`--doctor` 只存在于练习版本；核对是否完成跟写，并在对应项目重新执行 `npm link`。
+- 正式主线提示未知选项：`--doctor` 只存在于练习版本；核对是否完成跟写，并在对应项目重新执行 `npm run build`。
 
 完成后，试着解释：为什么同一个程序读取版本号和显示工作目录时，要使用不同的定位方式？

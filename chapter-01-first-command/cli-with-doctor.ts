@@ -20,7 +20,7 @@
  * 本文件保留完整实现，可以单独阅读；下一章仍从正式的 cli.ts 继续。
  *
  * 在独立跟写项目中，把本文件内容写入 chapter-01-first-command/cli.ts。
- * 在该项目根目录执行 npm run build 和 npm link，之后直接运行：
+ * 在该项目根目录执行 npm run build，自动安装依赖、编译并注册命令，之后直接运行：
  *   hello-my-agent --doctor -> 输出 Node、Platform、Working directory
  *   hello-my-agent          -> 仍显示欢迎语
  * 配套仓库的正式入口没有 --doctor；该选项只在完成练习后的版本中可用。
@@ -70,7 +70,7 @@ program
     }
 
     // 未传 --doctor 时保持主线行为，增加练习功能不能破坏原来的启动方式。
-    console.log("你好，我的 Agent！");
+    console.log("Hello，My Agent！");
     console.log("命令已启动。下一章，我们会给它接上模型。");
   });
 

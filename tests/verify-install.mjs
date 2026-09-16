@@ -4,6 +4,7 @@
  * 开发时有源码和 TypeScript，启动成功不等于安装包也能运行。
  * 检查流程：读取构建产物 -> 打包 -> 检查包内文件 -> 临时安装 -> 在源码目录外运行 -> 清理。
  * 在仓库根目录运行 npm run verify；该命令先检查类型、构建，再执行本脚本。
+ * verify 直接调用编译器，不执行 build 中的本地命令注册，避免验收切换正在使用的命令。
  *
  * assert 断言表示“这个结果必须成立”；不成立就抛错，让验收以非零状态结束。
  * tarball 是 npm pack 生成的 .tgz 安装包；prefix 是本次测试使用的安装位置。
@@ -78,7 +79,7 @@ try {
   mkdirSync(cwd);
   const cli = resolve(prefix, process.platform === "win32" ? "hello-my-agent.cmd" : "bin/hello-my-agent");
   // 欢迎语和帮助检查关键内容；版本必须等于包清单，验证没有误读用户工作目录。
-  assert.match(run(cli, [], cwd).stdout, /你好，我的 Agent！/);
+  assert.match(run(cli, [], cwd).stdout, /Hello，My Agent！/);
   const help = run(cli, ["--help"], cwd).stdout;
   assert.match(help, /--version/);
   assert.match(help, /--help/);

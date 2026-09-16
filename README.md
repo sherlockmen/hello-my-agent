@@ -14,15 +14,13 @@ Build Your Own TUI Coding Agent — From Scratch to npm
 
 [阅读第一章](chapter-01-first-command/README.md) · [查看第一章代码](chapter-01-first-command/cli.ts) · [从空目录跟写](docs/SETUP.md)
 
-已有配套仓库时，首次在仓库根目录（包含 `package.json` 的目录）安装依赖、构建并注册命令：
+已有配套仓库时，首次在仓库根目录（包含 `package.json` 的目录）执行：
 
 ```bash
-npm ci
 npm run build
-npm link
 ```
 
-完成后，统一直接使用这个命令：
+`npm run build` 会按锁文件安装依赖，再编译代码并注册本地命令。首次使用和后续修改代码，都只需这一条准备命令。完成后直接运行：
 
 ```bash
 hello-my-agent

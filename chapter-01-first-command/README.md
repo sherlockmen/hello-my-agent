@@ -13,7 +13,7 @@
 ```ts
 #!/usr/bin/env node
 // 第一行让类 Unix 系统找到 Node 执行入口；这里先把欢迎语输出到终端。
-console.log("你好，我的 Agent！");
+console.log("Hello，My Agent！");
 ```
 
 另一个人拿到程序后，未必知道入口文件在哪，也未必安装了 TypeScript 编译工具。他希望在自己的项目目录里输入一个命令，就能启动它；忘记用法时能查帮助，遇到问题时能查看版本。
@@ -27,7 +27,7 @@ console.log("你好，我的 Agent！");
 ```mermaid
 flowchart LR
   A[cli.ts] -->|tsc 编译| B[dist/cli.js]
-  B -->|npm link 本地注册| C[hello-my-agent 命令]
+  B -->|build 自动注册| C[hello-my-agent 命令]
   C -->|Node 运行| B
   B -->|npm pack 打包| D[安装包]
 ```
@@ -49,7 +49,7 @@ program
   .version(packageJson.version, "-v, --version", "显示版本号")
   .helpOption("-h, --help", "显示帮助")
   .action(() => {
-    console.log("你好，我的 Agent！");
+    console.log("Hello，My Agent！");
     console.log("命令已启动。下一章，我们会给它接上模型。");
   });
 
@@ -101,9 +101,9 @@ const packageJson = JSON.parse(
 }
 ```
 
-这里只展示 `package.json` 的 `bin` 字段，完整配置见 [环境准备](../docs/SETUP.md#根目录包清单)。执行 `npm link` 或全局安装包时，npm 根据它创建命令入口。在 macOS / Linux 上，文件首行 `#!/usr/bin/env node` 告诉系统通过 `PATH` 找到 Node，执行这个文件。
+这里只展示 `package.json` 的 `bin` 字段，完整配置见 [环境准备](../docs/SETUP.md#根目录包清单)。本地构建脚本会自动注册命令；全局安装包时，npm 也会根据这个字段创建命令入口。在 macOS / Linux 上，文件首行 `#!/usr/bin/env node` 告诉系统通过 `PATH` 找到 Node，执行这个文件。
 
-本地学习时先执行 `npm run build` 生成 `dist/cli.js`，再执行一次 `npm link`，把命令连接到当前项目的入口。修改 TypeScript 后重新构建，命令就会使用新产物。分发安装包时，npm 同样根据 `bin` 建立命令入口；Commander 会随运行依赖一起安装。
+本地学习时，只需执行 `npm run build`：它先按锁文件安装依赖，再生成 `dist/cli.js`，编译成功后自动把命令连接到当前项目的入口。修改 TypeScript 或切换跟写项目后，在目标项目根目录重新构建即可。分发安装包时，npm 同样根据 `bin` 建立命令入口；Commander 会随运行依赖一起安装。
 
 ## 动手构建
 
@@ -135,10 +135,10 @@ const packageJson = JSON.parse(
  *                                  | 不支持的参数  -> 报错，结束
  *
  * 两个概念：CLI 是命令行界面；入口文件是 Node 开始执行程序的文件。
- * npm link 或全局安装时，npm 根据 package.json 的 bin 创建命令入口。
+ * 构建脚本会自动注册命令；npm 根据 package.json 的 bin 将命令名连接到入口文件。
  * 第一行的 #!/usr/bin/env node 让类 Unix 系统通过 PATH 找到 Node 执行它。
  *
- * 首次在项目根目录安装依赖，执行 npm run build，再用 npm link 注册本地命令。
+ * 在项目根目录执行 npm run build，一次完成依赖安装、编译与本地命令注册。
  * 准备完成后直接运行以下命令；修改源码后重新构建即可：
  *   hello-my-agent           -> 显示欢迎语
  *   hello-my-agent --help    -> 显示帮助
@@ -177,7 +177,7 @@ program
   // 把 () => { ... } 这个函数交给 Commander，等解析参数后再决定是否调用。
   // 按本章规则，无参数启动时执行这里；请求帮助或版本时不会执行。下一章在此接入模型。
   .action(() => {
-    console.log("你好，我的 Agent！");
+    console.log("Hello，My Agent！");
     console.log("命令已启动。下一章，我们会给它接上模型。");
   });
 
@@ -188,7 +188,7 @@ program
 program.parse();
 ```
 
-代码写好后，在跟写项目根目录执行 `npm run build`，更新编译产物。你已经在环境准备中注册过命令，因此无需再次注册；接下来直接运行 `hello-my-agent` 和 `hello-my-agent --help`，比较两次输出。
+代码写好后，在跟写项目根目录执行 `npm run build`，自动安装依赖、更新编译产物并注册命令。接下来直接运行 `hello-my-agent` 和 `hello-my-agent --help`，比较两次输出。
 
 ## 相对起点的变化
 
@@ -208,12 +208,10 @@ program.parse();
 首次使用配套仓库时，在**仓库根目录**（包含 `package.json` 的目录）准备命令：
 
 ```bash
-npm ci
 npm run build
-npm link
 ```
 
-`npm ci` 安装工程依赖，`npm run build` 编译源码，`npm link` 在本机注册命令。准备完成后统一这样运行：
+`npm run build` 一次完成依赖安装、编译与本地命令注册。准备完成后统一这样运行：
 
 ```bash
 hello-my-agent
@@ -221,12 +219,12 @@ hello-my-agent --help
 hello-my-agent --version
 ```
 
-已经按环境说明完成注册的读者，只需在改完代码后重新构建。这些本地操作无需 npm 账号；`npm link` 只注册本机命令，不会发布 npm 包。
+已经完成准备的读者，改完代码后仍执行同一条构建命令。这些本地操作无需 npm 账号，自动注册只影响本机命令，不会发布 npm 包。
 
 默认操作输出：
 
 ```text
-你好，我的 Agent！
+Hello，My Agent！
 命令已启动。下一章，我们会给它接上模型。
 ```
 
@@ -256,7 +254,7 @@ hello-my-agent --versoin
 
 Commander 帮我们拒绝未知输入。后续让其他程序自动调用 Agent 时，它们也会用退出码判断任务是否成功。
 
-如果改了源码但运行结果没变，先在该项目根目录执行 `npm run build`。若结果仍不符，用 `command -v hello-my-agent` 查看终端找到的命令位置，再按 [命令查找说明](../docs/SETUP.md#注册命令后如何找到它) 检查；需要切换项目时，在目标项目根目录重新执行 `npm link`。
+如果改了源码但运行结果没变，先在该项目根目录执行 `npm run build`。若结果仍不符，用 `command -v hello-my-agent` 查看终端找到的命令位置，再按 [命令查找说明](../docs/SETUP.md#注册命令后如何找到它) 检查；需要切换项目时，在目标项目根目录执行 `npm run build`。
 
 ## 小练习
 

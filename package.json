@@ -15,10 +15,10 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "npm ci --include=dev --ignore-scripts --no-audit --no-fund && tsc -p tsconfig.build.json && npm link --ignore-scripts --no-audit --no-fund",
     "typecheck": "tsc --noEmit",
-    "prepack": "npm run build",
-    "verify": "npm run typecheck && npm run build && node tests/verify-install.mjs"
+    "prepack": "tsc -p tsconfig.build.json",
+    "verify": "npm run typecheck && tsc -p tsconfig.build.json && node tests/verify-install.mjs"
   },
   "dependencies": {
     "commander": "14.0.3"
