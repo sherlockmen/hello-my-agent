@@ -4,7 +4,7 @@
 
 Build Your Own TUI Coding Agent — From Scratch to npm
 
-用 TypeScript 从第一个命令开始，逐章构建自己的 Coding Agent：接通模型、增加工具和权限、管理会话与上下文、制作 TUI、实现扩展与协作，最终发布别人可以安装使用的 npm 包。
+用 TypeScript 从第一个命令开始，逐章构建自己的 Coding Agent：接通模型、增加工具和权限、制作 TUI、管理会话与上下文、实现扩展与协作，最终发布别人可以安装使用的 npm 包。
 
 **每章讲清一个主要机制，保留完整实现。** 下一章在前章代码上继续增加能力；旧章节保留，方便运行、比较和回看。基础编程能力是先修要求，Agent 知识在书内连续讲解。
 
@@ -14,16 +14,25 @@ Build Your Own TUI Coding Agent — From Scratch to npm
 
 [阅读第一章](chapter-01-first-command/README.md) · [查看第一章代码](chapter-01-first-command/cli.ts) · [从空目录跟写](docs/SETUP.md)
 
-在仓库根目录安装一次依赖，然后选择章节运行：
+已有配套仓库时，首次在仓库根目录（包含 `package.json` 的目录）安装依赖、构建并注册命令：
 
 ```bash
 npm ci
-npm run chapter:01
-npm run chapter:01 -- --help
-npm run chapter:01 -- --version
+npm run build
+npm link
 ```
 
-`npm run` 后面填写 `package.json` 中的脚本名：这里的 `chapter:01` 会启动 `chapter-01-first-command/cli.ts`。文件名 `cli.ts` 不是脚本名；早期的 `s01` 命令已改为 `chapter:01`。单独执行 `npm run` 可以查看当前可用脚本。
+完成后，统一直接使用这个命令：
+
+```bash
+hello-my-agent
+hello-my-agent --help
+hello-my-agent --version
+```
+
+`-v` 是 `--version` 的简写，`-h` 是 `--help` 的简写，两种写法效果相同；正文示例统一使用长选项。npm 负责安装依赖、编译和注册命令。准备完成后，运行 Agent 只需输入 `hello-my-agent` 及所需选项。修改源码后，在仓库根目录重新执行 `npm run build`，再运行命令。
+
+本地注册的命令指向当前仓库的构建产物。遇到找不到命令或运行了另一份代码时，按 [环境说明](docs/SETUP.md#注册命令后如何找到它) 检查。
 
 第一章只显示欢迎语、帮助和版本信息，无需 API Key。Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS arm64 验证，其他平台待验证。
 
@@ -31,18 +40,18 @@ npm run chapter:01 -- --version
 
 | 章节 | 本章解决的问题 | 实现 |
 | --- | --- | --- |
-| [第 01 章：自己的命令](chapter-01-first-command/README.md) | 怎样把源码变成可安装的命令？ | [cli.ts](chapter-01-first-command/cli.ts)，试写稿 |
-| 第 02 章：模型与对话 | 怎样调用模型并保留多轮消息？ | 待编写 |
-| 第 03 章：工具与循环 | 怎样执行模型请求的工具，再回传结果？ | 待编写 |
+| [第 01 章：从空目录到自己的命令](chapter-01-first-command/README.md) | 怎样把源码变成可安装的命令？ | [cli.ts](chapter-01-first-command/cli.ts)，试写稿 |
+| 第 02 章：接通模型并持续对话 | 怎样调用模型并保留多轮消息？ | 待编写 |
+| 第 03 章：第一个工具与 Agent Loop | 怎样执行模型请求的工具，再回传结果？ | 待编写 |
 
-完整路线为 [六部分、36 章](docs/planning/COURSE.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。后续章节完成时加入目录。
+完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。该表按作者的明确通知标记章节完成；[初版大纲](docs/planning/COURSE.md) 保留原规划。后续章节编写后加入阅读目录。
 
 ## 仓库结构
 
 ```text
 hello-my-agent/
   README.md                 全书入口与章节导航
-  package.json              统一依赖、章节运行命令、npm 包信息
+  package.json              统一依赖、构建脚本、npm 命令入口
   package-lock.json         全书依赖锁文件
   tsconfig.json             各章共享的类型检查配置
   tsconfig.build.json       当前可安装版本的编译入口
@@ -54,6 +63,7 @@ hello-my-agent/
   docs/
     SETUP.md                环境与从空目录搭建
     AUTHORING.md            章节编写规则
+    PROGRESS.md             36 章目录、完成状态与完成日期
     planning/               原规划与完整能力清单
     verification/           实际验证记录
   tests/                    全书共用的验收脚本
@@ -65,17 +75,15 @@ hello-my-agent/
 
 ## 运行、练习与安装验证
 
-以下命令都在根目录执行：
+在仓库根目录运行完整验收：
 
 ```bash
-npm run exercise:01 -- --doctor
-npm run typecheck
-npm run build
-npm start -- --version
 npm run verify
 ```
 
-`build` 当前编译第一章，得到 `dist/cli.js`；`verify` 生成真实 tarball，在临时位置安装并离开源码目录运行，最后清理临时文件。实际发布前会把编译入口推进到最终整合章节。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。
+
+第一章练习在独立跟写项目中增加 `--doctor`。完成练习、构建并注册对应项目后，用 `hello-my-agent --doctor` 查看环境；正式主线暂不包含这个选项。
 
 [练习完整答案](chapter-01-first-command/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [验证记录](docs/verification/01-first-command.md)
 

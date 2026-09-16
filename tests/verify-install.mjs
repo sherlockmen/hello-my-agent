@@ -1,8 +1,8 @@
 /**
- * 第一章安装验收：验证读者真正安装后拿到的命令。
+ * 第一章安装验收：验证读者安装后的命令能否正常运行。
  *
- * 开发时有源码、tsx 和 TypeScript，启动成功不等于安装包也能运行。
- * 检查流程：已有构建产物 -> 打包 -> 检查文件 -> 临时安装 -> 离开源码运行 -> 清理。
+ * 开发时有源码和 TypeScript，启动成功不等于安装包也能运行。
+ * 检查流程：读取构建产物 -> 打包 -> 检查包内文件 -> 临时安装 -> 在源码目录外运行 -> 清理。
  * 在仓库根目录运行 npm run verify；该命令先检查类型、构建，再执行本脚本。
  *
  * assert 断言表示“这个结果必须成立”；不成立就抛错，让验收以非零状态结束。
@@ -28,7 +28,7 @@ const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 
 /**
  * 启动一个命令并检查退出码，返回包含 stdout、stderr 等字段的子进程结果。
- * command 是程序名，args 是参数列表，cwd 指定在哪里执行，expectedStatus 默认是成功码 0。
+ * command 是程序名，args 是参数列表，cwd 是执行目录，expectedStatus 是预期退出码，默认为 0。
  * 故意输入错误选项时传入 1，验证程序正确拒绝输入；不是所有非零退出都代表测试失败。
  */
 function run(command, args, cwd, expectedStatus = 0) {
@@ -51,11 +51,11 @@ try {
   // 2. 验证真实包内容。verify 已先构建，--ignore-scripts 避免 pack 再触发一次 prepack。
   // --json 返回结构化打包结果，--pack-destination 把 .tgz 放入自己的临时目录。
   const packed = run(npm, ["pack", "--json", "--ignore-scripts", "--pack-destination", sandbox], root);
-  // npm 11 返回数组，npm 12 返回以包名为键的对象。
+  // 兼容数组和以包名为键的对象两种结果格式；当前实测的 npm 12 返回后一种。
   const packResult = JSON.parse(packed.stdout);
   const archive = Array.isArray(packResult) ? packResult[0] : packResult[pkg.name];
   assert.ok(archive, "npm pack 未返回当前包的信息");
-  // 排序后比较完整列表，同时发现缺失的入口和误打入的源码、练习或旧构建文件。
+  // 排序后比较完整列表，检查是否缺少入口，或误把源码、练习、旧构建文件放入包中。
   const entries = archive.files.map((file) => file.path).sort();
   assert.deepEqual(entries, ["LICENSE", "README.md", "dist/cli.js", "package.json"]);
   console.log("✓ 安装包只包含运行代码、包说明和许可证");
@@ -65,10 +65,10 @@ try {
   const prefix = join(sandbox, "installed");
   run(npm, ["install", "--global", "--prefix", prefix, "--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund", join(sandbox, archive.filename)], sandbox);
   const modules = run(npm, ["root", "--global", "--prefix", prefix], sandbox).stdout.trim();
-  // 向 npm 查询模块目录，适应平台的布局；带 scope 的包名会拆成 @sherlockmen 和 hello-my-agent。
+  // 向 npm 查询已安装包所在的目录，避免写死平台路径；带 scope 的包名分成两级目录。
   const installed = join(modules, ...pkg.name.split("/"));
   assert.ok(!existsSync(join(installed, "chapter-01-first-command")));
-  for (const dep of ["tsx", "typescript", "@types/node"]) {
+  for (const dep of ["typescript", "@types/node"]) {
     assert.ok(!existsSync(join(installed, "node_modules", dep)), `安装包不应包含 ${dep}`);
   }
   console.log("✓ 在临时前缀安装 tarball，不包含源码或开发依赖");
@@ -89,7 +89,7 @@ try {
   assert.match(run(cli, ["unexpected-argument"], cwd, 1).stderr, /too many arguments/);
   console.log("✓ 在源码之外、含空格的目录中，安装命令、帮助、版本和错误退出码均正确");
 } finally {
-  // 5. 无论断言成功还是抛错，finally 都会执行，只清理本脚本创建的临时目录。
+  // 5. try 中的代码正常结束或抛出异常时，finally 都会执行，清理本脚本创建的临时目录。
   // recursive 删除其中的安装文件，force 允许目录已不存在；不删除读者项目或已有全局安装。
   rmSync(sandbox, { recursive: true, force: true });
 }
