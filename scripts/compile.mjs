@@ -11,6 +11,7 @@ import { tmpdir } from "node:os";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const chapter = "chapter-02-model-dialogue";
+const toolChapter = "chapter-03-first-tool";
 const targets = {
   "01": "chapter-01-first-command",
   "02.1": `${chapter}/01-configuration/src`,
@@ -19,6 +20,9 @@ const targets = {
   "02.4": `${chapter}/04-conversation/src`,
   "02.5": `${chapter}/05-anthropic/src`,
   "02.6": `${chapter}/06-errors-and-usage/src`,
+  "03.1": `${toolChapter}/01-tool-request/src`,
+  "03.2": `${toolChapter}/02-read-file-loop/src`,
+  "03.3": `${toolChapter}/03-error-boundary/src`,
 };
 const args = process.argv.slice(2);
 const target = args.find((arg) => !arg.startsWith("--")) ?? "02.1";

@@ -7,7 +7,9 @@
  * 输入：--prompt、模型配置和取消信号。
  * 输出：成功时打印一条回答；空问题、配置错误或请求失败时显示安全提示。
  *
- * 执行流程：
+ * 启动主流程（Agent Loop 尚未建立）：
+ *   --doctor --> 显示 Node、平台和启动目录 --> 结束（不读取模型配置）
+ *   其他输入：
  *   +------------------+
  *   | --prompt <text>  |
  *   +--------+---------+
@@ -33,8 +35,15 @@ import { createModel } from "./models/client.js";
 
 // [KEEP 第 01 章] 构建产物始终是 dist/cli.js，因此从它的上一级读取 package.json。
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
-// --prompt 从 02.2 引入；配置类型只管理模型配置，不混入本次提问。
-type CliOptions = Options & { prompt?: string };
+
+// [KEEP 来自第 01 章练习] 环境诊断不读取模型配置，也不会发送模型请求。
+function printDoctor(): void {
+  console.log(`Node: ${process.version}`);
+  console.log(`Platform: ${process.platform} ${process.arch}`);
+  console.log(`Working directory: ${process.cwd()}`);
+}
+// 命令入口选项在模型配置之外增加 --prompt 和 --doctor。
+type CliOptions = Options & { prompt?: string; doctor?: boolean };
 const program = new Command();
 // 只在交互终端中加入 ANSI 颜色；重定向到文件或管道时保留纯文本。
 const colorLabel = (text: string, color: number) =>
@@ -45,6 +54,8 @@ program
   .description("你好，我的 Agent：从 0 到 npm 发布")
   .version(packageJson.version, "-v, --version", "显示版本号")
   .helpOption("-h, --help", "显示帮助")
+  // [KEEP 来自第 01 章练习] --doctor 在读取模型配置前结束，因此没有 API Key 也能使用。
+  .option("--doctor", "显示当前运行环境")
   // [KEEP 来自 02.1] 允许本次启动覆盖模型和基础地址，不在参数中传密钥。
   .option("--model <id>", "本次使用的模型 ID")
   .option("--base-url <url>", "本次使用的接口基础地址")
@@ -53,6 +64,10 @@ program
   // [CHANGED 02.2] 创建模型并发送一次请求。
   .action(async () => {
     const options = program.opts<CliOptions>();
+    if (options.doctor) {
+      printDoctor();
+      return;
+    }
     const config = readConfig(options);
     const model = createModel(config);
     if (!options.prompt?.trim()) throw new UserFacingError('请使用 --prompt "你好" 提问。');

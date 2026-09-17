@@ -23,11 +23,16 @@
     "lesson:02.4": "node scripts/compile.mjs 02.4 --prepare",
     "lesson:02.5": "node scripts/compile.mjs 02.5 --prepare",
     "lesson:02.6": "node scripts/compile.mjs 02.6 --prepare",
+    "lesson:03.1": "node scripts/compile.mjs 03.1 --prepare",
+    "lesson:03.2": "node scripts/compile.mjs 03.2 --prepare",
+    "lesson:03.3": "node scripts/compile.mjs 03.3 --prepare",
+    "exercise:02": "node tests/verify-exercise-02.mjs",
+    "check:03": "node tests/verify-chapter-03.mjs",
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
     "prepack": "node scripts/compile.mjs 02.1",
-    "verify": "npm run typecheck && node scripts/compile.mjs && node tests/verify-install.mjs"
+    "verify": "npm run typecheck && node scripts/compile.mjs && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.126.0",

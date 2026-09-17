@@ -54,7 +54,7 @@ if (text === "/reset") {
  * 输入：普通文本、/reset、/exit、EOF 或 Ctrl+C。
  * 输出：/reset 清空 history 并继续等待；其他输入保持 02.6 的处理方式。
  *
- * 执行流程：
+ * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   +-----------+
  *   | read line |
  *   +-----+-----+
@@ -155,4 +155,10 @@ hello-my-agent
 
 第一条命令只构建并注册练习所在小节，不调用模型；第二条命令才开始连续对话。先让模型记住“青柠”，收到回答后输入 `/reset`，再问“暗号是什么”。应看到清空提示。模型可能猜测答案，因此严格检查应看请求中是否还包含旧消息。
 
-运行 `npm run verify`，检查 `/reset` 是否清除了 OpenAI 和 Anthropic 两种协议的历史消息。
+运行下面的练习验收，它会编译你刚刚修改的 `06-errors-and-usage/src/ui/terminal.ts`，再检查 `/reset` 是否清除了 OpenAI 和 Anthropic 两种协议的历史消息：
+
+```bash
+npm run exercise:02
+```
+
+验收使用本地模拟接口，不读取 API Key，也不访问外网。通过后进入第三章时，`/reset` 会作为已经完成的会话能力继续保留。

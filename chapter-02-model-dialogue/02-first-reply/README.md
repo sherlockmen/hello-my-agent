@@ -237,18 +237,23 @@ export function createModel(config: Config): Model {
 ```ts
 import { createModel } from "./models/client.js";
 
-type CliOptions = Options & { prompt?: string };
+type CliOptions = Options & { prompt?: string; doctor?: boolean };
 
 const colorLabel = (text: string, color: number) =>
   process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;
 ```
 
-登记提问选项，并把默认操作替换为异步版本：
+登记提问选项，并把默认操作替换为异步版本。环境诊断仍然在读取配置和创建模型之前结束。
 
 ```ts
+.option("--doctor", "显示当前运行环境")
 .option("--prompt <text>", "提问一次后退出")
 .action(async () => {
   const options = program.opts<CliOptions>();
+  if (options.doctor) {
+    printDoctor();
+    return;
+  }
   const config = readConfig(options);
   const model = createModel(config);
   if (!options.prompt?.trim()) {

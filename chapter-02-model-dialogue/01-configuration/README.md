@@ -153,11 +153,21 @@ const fileEnv = parseEnv(readFileSync(envPath, "utf8"));
 
 ### 第六步：在需要模型时调用 readConfig()
 
-在 [src/cli.ts](src/cli.ts) 中导入 `readConfig()`，登记 `--model` 和 `--base-url`，把默认操作改为：
+在 [src/cli.ts](src/cli.ts) 中导入 `readConfig()`，登记 `--model` 和 `--base-url`。`--doctor` 必须在 `readConfig()` 之前结束：它只诊断本机环境，不应因为缺少模型密钥而失败。
 
 ```ts
+type CliOptions = Options & { doctor?: boolean };
+
+.option("--doctor", "显示当前运行环境")
+.option("--model <id>", "本次使用的模型 ID")
+.option("--base-url <url>", "本次使用的接口基础地址")
 .action(() => {
-  const config = readConfig(program.opts<Options>());
+  const options = program.opts<CliOptions>();
+  if (options.doctor) {
+    printDoctor();
+    return;
+  }
+  const config = readConfig(options);
   console.log("Hello，My Agent！");
   console.log(`配置已就绪，模型：${config.model}。本节不发送模型请求。`);
 });
@@ -258,13 +268,19 @@ export function readConfig(options: Options): Config {
 import { readConfig, UserFacingError, type Options } from "./config/load-config.js";
 ```
 
-在 `.helpOption()` 后面登记两个命令行选项，并把默认操作改成下面这样：
+在 `.helpOption()` 后面登记三个命令行选项，并把默认操作改成下面这样。`printDoctor()` 是第一章练习中已经完成的环境诊断函数。
 
 ```ts
+.option("--doctor", "显示当前运行环境")
 .option("--model <id>", "本次使用的模型 ID")
 .option("--base-url <url>", "本次使用的接口基础地址")
 .action(() => {
-  const config = readConfig(program.opts<Options>());
+  const options = program.opts<Options & { doctor?: boolean }>();
+  if (options.doctor) {
+    printDoctor();
+    return;
+  }
+  const config = readConfig(options);
   console.log("Hello，My Agent！");
   console.log(`配置已就绪，模型：${config.model}。本节不发送模型请求。`);
 });

@@ -5,7 +5,7 @@
  * 输入：provider、model、baseUrl 选项，以及 OPENAI_* / ANTHROPIC_* 环境配置。
  * 输出：经过校验的 Config；缺少配置或地址无效时抛出 UserFacingError。
  *
- * 执行流程：
+ * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   +----------+
  *   | provider |
  *   +----+-----+

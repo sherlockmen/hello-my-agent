@@ -1,30 +1,29 @@
 /**
  * 02.5 接入 Anthropic 接口 | [KEEP] agent/agent-loop.ts
  *
- * 学习目标：定义一轮 Agent 执行，并保证只有完整成功的问答才能进入历史。
- * 输入：Model、已有 history、本轮 input 和 AbortSignal。
- * 输出：成功时返回 Reply 并追加 user/assistant；失败或取消时抛错且历史不变。
+ * 学习目标：让同一个 Agent Loop 通过统一 Model 接口调用两种服务商协议。
+ * 输入：终端文本、共享 history、已按配置创建的 Model 和 AbortSignal。
+ * 输出：两种协议都归一为 Reply，再按相同规则提交历史并显示。
  *
- * 执行流程：
- *   +---------+   +-------------------+   +----------------+
- *   | history |-->| history + input   |-->| model.generate |
- *   +---------+   +-------------------+   +--------+-------+
- *                                                 | 失败 / 取消 --> 历史不变 --> 抛错
- *                                                 | 回答
- *                                                 v
- *                                            再检查取消？
- *                                             | 是 --> 历史不变 --> throw
- *                                             | 否
- *                                             v
- *                               +-------------------------+
- *                               | append user + assistant |
- *                               +------------+------------+
- *                                            v
- *                                       return Reply
+ * 全局主流程（本节版本）：
  *
- * 关键点：先用新数组构造候选上下文，模型成功且未取消后才修改原 history。
- * 本章还没有工具调用，一轮只请求一次模型；第三章会在这里加入真正的工具循环。
- * 运行观察：成功保存两条消息，失败和取消保存零条消息。
+ * [KEEP 02.4]        [KEEP 02.3]         [CHANGED 02.5]
+ * +----------+      +-------------+      +--------------------+
+ * | Terminal | ---> | agentLoop   | ---> | Model adapter      |
+ * +----^-----+      | + history   |      +---------+----------+
+ *      |            +------+------+                |
+ *      |                   ^               provider?
+ *      |                   |            +------+------+
+ *      |                   |            | OpenAI     | Anthropic
+ *      |                   |            v            v
+ *      |                   |       Chat API     Messages API
+ *      |                   |            +------+------+
+ *      |                   |                   |
+ *      +--- 显示 Reply <---+--- 统一 Reply <----+
+ *
+ * [CHANGED] 只发生在模型适配层；Agent Loop 不需要知道服务商字段差异。
+ * 适配器负责把统一 Message 转成各自协议，并把响应还原成相同的 Reply。
+ * 运行观察：切换 AGENT_PROVIDER 后，终端和 history 的控制流程保持一致。
  */
 
 import type { Message, Model, Reply } from "../models/client.js";

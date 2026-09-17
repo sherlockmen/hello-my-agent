@@ -55,7 +55,7 @@ function compileSnapshot(sourcePath, filename, label, replacement) {
   if (replacement) {
     source = join(project, "source");
     cpSync(join(root, sourcePath), source, { recursive: true });
-    // 直接编译章级练习文档里的完整答案，避免单独维护一份可能过时的答案文件。
+    // 全书验收只检查教程中的标准答案没有失效；读者实际文件由 npm run exercise:02 检查。
     const exercise = readFileSync(join(root, chapter, "EXERCISES.md"), "utf8");
     const solution = exercise.match(/<!-- solution: src\/ui\/terminal\.ts -->\s*```ts\n([\s\S]*?)\n```/);
     assert.ok(solution, "第二章练习必须保留完整终端替换代码及其目标标记");
@@ -95,6 +95,7 @@ async function verifyPackage(project, step, label) {
   assert.match(run(cli, ["--help"], cwd).stdout, /--help/);
   assert.equal(run(cli, ["--version"], cwd).stdout.trim(), pkg.version);
   assert.equal(run(cli, ["-v"], cwd).stdout.trim(), pkg.version);
+  if (step > 0) assert.match(run(cli, ["--doctor"], cwd).stdout, /Working directory:/);
   assert.match(run(cli, ["--unknown"], cwd, 1).stderr, /unknown option/);
   assert.match(run(cli, ["unexpected-argument"], cwd, 1).stderr, /too many arguments/);
   if (step === 0) assert.match(run(cli, [], cwd).stdout, /Hello，My Agent！/);
@@ -137,6 +138,7 @@ try {
     const sourcePath = `${chapter}/${lesson}/src`;
     if (!existsSync(join(root, sourcePath))) continue; // 从空目录跟写时，后续小节可能尚未创建。
     const cli = compileSnapshot(sourcePath, "cli.ts", `lesson-${index + 1}`);
+    assert.match(run(process.execPath, [cli, "--doctor"], cwd).stdout, /Working directory:/);
     if (index === 5) {
       if (currentStep !== 6) await verifyPackage(dirname(dirname(cli)), 6, "completed-package");
       const reset = compileSnapshot(sourcePath, "cli.ts", "reset", true);
@@ -146,7 +148,7 @@ try {
       if (index === 2) await verifyAgentLoop(join(dirname(cli), "agent/agent-loop.js"));
     }
   }
-  console.log("✓ 第一章、第二章各小节及练习均可独立构建运行");
+  console.log("✓ 第一章、第二章各小节及教程中的练习答案均可独立构建运行");
   }
 } finally {
   rmSync(sandbox, { recursive: true, force: true });

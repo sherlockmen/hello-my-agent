@@ -12,21 +12,22 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 ## 开始学习
 
-[从第一章开始](chapter-01-first-command/README.md) · [当前：第二章](chapter-02-model-dialogue/README.md) · [从空目录跟写](docs/SETUP.md)
+[从第一章开始](chapter-01-first-command/README.md) · [已完成：第二章](chapter-02-model-dialogue/README.md) · [继续第三章](chapter-03-first-tool/README.md) · [从空目录跟写](docs/SETUP.md)
 
-已有配套仓库时，先按 [02.1 配置说明](chapter-02-model-dialogue/01-configuration/README.md#填写第一组配置) 填写根目录 `.env`，再执行：
+第一次学习时先构建第一章：
+
+```bash
+npm run lesson:01
+hello-my-agent
+```
+
+第一章不需要 API Key。完成第一章及 `--doctor` 练习后，再按 [02.1 配置说明](chapter-02-model-dialogue/01-configuration/README.md#填写第一组配置) 填写根目录 `.env`，进入第二章：
 
 ```bash
 npm run lesson:02.1
 ```
 
-这条命令会安装依赖、选择 02.1、编译并注册命令。进入下一小节时只需换编号，例如：
-
-```bash
-npm run lesson:02.2
-```
-
-每个小节的构建脚本已经包含对应源码的依赖安装、编译与命令注册，直接使用 `npm run lesson:02.N`，不追加 npm 参数分隔符。六个小节的命令列在[第二章构建表](chapter-02-model-dialogue/README.md#构建并选择每个小节)。只有随后执行 `hello-my-agent` 或带 `--prompt` 的命令时才会调用模型。`-h`、`-v` 分别是帮助和版本的简写。
+每个小节的构建脚本已经包含对应源码的依赖安装、编译与命令注册。进入下一小节时只需更换编号，例如 `npm run lesson:02.2`。六个小节的命令列在[第二章构建表](chapter-02-model-dialogue/README.md#构建并选择每个小节)。02.2 和 02.3 只有带 `--prompt` 提问时才会调用模型；从 02.4 开始，无参数启动的连续会话也会调用模型。`--help`、`--version` 和 `--doctor` 不会调用模型。`-h`、`-v` 分别是帮助和版本的简写。
 
 本地注册的命令指向当前仓库的构建产物。遇到找不到命令或运行了另一份代码时，按 [环境说明](docs/SETUP.md#注册命令后如何找到它) 检查。
 
@@ -37,8 +38,8 @@ npm run lesson:02.2
 | 章节 | 本章解决的问题 | 实现 |
 | --- | --- | --- |
 | [第 01 章：从空目录到自己的命令](chapter-01-first-command/README.md) | 怎样把源码变成可安装的命令？ | [cli.ts](chapter-01-first-command/cli.ts)，已确认完成 |
-| [第 02 章：接通模型并持续对话](chapter-02-model-dialogue/README.md) | 怎样接通模型并建立 Agent Loop 的无工具路径？ | [六个递进小节](chapter-02-model-dialogue/README.md)，待确认 |
-| 第 03 章：第一个工具与 Agent Loop | 怎样执行模型请求的工具，再回传结果？ | 待编写 |
+| [第 02 章：接通模型并持续对话](chapter-02-model-dialogue/README.md) | 怎样接通模型并建立 Agent Loop 的无工具路径？ | [六个递进小节](chapter-02-model-dialogue/README.md)，已确认完成 |
+| [第 03 章：第一个工具与 Agent Loop](chapter-03-first-tool/README.md) | 怎样执行模型请求的工具，再回传结果？ | [三个递进小节](chapter-03-first-tool/README.md)，待确认完成 |
 
 完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。
 
@@ -78,6 +79,16 @@ hello-my-agent/
         models/             模型接口与协议转换
         ui/                 终端输入和显示，后续扩展 TUI
         errors.ts           共用错误类型与提示
+  chapter-03-first-tool/     第 03 章：第一个工具与 Agent Loop
+    README.md               工具循环的完整原理与章节导航
+    EXERCISES.md             多工具请求练习与完整答案
+    01-tool-request/         03.1 工具定义与请求归一化
+    02-read-file-loop/       03.2 读取文件并回传结果
+    03-error-boundary/       03.3 把工具失败反馈给模型
+      src/
+        agent/              有界 Agent Loop
+        tools/              read_file 与本地注册表
+        models/             双协议工具消息转换
   .env.example              模型配置模板，不含真实密钥
   docs/
     SETUP.md                环境与从空目录搭建
@@ -98,13 +109,15 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章逐个构建六个小节，检查 Agent 核心、协议、历史与取消规则；当前小节和完成版都验证真实安装包，同时回归第一章与练习快照；这些检查不使用真实密钥。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息。这些检查使用本地模拟接口，不需要真实密钥。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。
 
-第一章练习会增加 `--doctor`。完成练习后，用 `hello-my-agent --doctor` 查看 Node 版本、运行平台和当前工作目录。
+第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
-[第二章练习](chapter-02-model-dialogue/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第二章验证记录](docs/verification/02-model-dialogue.md)
+完成第二章 `/reset` 练习后，运行 `npm run exercise:02`。这条命令编译读者实际修改的终端文件，并用本地模拟接口检查两种协议中的历史是否真正清空。
 
-第一章已确认完成，第二章已提供正文、代码和练习，等待学习确认；尚未发布 npm 包。真实模型调用需配置服务商凭据后验证。
+[第三章练习](chapter-03-first-tool/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第三章验证记录](docs/verification/03-first-tool.md)
+
+第一章和第二章已确认完成；第三章正文、代码和本地验收已经具备，等待你的完成确认。npm 包尚未发布。
 
 ## 许可证
 

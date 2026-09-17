@@ -120,7 +120,11 @@ export async function verifyChat(cli, cwd, { reset = false } = {}) {
         assert.equal(first.body.max_tokens, 2048);
         assert.deepEqual(second.body.messages.map((message) => message.role), ["user", "assistant", "user"]);
       }
-      assert.equal(second.body.messages.at(-2).content, "收到：记住青柠");
+      const previousAssistantContent = second.body.messages.at(-2).content;
+      const previousAssistantText = typeof previousAssistantContent === "string"
+        ? previousAssistantContent
+        : previousAssistantContent.find((block) => block.type === "text")?.text;
+      assert.equal(previousAssistantText, "收到：记住青柠");
 
       // 单次提问从 02.2 一直保留到完成版，不能因为增加终端交互而消失。
       requests.length = 0;

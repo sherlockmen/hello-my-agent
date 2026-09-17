@@ -5,7 +5,7 @@
  * 输入：--model / --base-url、process.env，以及当前项目最近的 .env。
  * 输出：包含 apiKey、model、baseURL 的 Config；无效输入抛出 UserFacingError。
  *
- * 执行流程：
+ * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   +-----------+   +-------------+   +--------------+   +--------+
  *   | CLI options |-->|             |   | required     |   |        |
  *   | process.env|->| first value |-->| fields + URL |-->| Config |
