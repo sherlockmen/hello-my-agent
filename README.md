@@ -20,13 +20,13 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 npm run lesson:02.1
 ```
 
-这条命令会安装依赖、选择 02.1、编译、注册并启动。进入下一小节时只需换编号，例如：
+这条命令会安装依赖、选择 02.1、编译并注册命令。进入下一小节时只需换编号，例如：
 
 ```bash
 npm run lesson:02.2
 ```
 
-每个小节的启动脚本已经包含对应源码的构建与命令注册，运行时直接使用 `npm run lesson:02.N`，不追加 npm 参数分隔符。六个小节的命令列在 [第二章启动表](chapter-02-model-dialogue/README.md#一条命令启动每个小节)。构建成功后，也可以直接使用 `hello-my-agent`、`hello-my-agent --help` 和 `hello-my-agent --version`。`-h`、`-v` 分别是帮助和版本的简写。
+每个小节的构建脚本已经包含对应源码的依赖安装、编译与命令注册，直接使用 `npm run lesson:02.N`，不追加 npm 参数分隔符。六个小节的命令列在[第二章构建表](chapter-02-model-dialogue/README.md#构建并选择每个小节)。只有随后执行 `hello-my-agent` 或带 `--prompt` 的命令时才会调用模型。`-h`、`-v` 分别是帮助和版本的简写。
 
 本地注册的命令指向当前仓库的构建产物。遇到找不到命令或运行了另一份代码时，按 [环境说明](docs/SETUP.md#注册命令后如何找到它) 检查。
 
@@ -50,7 +50,7 @@ hello-my-agent/
   package.json              统一依赖、构建脚本、npm 命令入口
   package-lock.json         全书依赖锁文件
   tsconfig.json             各章共享的类型检查配置
-  scripts/compile.mjs       按小节编号选择、编译并启动源码
+  scripts/compile.mjs       按小节编号选择、编译并注册源码
   chapter-01-first-command/  第 01 章：构建可安装的命令
     README.md               本章中文讲解
     cli.ts                  命令行入口，本章完整实现

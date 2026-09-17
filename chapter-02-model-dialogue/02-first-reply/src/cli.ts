@@ -22,6 +22,7 @@
  *                                          | 成功 --> 打印回答 --> exit 0
  *
  * 关键点：网络调用是异步操作，所以 action 使用 async，入口使用 parseAsync() 等待它完成。
+ * 交互终端中的 Agent 标签使用紫色；管道和文件输出保持纯文本。
  * 运行观察：执行 hello-my-agent --prompt "你好"，程序回答一次后退出。
  */
 
@@ -35,6 +36,9 @@ const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.me
 // --prompt 从 02.2 引入；配置类型只管理模型配置，不混入本次提问。
 type CliOptions = Options & { prompt?: string };
 const program = new Command();
+// 只在交互终端中加入 ANSI 颜色；重定向到文件或管道时保留纯文本。
+const colorLabel = (text: string, color: number) =>
+  process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;
 program
   // [KEEP 第 01 章] 帮助、版本无需配置模型，也不会发送请求。
   .name("hello-my-agent")
@@ -54,7 +58,7 @@ program
     if (!options.prompt?.trim()) throw new UserFacingError('请使用 --prompt "你好" 提问。');
     const signal = new AbortController().signal;
     const reply = await model.generate([{ role: "user", content: options.prompt }], signal);
-    console.log(`Agent > ${reply.text}`);
+    console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);
   });
 
 // [CHANGED 02.2] 请求返回 Promise，parseAsync 会等待默认操作结束。

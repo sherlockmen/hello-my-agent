@@ -69,6 +69,7 @@ if (text === "/reset") {
  * 关键点：把数组 length 设为 0，旧问答就不再进入下一次请求。
  * continue 跳过 agentLoop 调用，所以 /reset 本身不会发送给模型。
  * 系统提示词和模型配置不在 history 中，清空问答不会清空它们。
+ * 交互终端中“你”为青色、“Agent”为紫色；管道和文件输出保持纯文本。
  * 运行观察：先对话，再输入 /reset；下一次请求中不再包含之前的 user/assistant 消息。
  */
 
@@ -76,6 +77,10 @@ import { createInterface } from "node:readline";
 import { agentLoop } from "../agent/agent-loop.js";
 import { explainError } from "../errors.js";
 import type { Message, Model, Reply } from "../models/client.js";
+
+// ANSI 颜色只用于交互终端；管道和日志仍得到不含控制字符的纯文本。
+const colorLabel = (text: string, color: number) =>
+  process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;
 
 // [KEEP 来自 02.4] history 的生命周期等于本次会话，agentLoop 负责每轮的提交规则。
 /** 等待输入 -> 调用 agentLoop -> 显示回答；会话内的各轮请求顺序执行。 */
@@ -98,7 +103,7 @@ export async function startTerminal(model: Model): Promise<void> {
   console.log("Hello，My Agent！输入消息开始对话，输入 /reset 清空历史，输入 /exit 退出。");
   try {
     while (!controller.signal.aborted) {
-      if (terminal) process.stdout.write("你 > ");
+      if (terminal) process.stdout.write(`${colorLabel("你", 36)} > `);
       const { value, done } = await lines.next();
       if (done) break; // EOF：输入结束，正常退出。
       const text = value.trim();
@@ -132,7 +137,7 @@ export async function startTerminal(model: Model): Promise<void> {
 
 // [KEEP 主线 02.6] 同一处输出同时服务于连续对话与 --prompt 单次提问。
 export function printReply(reply: Reply): void {
-  console.log(`Agent > ${reply.text}`);
+  console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);
   // 显示接口报告的本轮字段，不估算价格，也不把历史文本长度当成 token 数。
   console.log(`用量：输入 ${reply.inputTokens ?? "未知"}，输出 ${reply.outputTokens ?? "未知"} token。`);
   if (reply.truncated) console.log("提示：回答达到输出上限，可能尚未完整。");
@@ -145,8 +150,9 @@ export function printReply(reply: Reply): void {
 
 ```bash
 npm run lesson:02.6
+hello-my-agent
 ```
 
-先让模型记住“青柠”，收到回答后输入 `/reset`，再问“暗号是什么”。应看到清空提示。模型可能猜测答案，因此严格检查应看请求中是否还包含旧消息。
+第一条命令只构建并注册练习所在小节，不调用模型；第二条命令才开始连续对话。先让模型记住“青柠”，收到回答后输入 `/reset`，再问“暗号是什么”。应看到清空提示。模型可能猜测答案，因此严格检查应看请求中是否还包含旧消息。
 
 运行 `npm run verify`，检查 `/reset` 是否清除了 OpenAI 和 Anthropic 两种协议的历史消息。

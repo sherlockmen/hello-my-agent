@@ -31,7 +31,7 @@ export type Config = { apiKey: string; model: string; baseURL: string };
 export class UserFacingError extends Error {}
 
 // [NEW 02.2] 系统提示词描述助手身份与当前能力，独立于问答历史。
-export const systemPrompt = "你是 Hello, My Agent，一个帮助用户学习编程的助手。请用中文清楚回答。当前没有文件或命令工具，不要声称已经操作用户的项目。";
+export const systemPrompt = "你是一个运行在命令行中的个人编程 Agent。请使用中文准确、清楚地回答编程问题。当前阶段只能进行文本对话，尚未获得读取文件、修改代码或执行命令的工具；不要声称已经执行这些操作。";
 
 // [KEEP 来自 02.1] 从当前目录向上寻找最近项目的 .env；遇到 package.json 后不再越过项目边界。
 function readProjectEnv(): Record<string, string | undefined> {

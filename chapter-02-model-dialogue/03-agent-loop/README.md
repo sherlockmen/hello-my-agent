@@ -187,11 +187,18 @@ export async function agentLoop(
 import { agentLoop } from "./agent/agent-loop.js";
 ```
 
+如果还没有上一节的颜色函数，在 `program` 创建后加入：
+
+```ts
+const colorLabel = (text: string, color: number) =>
+  process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;
+```
+
 把上一节直接调用 `model.generate()` 的两行替换为：
 
 ```ts
 const reply = await agentLoop(model, [], options.prompt, signal);
-console.log(`Agent > ${reply.text}`);
+console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);
 ```
 
 这里传入空数组，所以命令仍然只回答一次。下一节会把长期存在的数组交给同一个函数。
@@ -200,7 +207,7 @@ console.log(`Agent > ${reply.text}`);
 
 确认根目录 `.env` 中已有可用的 OpenAI 兼容配置。本节用真实请求观察成功路径，再用内存模型检查无法从终端直接观察的失败路径。
 
-### 第四步：运行本节程序
+### 第四步：构建并运行本节
 
 在仓库根目录执行：
 
@@ -208,7 +215,7 @@ console.log(`Agent > ${reply.text}`);
 npm run lesson:02.3
 ```
 
-命令会用“你好”执行一轮 Agent Loop。要更换问题，运行：
+这条 npm 命令只构建并注册本节，不执行 Agent Loop。要观察一轮真实请求，再运行：
 
 ```bash
 hello-my-agent --prompt "用一句话解释什么是 CLI。"

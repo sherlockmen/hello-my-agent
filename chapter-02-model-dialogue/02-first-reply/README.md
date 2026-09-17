@@ -66,7 +66,7 @@
 
 ### 第一步：给模型一段系统说明
 
-在 [src/config/load-config.ts](src/config/load-config.ts) 中增加 `systemPrompt`，说明助手身份、使用中文回答，以及目前没有文件和命令工具。系统说明是程序给模型的规则；本次用户提问是需要模型回答的内容，两者职责不同。
+在 [src/config/load-config.ts](src/config/load-config.ts) 中增加 `systemPrompt`，把角色说明为“运行在命令行中的个人编程 Agent”，并写清当前只能文本对话。这里描述的是职责和真实能力，不把书名 `Hello, My Agent` 当作模型人格。系统说明是程序给模型的规则；本次用户提问是需要模型回答的内容，两者职责不同。
 
 ### 第二步：定义模型模块的输入和输出
 
@@ -134,7 +134,7 @@ SDK 成功返回只说明取得了一个符合 SDK 类型的响应，不代表�
 
 ```ts
 const reply = await model.generate([{ role: "user", content: options.prompt }], signal);
-console.log(`Agent > ${reply.text}`);
+console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);
 ```
 
 这里的 `options.prompt` 已在前面检查非空；`signal` 来自 `new AbortController().signal`。完整上下文见源码。
@@ -174,8 +174,9 @@ OpenAI SDK 已经负责认证头、请求路径、JSON 序列化、响应解析�
 
 ```ts
 export const systemPrompt =
-  "你是 Hello, My Agent，一个帮助用户学习编程的助手。请用中文清楚回答。" +
-  "当前没有文件或命令工具，不要声称已经操作用户的项目。";
+  "你是一个运行在命令行中的个人编程 Agent。请使用中文准确、清楚地回答编程问题。" +
+  "当前阶段只能进行文本对话，尚未获得读取文件、修改代码或执行命令的工具；" +
+  "不要声称已经执行这些操作。";
 ```
 
 系统提示词描述 Agent 当前真实拥有的能力。它不能阻止模型犯错，但可以减少模型声称已经读取文件或执行命令的情况。
@@ -237,6 +238,9 @@ export function createModel(config: Config): Model {
 import { createModel } from "./models/client.js";
 
 type CliOptions = Options & { prompt?: string };
+
+const colorLabel = (text: string, color: number) =>
+  process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;
 ```
 
 登记提问选项，并把默认操作替换为异步版本：
@@ -255,9 +259,11 @@ type CliOptions = Options & { prompt?: string };
     [{ role: "user", content: options.prompt }],
     signal,
   );
-  console.log(`Agent > ${reply.text}`);
+  console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);
 });
 ```
+
+颜色代码 `35` 表示紫色。只有 `stdout` 连接交互终端时才添加 ANSI 颜色；输出被重定向到文件或管道时仍是普通文本。
 
 底部把同步解析改成异步解析：
 
@@ -278,7 +284,7 @@ OpenAI 分支使用 [Chat Completions](https://developers.openai.com/api/referen
 
 OpenAI 官方目前建议新项目优先评估 Responses API；本教程选择 Chat Completions，是因为本章目标是先实现广泛使用的 OpenAI 兼容消息协议，并与 Anthropic Messages 对照学习。这里讲解的是协议边界，不表示所有 OpenAI 新项目都应选择同一个接口。
 
-### 第五步：运行本节程序
+### 第五步：构建并运行本节
 
 在仓库根目录执行：
 
@@ -286,7 +292,7 @@ OpenAI 官方目前建议新项目优先评估 Responses API；本教程选择 C
 npm run lesson:02.2
 ```
 
-命令会用“你好”完成一次请求。要更换问题，运行：
+这条 npm 命令只完成依赖安装、编译和命令注册，不调用模型。完成后会提示你在准备好真实请求时运行：
 
 ```bash
 hello-my-agent --prompt "用一句话解释什么是 CLI。"

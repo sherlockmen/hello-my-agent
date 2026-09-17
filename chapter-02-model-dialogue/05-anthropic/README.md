@@ -297,7 +297,7 @@ ANTHROPIC_BASE_URL=https://api.anthropic.com
 
 `AGENT_PROVIDER=openai` 设置默认协议。启动时使用 `--provider anthropic`，只切换当前进程使用的协议，不会修改 `.env`。
 
-### 第五步：运行本节程序
+### 第五步：构建并运行本节
 
 在仓库根目录执行：
 
@@ -305,7 +305,7 @@ ANTHROPIC_BASE_URL=https://api.anthropic.com
 npm run lesson:02.5
 ```
 
-启动后会使用 Anthropic 接口进入连续对话。之后也可以直接运行：
+这条 npm 命令只构建并注册本节，不调用 Anthropic 或 OpenAI。准备验证 Anthropic 接口时运行：
 
 ```bash
 hello-my-agent --provider anthropic

@@ -19,6 +19,7 @@
  *   Ctrl+C --> 取消请求 --> 关闭输入 --> exit 130
  *
  * 关键点：history 在 while 外创建，所以第二轮能带上第一轮问答。成功时显示 token 用量与截断提示；失败时通过 explainError() 给出分类建议。
+ * 交互终端中“你”为青色、“Agent”为紫色；管道和文件输出不包含 ANSI 控制字符。
  * 这个 while 等待不同的用户输入，不是 Agent 内部处理工具调用的循环。
  * 运行观察：连续提问时保留上下文；退出再启动后历史重新为空。
  */
@@ -27,6 +28,11 @@ import { createInterface } from "node:readline";
 import { agentLoop } from "../agent/agent-loop.js";
 import { explainError } from "../errors.js";
 import type { Message, Model, Reply } from "../models/client.js";
+
+// ANSI 颜色只用于交互终端：用户标签为青色，Agent 标签为紫色。
+// 输出被管道或文件接收时不加控制字符，便于日志和脚本读取。
+const colorLabel = (text: string, color: number) =>
+  process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;
 
 // [KEEP 来自 02.4] history 的生命周期等于本次会话，agentLoop 负责每轮的提交规则。
 /** 等待输入 -> 调用 agentLoop -> 显示回答；会话内的各轮请求顺序执行。 */
@@ -48,7 +54,7 @@ export async function startTerminal(model: Model): Promise<void> {
   console.log("Hello，My Agent！输入消息开始对话，输入 /exit 退出。");
   try {
     while (!controller.signal.aborted) {
-      if (terminal) process.stdout.write("你 > ");
+      if (terminal) process.stdout.write(`${colorLabel("你", 36)} > `);
       const { value, done } = await lines.next();
       if (done) break; // EOF：输入结束，正常退出。
       const text = value.trim();
@@ -76,7 +82,7 @@ export async function startTerminal(model: Model): Promise<void> {
 
 // [CHANGED 02.6] 同一处输出同时服务于连续对话与 --prompt 单次提问。
 export function printReply(reply: Reply): void {
-  console.log(`Agent > ${reply.text}`);
+  console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);
   // 显示接口报告的本轮字段，不估算价格，也不把历史文本长度当成 token 数。
   console.log(`用量：输入 ${reply.inputTokens ?? "未知"}，输出 ${reply.outputTokens ?? "未知"} token。`);
   if (reply.truncated) console.log("提示：回答达到输出上限，可能尚未完整。");

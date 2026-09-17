@@ -176,6 +176,9 @@ import { agentLoop } from "../agent/agent-loop.js";
 import { UserFacingError } from "../config/load-config.js";
 import type { Message, Model, Reply } from "../models/client.js";
 
+const colorLabel = (text: string, color: number) =>
+  process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;
+
 export async function startTerminal(model: Model): Promise<void> {
   const history: Message[] = [];
   const controller = new AbortController();
@@ -195,7 +198,7 @@ export async function startTerminal(model: Model): Promise<void> {
 
   try {
     while (!controller.signal.aborted) {
-      if (terminal) process.stdout.write("你 > ");
+      if (terminal) process.stdout.write(`${colorLabel("你", 36)} > `);
       const { value, done } = await lines.next();
       if (done) break;
 
@@ -225,11 +228,11 @@ export async function startTerminal(model: Model): Promise<void> {
 }
 
 export function printReply(reply: Reply): void {
-  console.log(`Agent > ${reply.text}`);
+  console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);
 }
 ```
 
-`history` 在 `while` 外创建，整个会话只使用这一份数组。`await agentLoop(...)` 位于读取下一行之前，因此各轮按顺序完成。[教学注释版源码](src/ui/terminal.ts)还说明了 EOF、SIGINT 和资源清理分支。
+`history` 在 `while` 外创建，整个会话只使用这一份数组。`await agentLoop(...)` 位于读取下一行之前，因此各轮按顺序完成。颜色代码 `36` 把“你”显示为青色，`35` 把“Agent”显示为紫色；非交互输出不加颜色。[教学注释版源码](src/ui/terminal.ts)还说明了 EOF、SIGINT 和资源清理分支。
 
 ### 第二步：让入口选择运行模式
 
@@ -260,7 +263,7 @@ printReply(reply);
 
 确认根目录 `.env` 中已有可用模型配置。你可以从仓库根目录或本小节目录运行，配置读取会向上找到最近项目的 `.env`。
 
-### 第四步：运行本节程序
+### 第四步：构建并运行本节
 
 在仓库根目录执行：
 
@@ -268,7 +271,7 @@ printReply(reply);
 npm run lesson:02.4
 ```
 
-启动后会进入连续对话。之后也可以直接运行：
+这条 npm 命令只构建并注册本节，不会进入连续对话，也不会调用模型。准备开始对话时运行：
 
 ```bash
 hello-my-agent

@@ -1,7 +1,7 @@
 /**
  * 公共构建步骤：根据小节编号选择入口，清理 dist，再编译该入口及其导入模块。
  * 读者不需要修改 TypeScript 构建配置；构建所需配置只在系统临时目录存在。
- * --prepare 负责安装依赖和注册命令，--run 在构建后直接运行选中的小节。
+ * --prepare 负责安装依赖和注册命令；完成后只输出一行完成提示。
  */
 import { chmodSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -71,11 +71,8 @@ if (!source) {
     }
   }
 
-  if (status === 0 && args.includes("--run")) {
-    const cliArgs = target === "02.2" || target === "02.3"
-      ? ["--prompt", "你好"]
-      : target === "02.5" ? ["--provider", "anthropic"] : [];
-    status = run(process.execPath, [join(root, "dist/cli.js"), ...cliArgs]);
+  if (status === 0 && args.includes("--prepare")) {
+    console.log(`✓ ${target} 已完成依赖安装、编译和命令注册。`);
   }
   process.exitCode = status;
 }

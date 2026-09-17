@@ -64,7 +64,7 @@ hello-my-agent --doctor
  * 读取本包版本时，相对入口文件查找；显示当前工作目录时，调用 process.cwd()。
  *
  * 将本文件内容写入 chapter-01-first-command/cli.ts。
- * 在项目根目录执行 npm run lesson:01，自动安装依赖、编译、注册并启动，之后直接运行：
+ * 在项目根目录执行 npm run lesson:01，自动安装依赖、编译并注册，之后直接运行：
  *   hello-my-agent --doctor -> 输出 Node、Platform、Working directory
  *   hello-my-agent          -> 仍显示欢迎语
  */
@@ -145,13 +145,13 @@ program.parse();
 
 ## 运行并观察
 
-把答案保存到 `chapter-01-first-command/cli.ts` 后，在项目根目录构建、注册并启动：
+把答案保存到 `chapter-01-first-command/cli.ts` 后，在项目根目录构建并注册：
 
 ```bash
 npm run lesson:01
 ```
 
-`npm run lesson:01` 会先按锁文件安装依赖，编译完成后自动注册命令并启动。之后修改源码，仍然只需执行这一条命令。
+`npm run lesson:01` 会先按锁文件安装依赖，编译完成后自动注册命令。之后修改源码，仍然使用这一条命令重新构建。
 
 现在直接运行：
 

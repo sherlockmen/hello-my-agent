@@ -251,7 +251,7 @@ console.error(`错误：${explainError(error)} 本轮未加入历史，可重新
 
 ```ts
 export function printReply(reply: Reply): void {
-  console.log(`Agent > ${reply.text}`);
+  console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);
   console.log(
     `用量：输入 ${reply.inputTokens ?? "未知"}，输出 ${reply.outputTokens ?? "未知"} token。`,
   );
@@ -260,6 +260,8 @@ export function printReply(reply: Reply): void {
   }
 }
 ```
+
+`colorLabel()` 延续 02.4 的终端规则：“你”使用青色，“Agent”使用紫色，并且只在交互终端中添加 ANSI 颜色。
 
 `??` 不会把合法的 0 替换成“未知”。只有 `null` 或 `undefined` 才表示服务商没有提供可靠数值。
 
@@ -288,7 +290,7 @@ try {
 
 使用根目录 `.env` 中已经配置好的任一服务商。本节不需要增加环境变量；成功响应本身会提供可用的用量字段。
 
-### 第六步：运行本节程序
+### 第六步：构建并运行本节
 
 在仓库根目录执行：
 
@@ -296,7 +298,7 @@ try {
 npm run lesson:02.6
 ```
 
-启动后会进入带错误分类和用量显示的连续对话。之后也可以直接运行：
+这条 npm 命令只构建并注册本节，不调用模型。准备观察错误分类和用量时运行：
 
 ```bash
 hello-my-agent

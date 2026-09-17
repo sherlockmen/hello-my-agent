@@ -161,7 +161,7 @@ const packageJson = JSON.parse(
  * 构建脚本会自动注册命令；npm 根据 package.json 的 bin 将命令名连接到入口文件。
  * 第一行的 #!/usr/bin/env node 让类 Unix 系统通过 PATH 找到 Node 执行它。
  *
- * 在项目根目录执行 npm run lesson:01，一次完成依赖安装、编译、注册与启动。
+ * 在项目根目录执行 npm run lesson:01，一次完成依赖安装、编译与注册。
  * 准备完成后直接运行以下命令；修改源码后重新执行小节命令即可：
  *   hello-my-agent           -> 显示欢迎语
  *   hello-my-agent --help    -> 显示帮助
@@ -211,7 +211,7 @@ program
 program.parse();
 ```
 
-代码写好后，在跟写项目根目录执行 `npm run lesson:01`，自动安装依赖、更新编译产物、注册并启动命令。接下来直接运行 `hello-my-agent --help`，比较两次输出。
+代码写好后，在跟写项目根目录执行 `npm run lesson:01`，自动安装依赖、更新编译产物并注册命令。接下来直接运行 `hello-my-agent --help`，比较两次输出。
 
 ## 本章实现清单
 
@@ -228,13 +228,13 @@ program.parse();
 
 ## 运行验证
 
-在**仓库根目录**（包含 `package.json` 的目录）执行本章启动命令：
+在**仓库根目录**（包含 `package.json` 的目录）执行本章构建命令：
 
 ```bash
 npm run lesson:01
 ```
 
-这条命令一次完成依赖安装、选择第一章、编译、注册与启动。准备完成后也可以这样运行：
+这条命令一次完成依赖安装、选择第一章、编译与注册。准备完成后这样运行：
 
 ```bash
 hello-my-agent

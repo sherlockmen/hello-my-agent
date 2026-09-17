@@ -295,7 +295,7 @@ OPENAI_BASE_URL=https://api.openai.com/v1
 
 根目录 `.env` 已被 Git 忽略。你可以在仓库根目录或第二章的小节目录运行已经构建的 `hello-my-agent`：程序都会向上找到这份配置。如果小节目录中另有 `.env`，程序优先使用离启动目录最近的一份。根目录 `.env.example` 还列出后续 Anthropic 字段，本节先不用填写。
 
-### 第四步：运行本节程序
+### 第四步：构建并运行本节
 
 在仓库根目录执行：
 
@@ -303,7 +303,7 @@ OPENAI_BASE_URL=https://api.openai.com/v1
 npm run lesson:02.1
 ```
 
-运行成功后，也可以直接检查默认命令、帮助和版本：
+这条 npm 命令只构建并注册本节，不读取配置，也不调用模型。完成后运行默认命令检查配置，再检查帮助和版本：
 
 ```bash
 hello-my-agent

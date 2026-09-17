@@ -19,7 +19,7 @@
  * 读取本包版本时，相对入口文件查找；显示当前工作目录时，调用 process.cwd()。
  *
  * 将本文件内容写入 chapter-01-first-command/cli.ts。
- * 在项目根目录执行 npm run lesson:01，自动安装依赖、编译、注册并启动，之后直接运行：
+ * 在项目根目录执行 npm run lesson:01，自动安装依赖、编译并注册，之后直接运行：
  *   hello-my-agent --doctor -> 输出 Node、Platform、Working directory
  *   hello-my-agent          -> 仍显示欢迎语
  */
