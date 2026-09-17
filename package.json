@@ -15,13 +15,24 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "npm ci --include=dev --ignore-scripts --no-audit --no-fund && tsc -p tsconfig.build.json && npm link --ignore-scripts --no-audit --no-fund",
+    "build": "node scripts/compile.mjs 02.1 --prepare",
+    "lesson:01": "node scripts/compile.mjs 01 --prepare --run",
+    "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare --run",
+    "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare --run",
+    "lesson:02.3": "node scripts/compile.mjs 02.3 --prepare --run",
+    "lesson:02.4": "node scripts/compile.mjs 02.4 --prepare --run",
+    "lesson:02.5": "node scripts/compile.mjs 02.5 --prepare --run",
+    "lesson:02.6": "node scripts/compile.mjs 02.6 --prepare --run",
+    "check:02.3": "node tests/verify-install.mjs 3",
+    "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "tsc -p tsconfig.build.json",
-    "verify": "npm run typecheck && tsc -p tsconfig.build.json && node tests/verify-install.mjs"
+    "prepack": "node scripts/compile.mjs 02.1",
+    "verify": "npm run typecheck && node scripts/compile.mjs && node tests/verify-install.mjs"
   },
   "dependencies": {
-    "commander": "14.0.3"
+    "@anthropic-ai/sdk": "0.126.0",
+    "commander": "14.0.3",
+    "openai": "7.15.0"
   },
   "devDependencies": {
     "@types/node": "22.20.3",

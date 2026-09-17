@@ -6,43 +6,41 @@ Build Your Own TUI Coding Agent — From Scratch to npm
 
 用 TypeScript 从第一个命令开始，逐章构建自己的 Coding Agent：接通模型、增加工具和权限、制作 TUI、管理会话与上下文、实现扩展与协作，最终发布别人可以安装使用的 npm 包。
 
-**每章讲清一个主要机制，保留完整实现。** 下一章在前章代码上继续增加能力；旧章节保留，方便运行、比较和回看。基础编程能力是先修要求，Agent 知识在书内连续讲解。
+CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持续刷新内容、响应键盘操作的交互界面；Coding Agent 则是在程序控制下调用模型和本地工具来完成编程任务的 Agent。本书先建立 CLI 和 Agent 核心，再逐步增加 TUI。
 
-源码和练习答案配有中文教学注释：从文件开头的问题与流程，到关键语句的参数、数据变化和设计原因，帮助你边读边构建。后续章节遵守同一份 [注释规范](docs/AUTHORING.md#教学代码注释所有章节必需)。
+**每章讲清一个主要机制，并提供可以运行的完整实现。** 你会先理解问题和执行流程，再修改代码、运行命令并检查结果。基础编程能力是先修要求，Agent 知识会在书中按顺序讲解。
 
 ## 开始学习
 
-[阅读第一章](chapter-01-first-command/README.md) · [查看第一章代码](chapter-01-first-command/cli.ts) · [从空目录跟写](docs/SETUP.md)
+[从第一章开始](chapter-01-first-command/README.md) · [当前：第二章](chapter-02-model-dialogue/README.md) · [从空目录跟写](docs/SETUP.md)
 
-已有配套仓库时，首次在仓库根目录（包含 `package.json` 的目录）执行：
-
-```bash
-npm run build
-```
-
-`npm run build` 会按锁文件安装依赖，再编译代码并注册本地命令。首次使用和后续修改代码，都只需这一条准备命令。完成后直接运行：
+已有配套仓库时，先按 [02.1 配置说明](chapter-02-model-dialogue/01-configuration/README.md#填写第一组配置) 填写根目录 `.env`，再执行：
 
 ```bash
-hello-my-agent
-hello-my-agent --help
-hello-my-agent --version
+npm run lesson:02.1
 ```
 
-`-v` 是 `--version` 的简写，`-h` 是 `--help` 的简写，两种写法效果相同；正文示例统一使用长选项。npm 负责安装依赖、编译和注册命令。准备完成后，运行 Agent 只需输入 `hello-my-agent` 及所需选项。修改源码后，在仓库根目录重新执行 `npm run build`，再运行命令。
+这条命令会安装依赖、选择 02.1、编译、注册并启动。进入下一小节时只需换编号，例如：
+
+```bash
+npm run lesson:02.2
+```
+
+每个小节的启动脚本已经包含对应源码的构建与命令注册，运行时直接使用 `npm run lesson:02.N`，不追加 npm 参数分隔符。六个小节的命令列在 [第二章启动表](chapter-02-model-dialogue/README.md#一条命令启动每个小节)。构建成功后，也可以直接使用 `hello-my-agent`、`hello-my-agent --help` 和 `hello-my-agent --version`。`-h`、`-v` 分别是帮助和版本的简写。
 
 本地注册的命令指向当前仓库的构建产物。遇到找不到命令或运行了另一份代码时，按 [环境说明](docs/SETUP.md#注册命令后如何找到它) 检查。
 
-第一章只显示欢迎语、帮助和版本信息，无需 API Key。Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS arm64 验证，其他平台待验证。
+第一章无需 API Key；02.1 只验证配置，不请求模型，02.2 才开始单次请求，02.4 开始连续会话，02.5 接入 Anthropic。帮助与版本始终无需密钥。Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS arm64 验证，其他平台待验证。
 
 ## 章节目录
 
 | 章节 | 本章解决的问题 | 实现 |
 | --- | --- | --- |
-| [第 01 章：从空目录到自己的命令](chapter-01-first-command/README.md) | 怎样把源码变成可安装的命令？ | [cli.ts](chapter-01-first-command/cli.ts)，试写稿 |
-| 第 02 章：接通模型并持续对话 | 怎样调用模型并保留多轮消息？ | 待编写 |
+| [第 01 章：从空目录到自己的命令](chapter-01-first-command/README.md) | 怎样把源码变成可安装的命令？ | [cli.ts](chapter-01-first-command/cli.ts)，已确认完成 |
+| [第 02 章：接通模型并持续对话](chapter-02-model-dialogue/README.md) | 怎样接通模型并建立 Agent Loop 的无工具路径？ | [六个递进小节](chapter-02-model-dialogue/README.md)，待确认 |
 | 第 03 章：第一个工具与 Agent Loop | 怎样执行模型请求的工具，再回传结果？ | 待编写 |
 
-完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。该表按作者的明确通知标记章节完成；[初版大纲](docs/planning/COURSE.md) 保留原规划。后续章节编写后加入阅读目录。
+完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。
 
 ## 仓库结构
 
@@ -52,12 +50,35 @@ hello-my-agent/
   package.json              统一依赖、构建脚本、npm 命令入口
   package-lock.json         全书依赖锁文件
   tsconfig.json             各章共享的类型检查配置
-  tsconfig.build.json       当前可安装版本的编译入口
+  scripts/compile.mjs       按小节编号选择、编译并启动源码
   chapter-01-first-command/  第 01 章：构建可安装的命令
     README.md               本章中文讲解
     cli.ts                  命令行入口，本章完整实现
     EXERCISES.md             练习思路与运行说明
     cli-with-doctor.ts       加入环境诊断后的完整练习答案
+  chapter-02-model-dialogue/ 第 02 章：六个递进小节
+    README.md               按顺序学习的导航
+    EXERCISES.md             本章练习与完整替换代码
+    01-configuration/       02.1 配置，从两个源码文件开始
+      README.md             本节讲解与运行步骤
+      src/
+        cli.ts              命令入口
+        config/
+          load-config.ts    配置读取
+    02-first-reply/         02.2 第一次模型请求
+    03-agent-loop/          02.3 一轮 Agent 执行的核心
+    04-conversation/        02.4 连续输入与历史
+    05-anthropic/           02.5 增加第二种协议
+    06-errors-and-usage/    02.6 错误分类与用量
+      README.md
+      src/
+        cli.ts              装配模块与启动
+        config/             配置读取
+        agent/              Agent Loop 核心
+        models/             模型接口与协议转换
+        ui/                 终端输入和显示，后续扩展 TUI
+        errors.ts           共用错误类型与提示
+  .env.example              模型配置模板，不含真实密钥
   docs/
     SETUP.md                环境与从空目录搭建
     AUTHORING.md            章节编写规则
@@ -67,9 +88,7 @@ hello-my-agent/
   tests/                    全书共用的验收脚本
 ```
 
-章节目录按 `chapter-编号-主题` 命名，代码文件按职责命名。第一章的 `cli.ts` 负责命令入口，`cli-with-doctor.ts` 展示环境诊断练习的完成状态。每章保留当时的完整实现，依赖在根目录统一管理；早期保持单文件，需要拆分时随正文引入模块。
-
-本书沿自己的 36 章路线，从可安装的命令逐步构建有工具、权限、会话管理和协作能力的 TUI Coding Agent。问题驱动的讲解和逐章可运行的组织方式借鉴了 [learn-claude-code](https://github.com/shareAI-lab/learn-claude-code)，具体取舍见 [参考记录](docs/REFERENCE-STRUCTURE.md)。
+章节目录按 `chapter-编号-主题` 命名，代码文件按职责命名。第一章的 `cli.ts` 负责命令入口，`cli-with-doctor.ts` 展示环境诊断练习的完成状态。每章保留当时的完整实现，依赖在根目录统一管理。从第二章开始，每个小节的源码放进独立的 `src/`，按配置、Agent 核心、模型接入和终端交互分目录，仍可独立运行。目录随功能逐步出现，练习放在章目录；后续工具、权限和会话能力也各归其模块。具体分工见 [第二章执行链](chapter-02-model-dialogue/README.md#六个小节怎样组成一条执行链)。
 
 ## 运行、练习与安装验证
 
@@ -79,13 +98,13 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章逐个构建六个小节，检查 Agent 核心、协议、历史与取消规则；当前小节和完成版都验证真实安装包，同时回归第一章与练习快照；这些检查不使用真实密钥。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。
 
-第一章练习在独立跟写项目中增加 `--doctor`。完成练习、构建并注册对应项目后，用 `hello-my-agent --doctor` 查看环境；正式主线暂不包含这个选项。
+第一章练习会增加 `--doctor`。完成练习后，用 `hello-my-agent --doctor` 查看 Node 版本、运行平台和当前工作目录。
 
-[练习完整答案](chapter-01-first-command/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [验证记录](docs/verification/01-first-command.md)
+[第二章练习](chapter-02-model-dialogue/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第二章验证记录](docs/verification/02-model-dialogue.md)
 
-当前只有第一章试写稿，尚未发布 npm 包。
+第一章已确认完成，第二章已提供正文、代码和练习，等待学习确认；尚未发布 npm 包。真实模型调用需配置服务商凭据后验证。
 
 ## 许可证
 

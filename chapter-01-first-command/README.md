@@ -2,7 +2,7 @@
 
 [全书目录](../README.md) · [完整源码](cli.ts) · [环境与从零搭建](../docs/SETUP.md) · [练习答案](EXERCISES.md)
 
-**本章目标：从空目录开始，做出一个可以安装、支持帮助和版本查询的 `hello-my-agent` 命令。** 本章只输出固定文本，不调用模型，无需 API Key。当前为试写稿。
+**本章目标：从空目录开始，做出一个可以安装、支持帮助和版本查询的 `hello-my-agent` 命令。** 本章只输出固定文本，不调用模型，无需 API Key。本章已于 2026-09-16 确认完成。
 
 ## 问题
 
@@ -36,7 +36,21 @@ flowchart LR
 
 ## 工作原理
 
-### 1. 先决定命令收到参数后做什么
+先把“运行一个命令”理解成四个程序接力，而不是 TypeScript 文件自己变成了命令：
+
+```text
+用户输入 hello-my-agent --help
+  -> shell 在 PATH 中寻找名为 hello-my-agent 的命令入口
+  -> npm 创建的入口指向 dist/cli.js
+  -> 操作系统根据 #!/usr/bin/env node 启动 Node
+  -> Commander 解析 --help，选择帮助分支并结束
+```
+
+这四层各自解决一个问题：shell 负责找到命令，npm 负责把命令名映射到文件，Node 负责执行 JavaScript，Commander 负责根据参数选择行为。最容易误解的是 `.name("hello-my-agent")`：它只改变帮助中显示的名字，不能让 shell 找到命令；真正建立命令入口的是 `package.json` 的 `bin`。
+
+本章只打通本地命令的启动和参数分支。模型、网络、历史与工具都还没有进入这条执行链。
+
+### 第一步：登记命令收到参数后应该做什么
 
 入口中的这一段声明命令行为：
 
@@ -71,7 +85,7 @@ program.parse();
 
 这里一串 `.name().description()` 叫链式调用：每个方法配置一项信息后返回这个命令对象，因此可以接着调用下一个方法。
 
-### 2. 版本信息属于程序，工作目录属于用户
+### 第二步：从程序自己的位置读取版本
 
 `packageJson.version` 从哪里来？入口前面读取了根目录的包清单：
 
@@ -81,7 +95,7 @@ const packageJson = JSON.parse(
 );
 ```
 
-`import.meta.url` 是当前程序文件的 URL。`new URL("../package.json", import.meta.url)` 以这个文件为基准，定位上一级目录中的包清单。源码在 `chapter-01-first-command/cli.ts`，编译产物在 `dist/cli.js`；两者的上一级目录中都有本包的 `package.json`。这个目录关系由根目录的 `tsconfig.build.json` 保证。
+`import.meta.url` 是当前程序文件的 URL。`new URL("../package.json", import.meta.url)` 以这个文件为基准，定位上一级目录中的包清单。源码在 `chapter-01-first-command/cli.ts`，编译产物在 `dist/cli.js`；两者的上一级目录中都有本包的 `package.json`。构建脚本保持这个输出位置。
 
 `readFileSync(..., "utf8")` 按 UTF-8 编码读取文本，`JSON.parse(...)` 再把 JSON 文本转成对象。这样，后面就能通过 `packageJson.version` 取得版本号。
 
@@ -89,7 +103,14 @@ const packageJson = JSON.parse(
 
 例如，在 `/work/demo` 运行已安装的命令时，工作目录是 `/work/demo`，但版本号仍应来自 Agent 安装目录中的包清单。练习中的环境诊断会用到这两个目录的区别。
 
-### 3. npm 负责把命令名连接到文件
+可以把这理解成两套坐标：
+
+- `import.meta.url` 以**程序文件**为原点，适合查找 Agent 自己的版本、模板和内置资源。
+- `process.cwd()` 以**用户启动命令的位置**为原点，适合查找用户项目中的源码、配置和工作文件。
+
+如果在 `/work/demo` 启动安装在另一个目录的 Agent，前者仍指向 Agent 安装目录，后者则是 `/work/demo`。混用两套坐标，是 CLI 离开源码目录后最常见的路径错误之一。
+
+### 第三步：用 bin 把命令名连接到运行文件
 
 [package.json](../package.json) 的 `bin` 字段建立这条连接：
 
@@ -101,13 +122,15 @@ const packageJson = JSON.parse(
 }
 ```
 
-这里只展示 `package.json` 的 `bin` 字段，完整配置见 [环境准备](../docs/SETUP.md#根目录包清单)。本地构建脚本会自动注册命令；全局安装包时，npm 也会根据这个字段创建命令入口。在 macOS / Linux 上，文件首行 `#!/usr/bin/env node` 告诉系统通过 `PATH` 找到 Node，执行这个文件。
+这里只展示 `package.json` 的 `bin` 字段，完整配置在 [环境准备](../docs/SETUP.md#根目录包清单)。npm 安装或链接这个包时，会读取 `bin`，创建一个名为 `hello-my-agent` 的命令入口，并让它指向 `dist/cli.js`。
 
-本地学习时，只需执行 `npm run build`：它先按锁文件安装依赖，再生成 `dist/cli.js`，编译成功后自动把命令连接到当前项目的入口。修改 TypeScript 或切换跟写项目后，在目标项目根目录重新构建即可。分发安装包时，npm 同样根据 `bin` 建立命令入口；Commander 会随运行依赖一起安装。
+在 macOS / Linux 上，shell 先按 `PATH` 的目录顺序找到这个入口。系统读取文件第一行 `#!/usr/bin/env node` 后，再从 `PATH` 中寻找 Node，用 Node 执行其余 JavaScript。`bin` 解决“命令名对应哪个文件”，shebang 解决“这个文件交给哪个解释器”；两者缺一不可。
+
+例如，输入 `hello-my-agent --version` 时，完整路径是：shell 找到命令入口 → 入口到达 `dist/cli.js` → Node 执行文件 → Commander 识别 `--version` → 打印从本包 `package.json` 读取的版本 → 进程以成功状态结束。
 
 ## 动手构建
 
-如果你从空目录跟写，先按 [环境准备](../docs/SETUP.md) 建立项目，做到“写第一段代码”，确认 `hello-my-agent` 能打印欢迎语，再回到这里。已经下载配套仓库的读者可以直接对照源码阅读，并按下方“试一下”运行完成版。
+如果你从空目录跟写，先按 [环境准备](../docs/SETUP.md) 建立项目，做到“写第一段代码”，确认 `hello-my-agent` 能打印欢迎语，再回到这里。已经下载配套仓库的读者可以直接对照源码阅读，并按下方“运行验证”检查结果。
 
 在自己的 `chapter-01-first-command/cli.ts` 中，按下面顺序补齐功能：
 
@@ -138,8 +161,8 @@ const packageJson = JSON.parse(
  * 构建脚本会自动注册命令；npm 根据 package.json 的 bin 将命令名连接到入口文件。
  * 第一行的 #!/usr/bin/env node 让类 Unix 系统通过 PATH 找到 Node 执行它。
  *
- * 在项目根目录执行 npm run build，一次完成依赖安装、编译与本地命令注册。
- * 准备完成后直接运行以下命令；修改源码后重新构建即可：
+ * 在项目根目录执行 npm run lesson:01，一次完成依赖安装、编译、注册与启动。
+ * 准备完成后直接运行以下命令；修改源码后重新执行小节命令即可：
  *   hello-my-agent           -> 显示欢迎语
  *   hello-my-agent --help    -> 显示帮助
  *   hello-my-agent --version -> 显示 package.json 中的版本；-v 是它的简写
@@ -188,9 +211,9 @@ program
 program.parse();
 ```
 
-代码写好后，在跟写项目根目录执行 `npm run build`，自动安装依赖、更新编译产物并注册命令。接下来直接运行 `hello-my-agent` 和 `hello-my-agent --help`，比较两次输出。
+代码写好后，在跟写项目根目录执行 `npm run lesson:01`，自动安装依赖、更新编译产物、注册并启动命令。接下来直接运行 `hello-my-agent --help`，比较两次输出。
 
-## 相对起点的变化
+## 本章实现清单
 
 第一章从空目录开始，完成后具备以下内容：
 
@@ -203,15 +226,15 @@ program.parse();
 
 后续第二章会保留这些行为，在默认操作中接入模型。第一章目录仍保留这一版本。
 
-## 试一下
+## 运行验证
 
-首次使用配套仓库时，在**仓库根目录**（包含 `package.json` 的目录）准备命令：
+在**仓库根目录**（包含 `package.json` 的目录）执行本章启动命令：
 
 ```bash
-npm run build
+npm run lesson:01
 ```
 
-`npm run build` 一次完成依赖安装、编译与本地命令注册。准备完成后统一这样运行：
+这条命令一次完成依赖安装、选择第一章、编译、注册与启动。准备完成后也可以这样运行：
 
 ```bash
 hello-my-agent
@@ -238,8 +261,6 @@ npm run verify
 
 `verify` 先检查类型并构建，再生成 `.tgz` 安装包（tarball）。脚本把包安装到临时目录，并在源码目录之外启动命令，检查欢迎语、帮助、版本和参数错误，最后清理自己创建的临时文件。[手动打包安装](../docs/SETUP.md#手动打包安装) 展示了这些步骤。
 
-从空目录跟写的项目需要先按环境说明准备验收脚本、README 和 LICENSE，再运行 `verify`。
-
 这个检查回答的就是本章最初的问题：程序离开源码目录，还能否正常启动？
 
 ## 失败实验：把参数拼错
@@ -254,7 +275,7 @@ hello-my-agent --versoin
 
 Commander 帮我们拒绝未知输入。后续让其他程序自动调用 Agent 时，它们也会用退出码判断任务是否成功。
 
-如果改了源码但运行结果没变，先在该项目根目录执行 `npm run build`。若结果仍不符，用 `command -v hello-my-agent` 查看终端找到的命令位置，再按 [命令查找说明](../docs/SETUP.md#注册命令后如何找到它) 检查；需要切换项目时，在目标项目根目录执行 `npm run build`。
+如果改了源码但运行结果没变，先在该项目根目录执行 `npm run lesson:01`。若结果仍不符，用 `command -v hello-my-agent` 查看终端找到的命令位置，再按 [命令查找说明](../docs/SETUP.md#注册命令后如何找到它) 检查。
 
 ## 小练习
 
@@ -262,10 +283,10 @@ Commander 帮我们拒绝未知输入。后续让其他程序自动调用 Agent 
 
 思考：显示当前工作目录时应该使用 `process.cwd()` 还是 `import.meta.url`？为什么这里与读取版本号不同？
 
-在独立跟写项目中完成练习、构建并注册后，运行 `hello-my-agent --doctor`。具体步骤和完整代码见 [练习答案](EXERCISES.md)。配套仓库的正式 `cli.ts` 没有这个选项；下一章从正式代码继续，不依赖练习结果。
+完成练习并重新构建后，运行 `hello-my-agent --doctor`。具体步骤和完整代码见 [练习答案](EXERCISES.md)。
 
 ## 接下来
 
 命令已经能启动，但回答仍是写死的两行文字。下一章要解决的是：怎样把输入发给模型，以及为什么第二次提问时需要保留第一次的消息。
 
-第 02 章：接通模型并持续对话（待编写）。
+[继续第 02 章：接通模型并持续对话](../chapter-02-model-dialogue/README.md)。
