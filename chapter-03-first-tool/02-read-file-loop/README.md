@@ -109,7 +109,7 @@ try {
             └─ read_file：只能读取项目根目录以内，不能读取 .env 系列文件
 ```
 
-因此模型客户端可以取得 API Key，`read_file` 却不能把它读成工具结果再发送给模型。`.env`、`.env.*` 和 `.envrc` 会直接得到 `ToolError`；真实路径检查还会阻止符号链接绕过这条规则。
+因此模型客户端可以取得 API Key，`read_file` 却不能把它读成工具结果再发送给模型。`.env`、`.env.*` 和 `.envrc` 会直接得到 `ToolError`；真实路径检查还会拒绝检查时已经通过符号链接指向这些文件的目标。
 
 只检查 `../` 还不够。项目内可能有一个符号链接：
 
@@ -133,6 +133,8 @@ if (
   throw new ToolError("path 不能离开当前项目根目录。");
 }
 ```
+
+这项判断只证明检查发生时解析到的目标位于项目内。检查结束到 `readFile()` 真正打开文件之间，其他进程仍可能替换路径。当前教程假设使用者控制本地工作区，因此这里不是文件系统沙箱；第四章会在分段读取的打开流程中进一步解释这种竞态。
 
 随后检查目标必须是普通文件，并且不超过 64 KiB（65,536 字节）。目录、设备文件和过大文件都不会进入 `readFile()`。
 
@@ -267,6 +269,9 @@ export type Message =
 
 ```bash
 npm run lesson:03.2
+```
+
+```bash
 hello-my-agent --prompt "请读取 package.json，只告诉我 name 字段。"
 ```
 
@@ -282,7 +287,7 @@ hello-my-agent --prompt "请读取 package.json，只告诉我 name 字段。"
 
 - 运行时校验工具参数，不依赖模型遵守 Schema。
 - 向上查找最近的 `package.json`，确定一致的项目根目录。
-- 使用真实路径阻止 `../` 和符号链接离开项目根目录。
+- 使用真实路径拒绝检查时已经通过 `../` 或符号链接离开项目根目录的目标。
 - 拒绝 `.env` 系列文件；普通文件按 UTF-8 解码，大小上限为 64 KiB。
 - 本地注册表决定允许执行的工具名称。
 - 工具请求和结果使用同一个调用 ID。
@@ -306,6 +311,9 @@ npm run check:03
 
 ```bash
 npm run lesson:03.2
+```
+
+```bash
 hello-my-agent --prompt "请读取 definitely-missing.txt。"
 ```
 

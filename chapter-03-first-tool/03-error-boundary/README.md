@@ -213,6 +213,9 @@ turn.push({
 
 ```bash
 npm run lesson:03.3
+```
+
+```bash
 hello-my-agent --prompt "请读取 definitely-missing.txt；如果不存在，请说明真实错误。"
 ```
 

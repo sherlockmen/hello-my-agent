@@ -150,6 +150,9 @@ export function printReply(reply: Reply): void {
 
 ```bash
 npm run lesson:02.6
+```
+
+```bash
 hello-my-agent
 ```
 

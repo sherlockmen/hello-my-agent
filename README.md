@@ -8,7 +8,7 @@ Build Your Own TUI Coding Agent — From Scratch to npm
 
 CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持续刷新内容、响应键盘操作的交互界面；Coding Agent 则是在程序控制下调用模型和本地工具来完成编程任务的 Agent。本书先建立 CLI 和 Agent 核心，再逐步增加 TUI。
 
-**每章讲清一个主要机制，并提供可以运行的完整实现。** 你会先理解问题和执行流程，再修改代码、运行命令并检查结果。基础编程能力是先修要求，Agent 知识会在书中按顺序讲解。
+**每章讲清一个主要机制，并提供可以运行的完整实现。** 本书面向具备 TypeScript 基础、使用过 Coding Agent、希望理解内部原理的开发者。你会从熟悉的产品行为出发，按顺序理解执行流程、修改代码并检查结果。
 
 ## 开始学习
 
@@ -18,6 +18,9 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 ```bash
 npm run lesson:01
+```
+
+```bash
 hello-my-agent
 ```
 
@@ -93,9 +96,9 @@ hello-my-agent/
   chapter-04-code-search/    第 04 章：让 Agent 找到代码
     README.md               文件发现、内容搜索与分段读取原理
     EXERCISES.md             搜索结果上限练习与完整答案
-    01-file-discovery/       04.1 glob 与忽略规则
-    02-content-search/       04.2 grep 与真实代码位置
-    03-chunked-reading/      04.3 按行读取源码片段
+    01-file-discovery/       04.1 控制文件搜索范围
+    02-content-search/       04.2 把文本目标变成代码位置
+    03-chunked-reading/      04.3 把代码位置变成上下文
       src/tools/
         workspace.ts        共享项目根和忽略规则
         glob.ts             路径发现

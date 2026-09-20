@@ -39,7 +39,7 @@ export function runCli(cli, args, cwd, env = {}, input = "", onStart = () => {})
   });
 }
 
-export async function verifyChat(cli, cwd, { reset = false } = {}) {
+export async function verifyChat(cli, cwd, { reset = false, progress = false } = {}) {
   const secret = "fixture-api-secret-MUST-NOT-LOG";
   const requests = [];
   let pendingChild;
@@ -132,6 +132,7 @@ export async function verifyChat(cli, cwd, { reset = false } = {}) {
       assert.equal(once.status, 0, once.stderr);
       assert.match(once.stdout, /收到：只问一次/);
       assert.match(once.stdout, /输入 21，输出 8/);
+      if (progress) assert.match(once.stdout, /模型 > 第 1 次决策：读取当前消息并选择下一步/);
       assert.equal(requests.length, 1);
       assert.equal((await invoke(["--provider", provider, "--prompt", "   "])).status, 1);
 

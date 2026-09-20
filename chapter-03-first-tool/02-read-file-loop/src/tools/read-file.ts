@@ -16,7 +16,7 @@
  *       path 是非空字符串？-- 否 ---> ToolError
  *            | 是
  *            v
- *   realpath 后仍在项目根目录内？-- 否 ---> ToolError
+ *   检查时 realpath 在项目根目录内？-- 否 ---> ToolError
  *            | 是
  *            v
  *       非 .env 且为普通文件？-- 否 ---> ToolError
@@ -28,7 +28,8 @@
  *       readFile(utf8) ----------> 文件内容
  *
  * 关键点：模型输出属于不可信输入，即使参数声明了 JSON Schema，本地仍必须重新校验。
- * realpath 会解析符号链接，防止表面位于项目内的链接实际指向项目外。
+ * realpath 会解析符号链接，因此能拒绝检查时已经指向项目外的目标。
+ * 检查与读取不是同一个操作；当前实现假设本地工作区及其他进程可信，不是文件系统沙箱。
  * .env 系列文件可能保存模型密钥，因此在第 05 章权限系统完成前直接拒绝。
  * 64 KiB（65,536 字节）是固定保护上限；第 04 章会增加分段读取和结果控制。
  * 运行观察：从仓库内的小节目录启动也能读取根目录文件；越界路径仍会停止。
@@ -123,7 +124,9 @@ function findProjectRoot(start = process.cwd()): string {
  * - 关键步骤：解析参数、拒绝环境文件、解析真实路径、检查越界与文件类型、限制大小，最后读取。
  * - 失败方式：参数、越界、目标不存在、文件类型或大小不符合规则时抛出 `ToolError`。
  * - 系统异常：真实路径检查后的 `stat()` 或 `readFile()` 仍可能因权限变化等竞态抛出文件系统异常，由外层统一处理。
- * - 关键原因：`realpath()` 会解析符号链接，防止表面位于项目内的路径实际指向项目外。
+ * - 关键原因：`realpath()` 会解析符号链接，因此能拒绝检查时已经指向项目外的目标。
+ * - 竞态边界：检查和 `readFile()` 不是原子操作；当前实现假设本地工作区及其他进程可信，
+ *   不能抵抗恶意进程在检查后替换路径，也不能作为文件系统沙箱。
  * - 内容边界：本章不识别二进制格式；任何普通文件都会尝试按 UTF-8 解码。
  */
 export async function readFileTool(argumentsJson: string, projectRoot = findProjectRoot()): Promise<string> {
@@ -141,7 +144,7 @@ export async function readFileTool(argumentsJson: string, projectRoot = findProj
   if (pathFromProjectRoot === ".." || pathFromProjectRoot.startsWith(`..${sep}`) || isAbsolute(pathFromProjectRoot)) {
     throw new ToolError("path 不能离开当前项目根目录。");
   }
-  // 再检查真实目标，防止项目根目录内的普通文件名通过符号链接指向同目录下的 .env。
+  // 检查此刻解析到的真实目标，拒绝已经通过符号链接指向同目录 .env 的路径。
   if (isEnvironmentFile(pathFromProjectRoot)) {
     throw new ToolError("为防止泄露凭据，read_file 不读取 .env 系列文件。");
   }

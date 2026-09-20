@@ -257,6 +257,9 @@ const toolCalls: ToolCall[] = response.content
 
 ```bash
 npm run lesson:03.1
+```
+
+```bash
 hello-my-agent --prompt "请先读取 package.json，再告诉我 name 字段。"
 ```
 
