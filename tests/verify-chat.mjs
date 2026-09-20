@@ -132,7 +132,11 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false } =
       assert.equal(once.status, 0, once.stderr);
       assert.match(once.stdout, /收到：只问一次/);
       assert.match(once.stdout, /输入 21，输出 8/);
-      if (progress) assert.match(once.stdout, /模型 > 第 1 次决策：读取当前消息并选择下一步/);
+      if (progress) {
+        assert.match(once.stdout, /模型 > 第 1 次决策/);
+        assert.match(once.stdout, /收到：新增用户问题「只问一次」/);
+        assert.match(once.stdout, /返回：最终回答，交给终端显示/);
+      }
       assert.equal(requests.length, 1);
       assert.equal((await invoke(["--provider", provider, "--prompt", "   "])).status, 1);
 

@@ -3,7 +3,7 @@
  *
  * 学习目标：让模型用 glob 模式查找项目中的真实文件，而不是猜测文件名。
  * 输入：包含 pattern 的 JSON 参数，例如匹配 src 下所有 TypeScript 文件的模式。
- * 输出：按路径排序的相对文件名；最多返回 200 项，并明确标记结果是否被截断。
+ * 输出：给模型的有界路径文本，以及供界面使用的路径数量、截断状态和路径元数据。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   +------------------+
@@ -29,6 +29,7 @@
 import { glob } from "node:fs/promises";
 import { isAbsolute, join, relative, sep } from "node:path";
 import { ToolError } from "../errors.js";
+import type { ToolExecutionResult } from "./types.js";
 import { createIgnoreMatcher, findProjectRoot } from "./workspace.js";
 
 export const globDefinition = {
@@ -141,7 +142,7 @@ export async function findMatchingFiles(
  * 执行 glob 工具，并把有界路径列表转换成模型可读的文本。
  *
  * - 输入：模型生成的参数字符串、项目根目录和可选取消信号。
- * - 输出：每行一个相对路径；超过 200 项时追加截断提示。
+ * - 输出：`content` 是给模型的路径文本，`metadata` 是给界面的路径数量、截断状态和路径数组。
  * - 失败方式：参数或模式无效时抛出 `ToolError`；取消时立即停止，未匹配时返回明确说明。
  * - 职责边界：只返回路径，不读取匹配文件的内容。
  */
@@ -149,11 +150,21 @@ export async function globTool(
   argumentsJson: string,
   projectRoot = findProjectRoot(),
   signal?: AbortSignal,
-): Promise<string> {
+): Promise<ToolExecutionResult> {
   signal?.throwIfAborted();
   const pattern = parsePattern(argumentsJson);
   const result = await findMatchingFiles(pattern, projectRoot, MAX_RESULTS, signal);
-  if (result.paths.length === 0) return `没有文件匹配：${pattern}`;
+  if (result.paths.length === 0) {
+    return {
+      content: `没有文件匹配：${pattern}`,
+      metadata: { kind: "glob", count: 0, truncated: result.truncated, paths: [] },
+    };
+  }
   const suffix = result.truncated ? `\n[结果已截断，只显示前 ${MAX_RESULTS} 项]` : "";
-  return `${result.paths.join("\n")}${suffix}`;
+  return {
+    content: `${result.paths.join("\n")}${suffix}`,
+    metadata: {
+      kind: "glob", count: result.paths.length, truncated: result.truncated, paths: result.paths,
+    },
+  };
 }

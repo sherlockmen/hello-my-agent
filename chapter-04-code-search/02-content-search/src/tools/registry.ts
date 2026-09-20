@@ -1,26 +1,19 @@
 /**
  * 04.2 把文本目标变成代码位置 | [CHANGED] tools/registry.ts
  *
- * 学习目标：把 grep 加入允许列表，让模型能从路径发现继续缩小到具体代码行。
- * 输入：统一的 ToolCall，包含调用 ID、名称和 JSON 参数。
- * 输出：已知名称转交对应实现；未知名称抛出 ToolError。
+ * 学习目标：把 grep 加入允许列表，让同一个分派入口可以读取文件、发现路径和搜索内容。
+ * 输入：模型返回的工具名称、JSON 参数和本轮取消信号。
+ * 输出：工具给模型的 content 与给观察事件的 metadata；未知名称抛出 ToolError。
  *
- * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
- *   +----------+      name？
- *   | ToolCall | ---> +-- read_file --> readFileTool --> 文件内容
- *   +----------+      +-- glob ------> globTool -----> 路径列表
- *                     +-- grep ------> grepTool -----> 匹配位置
- *                     +-- 其他 ----------------------> ToolError
- *
- * 关键点：glob 回答“哪些文件名符合条件”，grep 回答“代码出现在哪一行”，read_file 读取上下文。
- * 注册表只分派已登记名称；新增工具不会改变 Agent Loop 的控制结构。
- * 运行观察：模型可以依次使用 glob、grep 和 read_file 完成一次代码定位。
+ * 本文件只负责“允许什么、执行哪个”。终端文案位于 ui/teaching-trace.ts，
+ * 新增工具不会让 Agent Loop 出现按工具名称编写的分支。
  */
 
 import { ToolError } from "../errors.js";
 import { globDefinition, globTool } from "./glob.js";
 import { grepDefinition, grepTool } from "./grep.js";
 import { readFileDefinition, readFileTool } from "./read-file.js";
+import type { ToolExecutionResult } from "./types.js";
 
 export type ToolCall = {
   id: string;
@@ -31,27 +24,14 @@ export type ToolCall = {
 export const toolDefinitions = [readFileDefinition, globDefinition, grepDefinition];
 
 /**
- * 把模型给出的工具名转换成可以安全显示的本地名称。
+ * 在本地允许列表中查找并执行模型请求的工具。
  *
- * - 输入：模型返回的未可信工具名。
- * - 输出：注册表中的规范名称；未注册时返回固定文字“未知工具”。
- * - 关键原因：过程输出不能直接打印模型生成的名称，否则换行和控制字符会污染终端。
- * - 职责边界：这里只生成显示名称，不判断参数，也不执行工具。
+ * 调用 ID 由 Agent Loop 配回消息；注册表不修改历史，也不生成任何界面文本。
  */
-export function getRegisteredToolName(name: string): string {
-  return toolDefinitions.find((tool) => tool.name === name)?.name ?? "未知工具";
-}
-
-/**
- * 在程序允许使用的工具列表中查找并执行模型请求的工具。
- *
- * - 输入：已经过协议基础字段检查的统一 `ToolCall`，以及本轮 `AbortSignal`。
- * - 输出：按名称返回文件内容、路径列表或内容匹配位置。
- * - 关键步骤：只按显式允许的名称分派，并把同一个取消信号传入具体工具。
- * - 失败方式：名称未注册或参数失败时抛出 `ToolError`；取消时保留 `AbortError`。
- * - 职责边界：调用 ID 由 Agent Loop 配回结果，本函数不修改会话历史。
- */
-export async function executeTool(call: ToolCall, signal: AbortSignal): Promise<string> {
+export async function executeTool(
+  call: ToolCall,
+  signal: AbortSignal,
+): Promise<ToolExecutionResult> {
   signal.throwIfAborted();
   if (call.name === readFileDefinition.name) return readFileTool(call.arguments, undefined, signal);
   if (call.name === globDefinition.name) return globTool(call.arguments, undefined, signal);

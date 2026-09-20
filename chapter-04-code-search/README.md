@@ -78,39 +78,93 @@ Agent Loop 一次性把完整 turn 提交到 history
 
 ## 为什么终端现在显示过程
 
-第三章只显示最终回答，读者很难把屏幕上的停顿对应到 Agent Loop 的哪一步。本章给 `agentLoop()` 增加一个最小的结构化进度回调：
+第三章只显示最终回答，读者很难把屏幕上的停顿对应到 Agent Loop 的哪一步。直接在 `agentLoop()` 里写 `console.log()` 虽然能看到过程，却会让核心依赖当前终端格式；以后换成 JSONL 或 TUI，还要再次修改循环。
 
-```ts
-export type AgentProgress =
-  | { type: "model_start"; call: number }
-  | { type: "tool_start"; sequence: number; name: string }
-  | { type: "tool_finish"; sequence: number; name: string; isError: boolean };
-```
-
-`sequence` 是 Agent Loop 自己递增的步骤号，`name` 只取自本地工具注册表。事件不携带模型生成的调用 ID、参数和工具结果：这些数据仍留在内部消息链中，但不会未经处理进入终端日志。核心只报告状态，不调用 `console.log()`；终端模块决定怎样显示。一次完整运行会出现类似输出：
+本章先建立一个可以继续演进的观察边界：
 
 ```text
-模型 > 第 1 次决策：读取当前消息并选择下一步。
-工具 > 第 1 步：glob 开始。
-工具 > 第 1 步：glob 完成，结果已加入当前回合。
-模型 > 第 2 次决策：读取当前消息并选择下一步。
-工具 > 第 2 步：grep 开始。
-工具 > 第 2 步：grep 完成，结果已加入当前回合。
-模型 > 第 3 次决策：读取当前消息并选择下一步。
-工具 > 第 3 步：read_file 开始。
-工具 > 第 3 步：read_file 完成，结果已加入当前回合。
-模型 > 第 4 次决策：读取当前消息并选择下一步。
-Agent > createModel 位于 src/models/client.ts:41……
+Agent Loop ── AgentEvent ──┬── teaching-trace.ts ── 普通终端
+                           ├── JSONL              第 09 章
+                           └── Ink TUI            第 10 章
 ```
 
-每行对应一个明确发出者：
+`agent/events.ts` 定义生命周期事件。事件只描述“发生了什么”，不包含中文排版规则：
 
-- `模型` 行由 Agent Loop 在调用 `model.generate()` 前报告。
-- `工具开始`行由 Agent Loop 在进入注册表前报告。
-- `工具完成`行表示结果已经写入当前 `turn`，下一次模型调用会看到它。
-- `Agent` 行由终端在 Agent Loop 得到最终回答后显示。
+```ts
+export type AgentEvent =
+  | {
+      type: "model_start";
+      call: number;
+      contextMessages: number;
+      trigger: { kind: "user"; content: string } | { kind: "tool_results"; count: number };
+    }
+  | {
+      type: "model_finish";
+      call: number;
+      outcome: "tools" | "final" | "empty";
+      toolRequests: number;
+      text: string;
+    }
+  | { type: "tool_start"; sequence: number; call: ToolCall }
+  | {
+      type: "tool_finish";
+      sequence: number;
+      call: ToolCall;
+      outcome: "success";
+      result: ToolExecutionResult;
+    }
+  | { type: "tool_finish"; sequence: number; call: ToolCall; outcome: "error"; error: string };
+```
 
-进度回调是尽力而为的观察通道。终端显示函数即使抛出异常，也不能把一次成功的模型或工具执行改写成失败；本章因此隔离同步回调错误。这还不是第 09 章的完整事件系统：到那时会在同一边界上增加统一事件流、JSONL 输出和 TUI 可消费状态，并处理异步送达、消费者失败与背压。
+工具也不再让界面反向解析给模型的文本，而是一次返回两个用途不同的值：
+
+```ts
+export type ToolExecutionResult = {
+  content: string;              // 加入消息链，交给模型
+  metadata: ToolResultMetadata; // 路径数、位置、行号范围等结构化事实
+};
+```
+
+例如 `grep` 的 `content` 含有匹配行，帮助模型理解代码；它的 `metadata` 只含 `path`、`line` 和 `column`，界面可以安全显示位置而不必从源码字符串中猜字段。`registry.ts` 只登记和执行工具，不再负责生成终端摘要。
+
+`ui/teaching-trace.ts` 是本章的文本消费者。它根据工具 Schema 选择允许显示的参数字段，执行单行化、限长和敏感值隐藏，再生成下面的中文记录。`>` 表示组件收到输入或开始执行，`<` 表示组件已经返回。
+
+下面展示一次可能的真实路径。工具顺序由模型根据已有证据决定，并不是 Agent Loop 写死的：
+
+```text
+模型 > 第 1 次决策
+  收到：新增用户问题「找到 createModel 的定义」；Agent Loop 消息链共 1 条。
+模型 < 第 1 次决策
+  返回：1 个工具请求。
+工具 > 第 1 步：glob
+  执行：pattern="chapter-04-code-search/02-content-search/src/**/*.ts"。
+工具 < 第 1 步：glob 完成
+  返回：11 个路径；示例：chapter-04-code-search/02-content-search/src/agent/agent-loop.ts，chapter-04-code-search/02-content-search/src/cli.ts。
+  去向：结果已加入当前回合，下一次模型决策会收到。
+模型 > 第 2 次决策
+  收到：新增 1 条工具结果；Agent Loop 消息链共 3 条。
+模型 < 第 2 次决策
+  返回：1 个工具请求。
+工具 > 第 2 步：grep
+  执行：query="createModel"，glob="chapter-04-code-search/02-content-search/src/**/*.ts"。
+工具 < 第 2 步：grep 完成
+  返回：1 个匹配位置；示例：chapter-04-code-search/02-content-search/src/models/client.ts:59:17。
+  去向：结果已加入当前回合，下一次模型决策会收到。
+模型 > 第 3 次决策
+  收到：新增 1 条工具结果；Agent Loop 消息链共 5 条。
+模型 < 第 3 次决策
+  返回：最终回答，交给终端显示。
+Agent > createModel 位于 chapter-04-code-search/02-content-search/src/models/client.ts:59……
+```
+
+这段输出可以直接回答四个问题：
+
+- `模型 >`：这次模型调用收到了哪些新增信息。
+- `模型 <`：模型返回最终回答，还是返回一个或多个工具请求。
+- `工具 >`：本地程序实际执行哪个工具以及哪些安全参数。
+- `工具 <`：工具得到什么规模的结果，以及结果接下来交给谁。
+
+观察者不参与模型选择、工具执行和历史提交。核心使用 `structuredClone()` 发送事件快照，所以观察者修改工具名或参数也不会改变随后执行的真实请求；终端显示函数抛出异常同样不能把成功执行改写成失败。事件对象保留核心运行所需的真实事实，因此不能未经筛选直接写日志；普通终端的安全处理集中在 `teaching-trace.ts`。第 09 章将在同一边界上增加 JSONL、事件送达和输出通道规则，第 10 章让 Ink TUI 订阅同一事件，而不再修改 Agent Loop。
 
 ## 本章完成后你应能解释
 
@@ -124,7 +178,7 @@ Agent > createModel 位于 src/models/client.ts:41……
 
 | 当前限制 | 为什么本章不解决 | 后续位置 |
 | --- | --- | --- |
-| 只有简单进度回调 | 完整事件设计需要日志和 UI 消费者 | 第 09 章 |
+| 事件观察者目前同步调用 | 异步送达、背压和 JSONL 需要完整消费者 | 第 09 章 |
 | 文件工具全部只读 | 写入前必须先建立权限决策 | 第 05—06 章 |
 | 分段读取没有文件快照 | 需要写入冲突与检查点机制 | 第 06、14 章 |
 | 工具调用串行执行 | 并发需要队列、资源上限和失败汇总 | 第 27 章 |

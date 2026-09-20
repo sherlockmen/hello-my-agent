@@ -3,24 +3,26 @@
  *
  * 学习目标：持续读取终端输入，并让多轮对话共享同一份 history。
  * 输入：逐行用户文本、/reset、/exit、EOF 或 Ctrl+C。
- * 输出：普通文本交给 agentLoop()；执行期间显示模型与工具步骤，最后显示回答。
+ * 输出：普通文本交给 agentLoop()；执行期间显示教学追踪，最后显示回答。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   read line
  *      +-- EOF / /exit --> 关闭输入
  *      +-- /reset ------> 清空 history --> 读取下一行
  *      +-- 空行 --------> 读取下一行
- *      +-- 普通文本 ----> agentLoop --> 显示进度 --> 显示回答或错误 --> 读取下一行
+ *      +-- 普通文本 ----> agentLoop --> 显示教学追踪 --> 显示回答或错误 --> 读取下一行
  *   Ctrl+C --> 取消请求 --> 关闭输入 --> exit 130
  *
- * 关键点：终端只格式化核心报告的结构化步骤，不从输出文字反推 Agent 状态。
- * 运行观察：每次模型决策和工具执行都会先显示，最终回答仍使用 Agent 标签。
+ * 关键点：终端只格式化核心报告的结构化摘要，不参与 Agent 的模型或工具决策。
+ * 运行观察：模型收到/返回、工具执行/返回依次显示，最终回答仍使用 Agent 标签。
  */
 
 import { createInterface } from "node:readline";
-import { agentLoop, type AgentProgress } from "../agent/agent-loop.js";
+import { agentLoop } from "../agent/agent-loop.js";
+import type { AgentEvent } from "../agent/events.js";
 import { explainError } from "../errors.js";
 import type { Message, Model, Reply } from "../models/client.js";
+import { formatTeachingTrace } from "./teaching-trace.js";
 
 // ANSI 颜色只用于交互终端：用户标签为青色，Agent 标签为紫色。
 // 输出被管道或文件接收时不加控制字符，便于日志和脚本读取。
@@ -37,21 +39,16 @@ const colorLabel = (text: string, color: number) =>
 /**
  * 把 Agent Loop 的结构化步骤转换成简短终端记录。
  *
- * - 输入：核心在请求模型、开始工具或结束工具时发出的进度事件。
- * - 输出：模型步骤使用黄色标签，工具步骤使用蓝色标签和本地生成的顺序号。
- * - 关键原因：界面展示真实控制流，但不打印模型生成的参数、调用 ID 或工具结果。
+ * - 输入：核心在请求模型、开始工具或结束工具时发出的结构化 AgentEvent。
+ * - 输出：先由 teaching-trace.ts 生成安全文本，再给模型与工具标签添加颜色。
+ * - 关键原因：终端只渲染事件，不解析 Agent 最终回答，也不参与任何执行决策。
  */
-export function printProgress(event: AgentProgress): void {
-  if (event.type === "model_start") {
-    console.log(`${colorLabel("模型", 33)} > 第 ${event.call} 次决策：读取当前消息并选择下一步。`);
-    return;
+export function printProgress(event: AgentEvent): void {
+  for (const line of formatTeachingTrace(event)) {
+    if (line.startsWith("模型")) console.log(`${colorLabel("模型", 33)}${line.slice(2)}`);
+    else if (line.startsWith("工具")) console.log(`${colorLabel("工具", 34)}${line.slice(2)}`);
+    else console.log(line);
   }
-  if (event.type === "tool_start") {
-    console.log(`${colorLabel("工具", 34)} > 第 ${event.sequence} 步：${event.name} 开始。`);
-    return;
-  }
-  const status = event.isError ? "失败，错误已加入当前回合" : "完成，结果已加入当前回合";
-  console.log(`${colorLabel("工具", 34)} > 第 ${event.sequence} 步：${event.name} ${status}。`);
 }
 
 // [KEEP 来自 02.4] history 的生命周期等于本次会话，agentLoop 负责每轮的提交规则。

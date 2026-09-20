@@ -160,24 +160,33 @@ if (call.name === globDefinition.name) {
 }
 ```
 
-`globTool()` 返回路径文本后，Agent Loop 把结果和原 `toolCallId` 放进当前 `turn`。下一次 `model.generate()` 会同时看到：用户目标、模型自己的 glob 请求以及本地返回的路径列表。
+`globTool()` 返回 `{ content, metadata }`。Agent Loop 只把 `content` 和原 `toolCallId` 放进当前 `turn`；`metadata` 随 `AgentEvent` 交给观察者。下一次 `model.generate()` 会同时看到：用户目标、模型自己的 glob 请求以及本地返回的路径列表，但不会收到仅供界面使用的元数据。
 
-本节新增的进度回调让这条内部链显示在终端：
+本节新增的教学追踪让这条内部链显示在终端：
 
 ```text
-模型 > 第 1 次决策：读取当前消息并选择下一步。
-工具 > 第 1 步：glob 开始。
-工具 > 第 1 步：glob 完成，结果已加入当前回合。
-模型 > 第 2 次决策：读取当前消息并选择下一步。
+模型 > 第 1 次决策
+  收到：新增用户问题「找到所有 load-config.ts」；Agent Loop 消息链共 1 条。
+模型 < 第 1 次决策
+  返回：1 个工具请求。
+工具 > 第 1 步：glob
+  执行：pattern="**/load-config.ts"。
+工具 < 第 1 步：glob 完成
+  返回：12 个路径；示例：chapter-02-model-dialogue/01-configuration/src/config/load-config.ts，chapter-02-model-dialogue/02-first-reply/src/config/load-config.ts。
+  去向：结果已加入当前回合，下一次模型决策会收到。
+模型 > 第 2 次决策
+  收到：新增 1 条工具结果；Agent Loop 消息链共 3 条。
+模型 < 第 2 次决策
+  返回：最终回答，交给终端显示。
 Agent > 配置读取位于 src/config/load-config.ts。
 ```
 
-- 第一行在 `agentLoop()` 调用模型前产生。
-- 第二行在注册表执行 `glob` 前产生。
-- 第三行说明工具结果已经写入 `turn`。
-- 第四行表示结果随当前消息再次发给模型。
+- `模型 >` 与 `模型 <` 分别出现在 `model.generate()` 前后。
+- `工具 >` 由 `teaching-trace.ts` 根据工具 Schema 显示允许字段。
+- `工具 <` 根据 `glob` 直接产生的结构化元数据显示路径数量和最多两个示例；完整路径列表仍通过 `content` 发给模型。
+- 第二次 `模型 >` 明确说明模型已经收到上一条工具结果。
 
-工具步骤号由 Agent Loop 生成，显示名称来自本地注册表。模型返回的参数、调用 ID 和文件列表不会被进度事件重复打印；它们只在内部消息链中参与下一次模型决策。核心报告结构化状态，`ui/terminal.ts` 负责文字和颜色。显示回调即使失败也不会中断搜索；第 09 章接 TUI 时，也不需要从日志字符串猜测 Agent 正处于哪一步。
+工具步骤号由 Agent Loop 生成，工具名和原始参数随事件传出。教学渲染器负责检查名称、选择 Schema 允许字段并生成安全文本。关闭观察者后，模型请求、工具结果和历史内容完全相同。
 
 ## 动手构建
 
@@ -186,11 +195,14 @@ Agent > 配置读取位于 src/config/load-config.ts。
 | 文件 | 作用 |
 | --- | --- |
 | `src/tools/workspace.ts` | 统一项目根与忽略规则 |
-| `src/tools/glob.ts` | 校验 pattern，遍历并返回有界路径 |
-| `src/tools/registry.ts` | 注册 `glob` |
-| `src/agent/agent-loop.ts` | 报告模型和工具执行步骤 |
-| `src/ui/terminal.ts` | 显示结构化进度 |
-| `src/cli.ts` | 单次提问也接入进度显示 |
+| `src/tools/glob.ts` | 校验 pattern，并返回模型文本与结构化路径元数据 |
+| `src/tools/types.ts` | 定义工具内容和观察元数据的双输出契约 |
+| `src/tools/registry.ts` | 只注册并执行 `glob`，不生成界面文案 |
+| `src/agent/events.ts` | 定义以后可交给普通终端、JSONL 和 TUI 的生命周期事件 |
+| `src/agent/agent-loop.ts` | 在真实状态转换处发送事件 |
+| `src/ui/teaching-trace.ts` | 把事件转换成安全、易读的教学记录 |
+| `src/ui/terminal.ts` | 输出记录并添加终端颜色 |
+| `src/cli.ts` | 为单次提问和连续会话装配同一个观察者 |
 | `src/config/load-config.ts` | 告诉模型当前真实工具能力 |
 
 完整实现位于[本节源码](src/)。先读 `agent/agent-loop.ts` 的全局流程，再读 `tools/glob.ts` 和 `tools/workspace.ts` 的局部流程。
@@ -237,6 +249,17 @@ glob({ "pattern": "../**/*.ts" })
 
 答案：返回 200 项只证明“至少有 200 项”；只有发现第 201 项，才能证明“还有未返回的结果”。这条判断也会在 `grep` 结果和 `read_file` 续读中重复出现。
 
-## 接下来
+## 本节完成后的 Agent
 
-`glob` 解决了“哪些文件可能相关”，却不知道目标文本位于哪个文件和哪一行。[04.2](../02-content-search/README.md) 将把候选路径进一步收窄成可引用的代码位置。
+此时，Agent 已经能从未知项目结构中取得候选路径：
+
+```text
+用户目标 -> Agent Loop -> 模型决定下一步
+                          |-- 最终回答 ------> 结束
+                          |-- read_file ------> 读取已知路径
+                          +-- glob(pattern) --> 发现候选路径
+                                                |
+                         工具结果返回模型 <----+
+```
+
+`glob` 给模型增加了项目路径证据，但它只能判断路径是否匹配，不能判断文件内容是否包含目标。下一节将加入 `grep(query, glob)`：它会按自己的 `glob` 参数选择搜索范围，再返回带行号和列号的候选匹配位置。

@@ -3,7 +3,7 @@
  *
  * 学习目标：根据搜索得到的行号读取一段源码，并让模型知道怎样继续读取下一段。
  * 输入：path、从 1 开始的 offset 和 1 到 400 之间的 limit。
- * 输出：带行号的文本片段，以及是否到达文件末尾的说明。
+ * 输出：给模型的带行号片段，以及给界面的行号范围与续读状态。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   +------------------+
@@ -35,6 +35,7 @@ import { realpath, stat } from "node:fs/promises";
 import { basename, isAbsolute, relative, resolve, sep } from "node:path";
 import { createInterface } from "node:readline";
 import { ToolError } from "../errors.js";
+import type { ToolExecutionResult } from "./types.js";
 import { findProjectRoot } from "./workspace.js";
 
 export const readFileDefinition = {
@@ -166,7 +167,7 @@ async function resolveReadableFile(path: string, projectRoot: string): Promise<s
  * 按行流式读取文件片段，并为每行添加可引用的真实行号。
  *
  * - 输入：模型生成的路径与行范围、项目根目录和可选取消信号。
- * - 输出：最多 `limit` 行，以及到达末尾或下一段起始行的提示。
+ * - 输出：`content` 是给模型的带行号片段，`metadata` 是给界面的范围与续读状态。
  * - 关键步骤：通过真实路径检查后逐行跳过前文，只保留目标片段和一个额外行用于判断是否还有内容。
  * - 失败方式：起始行超过文件范围时抛出 `ToolError`；`stat()`、流读取竞态和取消异常由外层统一处理。
  * - 职责边界：分段限制模型上下文；文件仍需小于 10 MiB，本章不检测具体文本编码。
@@ -176,7 +177,7 @@ export async function readFileTool(
   argumentsJson: string,
   projectRoot = findProjectRoot(),
   signal?: AbortSignal,
-): Promise<string> {
+): Promise<ToolExecutionResult> {
   signal?.throwIfAborted();
   const input = parseArguments(argumentsJson);
   const filePath = await resolveReadableFile(input.path, projectRoot);
@@ -202,11 +203,25 @@ export async function readFileTool(
     stream.destroy();
   }
 
-  if (lineNumber === 0 && input.offset === 1) return `文件为空：${input.path}`;
+  if (lineNumber === 0 && input.offset === 1) {
+    return {
+      content: `文件为空：${input.path}`,
+      metadata: { kind: "read_file", lineCount: 0 },
+    };
+  }
   if (selected.length === 0) throw new ToolError(`起始行 ${input.offset} 超过文件范围。`);
   const lastLine = input.offset + selected.length - 1;
   const status = hasMore
     ? `[显示第 ${input.offset}-${lastLine} 行；后面还有内容，请把 offset 设为 ${lastLine + 1} 继续]`
     : `[显示第 ${input.offset}-${lastLine} 行；已到文件末尾]`;
-  return `${selected.join("\n")}\n${status}`;
+  return {
+    content: `${selected.join("\n")}\n${status}`,
+    metadata: {
+      kind: "read_file",
+      lineCount: selected.length,
+      startLine: input.offset,
+      endLine: lastLine,
+      hasMore,
+    },
+  };
 }

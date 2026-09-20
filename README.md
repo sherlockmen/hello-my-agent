@@ -99,11 +99,16 @@ hello-my-agent/
     01-file-discovery/       04.1 控制文件搜索范围
     02-content-search/       04.2 把文本目标变成代码位置
     03-chunked-reading/      04.3 把代码位置变成上下文
+      src/agent/
+        events.ts            核心向终端、日志与后续 TUI 发送的结构化事件
       src/tools/
+        types.ts             模型内容与观察元数据的工具结果契约
         workspace.ts        共享项目根和忽略规则
         glob.ts             路径发现
         grep.ts             内容搜索
         read-file.ts        分段读取
+      src/ui/
+        teaching-trace.ts    把事件转换成安全的中文教学记录
   .env.example              模型配置模板，不含真实密钥
   docs/
     SETUP.md                环境与从空目录搭建

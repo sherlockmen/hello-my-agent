@@ -3,7 +3,7 @@
  *
  * 学习目标：继续在项目边界内安全读取一个小型普通文件。
  * 输入：包含相对 path 的 JSON 参数，以及统一确定的项目根目录。
- * 输出：不超过 64 KiB 的 UTF-8 文本；参数、路径或文件不合法时抛出 ToolError。
+ * 输出：不超过 64 KiB 的 UTF-8 模型内容和实际行数元数据；参数无效时抛出 ToolError。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   arguments --> 校验 path --> realpath 边界 --> .env / 类型 / 大小检查 --> 文件内容
@@ -19,6 +19,7 @@
 import { readFile, realpath, stat } from "node:fs/promises";
 import { basename, isAbsolute, relative, resolve, sep } from "node:path";
 import { ToolError } from "../errors.js";
+import type { ToolExecutionResult } from "./types.js";
 import { findProjectRoot } from "./workspace.js";
 
 export const readFileDefinition = {
@@ -83,7 +84,7 @@ function parsePath(argumentsJson: string): string {
  * 在项目根目录边界内校验并读取一个不超过 64 KiB 的普通文件，再按 UTF-8 解码。
  *
  * - 输入：模型生成的参数字符串、项目根目录和可选取消信号。
- * - 输出：所有检查通过后，按 UTF-8 返回完整文件内容。
+ * - 输出：`content` 保存完整 UTF-8 文本，`metadata` 保存实际行数供界面观察。
  * - 关键步骤：解析参数、拒绝环境文件、解析真实路径、检查越界与文件类型、限制大小，最后读取。
  * - 失败方式：参数、越界、目标不存在、文件类型或大小不符合规则时抛出 `ToolError`。
  * - 系统异常：检查后的 `stat()` 或 `readFile()` 仍可能因竞态抛出文件系统异常；取消则抛出 `AbortError`，都由外层处理。
@@ -96,7 +97,7 @@ export async function readFileTool(
   argumentsJson: string,
   projectRoot = findProjectRoot(),
   signal?: AbortSignal,
-): Promise<string> {
+): Promise<ToolExecutionResult> {
   signal?.throwIfAborted();
   const path = parsePath(argumentsJson);
   if (isEnvironmentFile(path)) throw new ToolError("为防止泄露凭据，read_file 不读取 .env 系列文件。");
@@ -119,5 +120,8 @@ export async function readFileTool(
   const fileStat = await stat(filePath);
   if (!fileStat.isFile()) throw new ToolError(`目标不是普通文件：${path}`);
   if (fileStat.size > MAX_FILE_BYTES) throw new ToolError("文件超过 64 KiB，本章暂不读取。");
-  return readFile(filePath, { encoding: "utf8", signal });
+  const content = await readFile(filePath, { encoding: "utf8", signal });
+  const lines = content === "" ? [] : content.split(/\r?\n/);
+  if (lines.at(-1) === "") lines.pop();
+  return { content, metadata: { kind: "read_file", lineCount: lines.length } };
 }

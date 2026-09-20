@@ -25,8 +25,9 @@ const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 const chapter = "chapter-02-model-dialogue";
 const currentStep = 6; // 当前包已包含第二章完成版的对话、错误与用量行为。
 const currentPackageModules = [
-  "agent/agent-loop", "cli", "config/load-config", "errors", "models/client",
-  "tools/glob", "tools/grep", "tools/read-file", "tools/registry", "tools/workspace", "ui/terminal",
+  "agent/agent-loop", "agent/events", "cli", "config/load-config", "errors", "models/client",
+  "tools/glob", "tools/grep", "tools/read-file", "tools/registry", "tools/types", "tools/workspace",
+  "ui/teaching-trace", "ui/terminal",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {

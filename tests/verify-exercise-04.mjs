@@ -35,14 +35,17 @@ try {
     '{"query":"needle","glob":"src/**/*.ts","maxResults":2}',
     fixture,
   );
-  assert.equal(result.split("\n").filter((line) => line.startsWith("src/sample.ts:")).length, 2);
-  assert.match(result, /结果已截断，只显示前 2 项/);
+  assert.equal(result.content.split("\n").filter((line) => line.startsWith("src/sample.ts:")).length, 2);
+  assert.match(result.content, /结果已截断，只显示前 2 项/);
+  assert.equal(result.metadata.count, 2);
+  assert.equal(result.metadata.truncated, true);
   const exact = await grepTool(
     '{"query":"exact","glob":"src/exact.ts","maxResults":2}',
     fixture,
   );
-  assert.equal(exact.split("\n").filter((line) => line.startsWith("src/exact.ts:")).length, 2);
-  assert.doesNotMatch(exact, /结果已截断/);
+  assert.equal(exact.content.split("\n").filter((line) => line.startsWith("src/exact.ts:")).length, 2);
+  assert.doesNotMatch(exact.content, /结果已截断/);
+  assert.equal(exact.metadata.truncated, false);
   await assert.rejects(
     grepTool('{"query":"needle","glob":"**/*","maxResults":0}', fixture),
     /maxResults/,

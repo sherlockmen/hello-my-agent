@@ -9,10 +9,10 @@
 上一节可能返回：
 
 ```text
-src/models/client.ts:41:17: export function createModel(config: Config): Model {
+chapter-04-code-search/03-chunked-reading/src/models/client.ts:59:17: export function createModel(config: Config): Model {
 ```
 
-这一行证明目标位于第 41 行，却没有函数体、分支和返回值。第三章的 `read_file(path)` 会读取整个小文件；文件变大后，完整读取会把与当前任务无关的文本一起放进 `turn`，后续每次模型调用还会再次携带它。
+这一行证明目标位于第 59 行，却没有函数体、分支和返回值。第三章的 `read_file(path)` 会读取整个小文件；文件变大后，完整读取会把与当前任务无关的文本一起放进 `turn`，后续每次模型调用还会再次携带它。
 
 核心认识是：**读取工具不是“把文件交给模型”，而是为当前决策提供一个可续读的上下文窗口。**
 
@@ -22,8 +22,8 @@ src/models/client.ts:41:17: export function createModel(config: Config): Model {
 
 ```json
 {
-  "path": "src/models/client.ts",
-  "offset": 41,
+  "path": "chapter-04-code-search/03-chunked-reading/src/models/client.ts",
+  "offset": 50,
   "limit": 60
 }
 ```
@@ -54,9 +54,53 @@ src/models/client.ts:41:17: export function createModel(config: Config): Model {
 
 ## 工作原理
 
-### 1. `offset + limit` 是面向模型的游标
+本节没有增加新的循环，也没有规定模型必须按照固定顺序调用工具。它只改变 `read_file` 的读取方式：模型不再只能读取整个文件，而是可以指定从哪一行开始、最多读取多少行。
 
-假设文件内容为：
+### 1. `grep` 提供位置，`read_file` 提供上下文
+
+假设 `grep` 返回：
+
+```text
+chapter-04-code-search/03-chunked-reading/src/models/client.ts:59:17: export function createModel(config: Config): Model {
+```
+
+第 59 行只是一个坐标。要解释 `createModel`，模型通常还需要看到函数前面的注释、函数体和返回分支。因此，模型根据当前任务选择一个包含第 59 行的读取范围：
+
+```json
+{
+  "path": "chapter-04-code-search/03-chunked-reading/src/models/client.ts",
+  "offset": 50,
+  "limit": 60
+}
+```
+
+这三个参数的含义是：读取该文件，从第 50 行开始，最多返回 60 行。若文件足够长，本次窗口覆盖第 50—109 行。
+
+```text
+用户要求解释 createModel
+          |
+          v
+模型调用 grep("createModel")
+          |
+          v
+程序返回：目标位于第 59 行
+          |
+          v
+模型调用 read_file(path, offset=50, limit=60)
+          |
+          v
+程序返回：第 50—109 行源码 + 后面是否还有内容
+          |
+          +-- 信息足够 --> 模型给出最终回答
+          |
+          +-- 信息不足 --> 模型调整 offset，再读一段
+```
+
+这里没有程序预设的“先 `grep`、再 `read_file`”工作流。Agent Loop 把每次工具结果交回模型，由模型根据已有证据选择下一步。
+
+### 2. `read_file` 怎样取出指定范围
+
+以 `offset=3、limit=2` 为例：
 
 ```text
 1: import { readFile } from "node:fs/promises";
@@ -68,22 +112,13 @@ src/models/client.ts:41:17: export function createModel(config: Config): Model {
 7: export function other() {}
 ```
 
-模型请求：
+读取过程只有三步：
 
-```json
-{ "path": "src/example.ts", "offset": 3, "limit": 2 }
-```
+1. 跳过第 1、2 行，因为它们位于 `offset` 之前。
+2. 保存第 3、4 行，因为 `limit=2`。
+3. 再观察第 5 行，但不把它放进结果。第 5 行的存在证明文件后面还有内容。
 
-循环状态如下：
-
-| 当前行 | 动作 | 已保留内容 |
-| ---: | --- | --- |
-| 1、2 | 小于 offset，跳过 | 空 |
-| 3 | 保存 | 第 3 行 |
-| 4 | 保存 | 第 3、4 行 |
-| 5 | 不返回，只证明还有后文 | 第 3、4 行 |
-
-结果：
+模型收到：
 
 ```text
 3: export function target() {
@@ -91,134 +126,60 @@ src/models/client.ts:41:17: export function createModel(config: Config): Model {
 [显示第 3-4 行；后面还有内容，请把 offset 设为 5 继续]
 ```
 
-如果文件恰好在第 4 行结束，循环看不到额外一行，状态应是“已到文件末尾”。因此 `read_file`、`grep` 和 `glob` 都使用同一个判断原则：**只有实际观察到上限之外的一项，才能声称结果被截断。**
+程序必须多观察一行才能正确计算 `hasMore`。如果文件恰好在第 4 行结束，结果就会标记“已到文件末尾”；如果第 5 行存在，下一段应从第 5 行开始。
 
-### 2. 流式读取减少内存，不提供随机行访问
+源码使用 `createReadStream()` 和 `readline` 从文件开头逐行处理。这样不需要先把整个文件装入一个字符串，但普通文本文件没有内建的行号索引，所以读取第 5000 行时仍要经过前 4999 行。这里减少的是内存占用和发送给模型的文本量，不是跳转到任意行所需的扫描时间。
 
-实现使用 `createReadStream()` 和 `readline`：
+### 3. 一次工具执行产生两种结果
+
+`readFileTool()` 返回：
 
 ```ts
-const stream = createReadStream(filePath, {
-  encoding: "utf8",
-  signal,
-});
-const lines = createInterface({
-  input: stream,
-  crlfDelay: Infinity,
-});
-
-for await (const line of lines) {
-  // 逐行处理
+{
+  content: "50: ...\n51: ...\n[显示第 50-109 行；后面还有内容，请把 offset 设为 110 继续]",
+  metadata: {
+    kind: "read_file",
+    lineCount: 60,
+    startLine: 50,
+    endLine: 109,
+    hasMore: true,
+  },
 }
 ```
 
-程序不再先创建包含整个文件内容的字符串，也不会把整个文件发送给模型。但普通文本文件没有行号索引，请求 `offset=5000` 时，程序仍要从文件开头经过前 4999 行。
+- `content` 包含真正的源码，Agent Loop 把它作为工具结果发回模型。
+- `metadata` 只描述这次读取，终端用它显示“读取了第 50—109 行”。
 
-因此当前成本近似为：
+两者来自同一次工具执行。界面不需要解析源码文本，模型也不需要接收专门为界面准备的中文过程说明。后续接入 TUI 时，TUI 继续读取同一份 `metadata`，不需要修改 `read_file` 或 Agent Loop。
 
-```text
-扫描成本：O(offset + limit)
-返回成本：O(limit)
-```
+### 4. 信息不足时，Agent Loop 怎样继续
 
-流式读取优化的是常驻内存和模型上下文，不是随机访问速度。如果未来需要频繁跳转超大文件，需要额外建立行偏移索引或使用语言服务；本节没有提前加入这种复杂度。
+如果第 50—109 行已经包含完整函数，模型可以直接回答。如果函数还没有结束，模型会看到 `hasMore` 对应的续读提示，再发出一次工具请求：
 
-### 3. 行数上限之外为什么还要限制单行
-
-`limit=40` 只能限制行数。压缩 JSON、压缩 JavaScript 或生成文件可能把几十万个字符放在一行中。
-
-```ts
-function shortenLine(line: string): string {
-  return line.length <= 1000
-    ? line
-    : `${line.slice(0, 1000)}… [本行已截断]`;
+```json
+{
+  "path": "chapter-04-code-search/03-chunked-reading/src/models/client.ts",
+  "offset": 110,
+  "limit": 60
 }
 ```
 
-三种上限分别保护不同资源：
-
-| 上限 | 当前值 | 保护对象 |
-| --- | ---: | --- |
-| 单次返回行数 | 400 | 模型上下文中的行数量 |
-| 单行正文 | 前 1000 个原字符 | 单条异常长行的消息大小 |
-| 可扫描文件 | 10 MiB | 本地最坏扫描规模 |
-
-10 MiB 不代表工具会把 10 MiB 全部发给模型；`limit` 和单行截断决定实际输出。反过来，`limit=1` 也不代表只读取一个磁盘数据块，因为程序仍要走到 `offset`。
-
-### 4. 路径检查为什么只是“检查时边界”
-
-参数合法后，`resolveReadableFile()` 会：
+第二次读取结果仍以工具消息加入当前回合。Agent Loop 不需要为“续读”增加特殊分支，它仍然执行同一条规则：
 
 ```text
-拒绝 .env 系列名称
-  -> realpath(projectRoot)
-  -> realpath(target)
-  -> 检查此刻真实目标仍位于项目内
-  -> 再检查真实文件名
-  -> stat：普通文件且 <= 10 MiB
+模型请求工具
+    -> 程序执行工具
+    -> 工具结果加入当前回合
+    -> 模型读取新增结果并再次决策
 ```
 
-如果符号链接在检查前已经指向项目外，`realpath()` 能发现并拒绝它。但函数返回的是路径字符串，后面的 `createReadStream()` 还要再次按路径打开文件。
+因此，分段读取不是把一个大文件自动切成多段全部发送。每读一段，模型都要判断现有证据是否已经足够；只有不足时才继续读取。这正是它比“直接读取整个文件”更节省上下文的原因。
 
-```text
-realpath / stat 检查完成
-          |
-          | 另一个进程可能替换路径
-          v
-createReadStream 真正打开文件
-```
+### 实现边界
 
-这就是 TOCTOU：检查时间和使用时间之间状态发生变化。当前实现假设使用者控制本地工作区，不能抵抗恶意进程在两步之间替换路径，也不是文件系统沙箱。重复调用一次 `realpath()` 只会产生新的检查窗口。
+当前实现用三条限制控制最坏输出：每次最多返回 400 行、每行最多保留 1000 个字符、只处理不超过 10 MiB 的普通文件。它还会拒绝项目外路径和 `.env` 文件。
 
-更强隔离需要操作系统沙箱，或围绕同一个已经打开的文件描述符完成验证和读取。本章测试只能证明“检查前就已存在的越界符号链接会被拒绝”，不能证明竞态已经消失。
-
-### 5. 两次读取为什么可能不属于同一文件版本
-
-模型可能先读：
-
-```json
-{ "path": "src/a.ts", "offset": 1, "limit": 100 }
-```
-
-看到续读提示后再读：
-
-```json
-{ "path": "src/a.ts", "offset": 101, "limit": 100 }
-```
-
-如果外部编辑器在两次调用之间插入 20 行，第二次的第 101 行已经不是第一次结果的后续位置。当前工具没有锁、内容哈希或文件快照，所以“续读”只在文件没有变化的前提下成立。
-
-第 06 章写入文件时会在修改前检查外部变化；第 14 章再引入检查点。这里先把一致性假设写清楚，不伪装成版本化读取。
-
-### 6. 位置证据怎样完成一次 Agent Loop
-
-一次完整过程可能显示：
-
-```text
-模型 > 第 1 次决策：读取当前消息并选择下一步。
-工具 > 第 1 步：grep 开始。
-工具 > 第 1 步：grep 完成，结果已加入当前回合。
-模型 > 第 2 次决策：读取当前消息并选择下一步。
-工具 > 第 2 步：read_file 开始。
-工具 > 第 2 步：read_file 完成，结果已加入当前回合。
-模型 > 第 3 次决策：读取当前消息并选择下一步。
-Agent > createModel 根据 provider 创建对应客户端……
-```
-
-数据在当前回合中的形状是：
-
-```text
-user       原始目标
-assistant  grep 请求，id=call_1
- tool      位置结果，toolCallId=call_1
-assistant  read_file 请求，id=call_2
- tool      源码窗口，toolCallId=call_2
-assistant  最终回答
-```
-
-只有最后出现最终回答，Agent Loop 才把整段 `turn` 提交到 `history`。如果取消、发生系统异常或八次模型调用后仍没有最终回答，这条未完成证据链不会污染后续会话。
-
-工具进度只向终端说明控制流，没有把工具参数、调用 ID 或结果全文重复打印一遍。步骤号由 Agent Loop 生成，显示名称来自本地注册表；原始数据仍通过内部工具消息传给模型，避免不可信内容直接进入日志，也避免终端和模型历史形成两套状态来源。
+两次 `read_file` 调用之间，文件可能被编辑，因此续读依赖“文件在两次调用之间没有变化”。第 06 章实现文件修改时会加入外部变化检查；本节只解决如何取得有界的只读源码上下文。
 
 ## 动手构建
 
@@ -227,9 +188,11 @@ assistant  最终回答
 | 文件 | 作用 |
 | --- | --- |
 | `src/tools/read-file.ts` | 校验 `offset`/`limit`，流式返回带行号片段 |
+| `src/tools/types.ts` | 给 `read_file` 元数据增加实际行号范围和续读状态 |
+| `src/ui/teaching-trace.ts` | 根据新 Schema 与元数据显示读取参数和行号范围 |
 | `src/config/load-config.ts` | 提醒模型根据搜索位置分段读取 |
 
-`glob`、`grep`、Agent Loop 和进度回调保持上一节契约。完整实现位于[本节源码](src/)。
+`glob`、`grep`、注册表、`AgentEvent` 和 Agent Loop 保持上一节契约；只有工具结果类型与界面消费者适配分段读取字段。完整实现位于[本节源码](src/)。
 
 在仓库根目录执行：
 
@@ -284,6 +247,19 @@ read_file({
 
 这会覆盖目标前 10 行和后续 39 行。如果结果提示还有内容，下一次把 `offset` 设为 160。上下文窗口大小由模型根据任务调整，本地程序只保证范围合法且输出受限。
 
-## 接下来
+## 本节完成后的 Agent
 
-Agent 已经能建立“候选路径 → 匹配位置 → 源码窗口”的只读证据链。下一章加入 allow、ask、deny 权限决策和终端审批；在文件写入与命令执行出现之前，先建立所有副作用都必须经过的统一入口。
+第四章结束时，Agent 已经具备一条完整的只读代码检索链：
+
+```text
+用户目标 -> Agent Loop -> 模型决定下一步
+                          |-- glob(pattern) ------------> 候选路径
+                          |-- grep(query, glob) --------> 候选匹配位置
+                          |-- read_file(path, offset,
+                          |             limit) ---------> 源码窗口
+                          +-- 最终回答 -----------------> 提交本轮历史
+
+每次工具结果 ------------------------------> 返回模型继续决策
+```
+
+一次任务可能经过 `glob → grep → read_file → 最终回答`，也可能跳过不需要的工具；顺序由模型根据工具结果决定。核心循环只产生结构化事件，当前终端和未来 TUI 可以各自显示同一执行过程。Agent 目前只有只读工具；下一章将在加入文件写入和命令执行之前，先建立 `allow`、`ask`、`deny` 权限决策以及需要用户确认的统一入口。

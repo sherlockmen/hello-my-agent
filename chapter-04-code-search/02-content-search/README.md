@@ -31,7 +31,7 @@ grep({
 结果形状固定为：
 
 ```text
-src/models/client.ts:41:17: export function createModel(config: Config): Model {
+chapter-04-code-search/02-content-search/src/models/client.ts:59:17: export function createModel(config: Config): Model {
 ```
 
 核心认识是：**`grep` 的职责不是理解代码语义，而是把模糊目标转换成位置证据。** 注释、字符串和真正的定义都可能命中；模型要在下一节读取上下文后再判断。
@@ -179,36 +179,55 @@ matches.push(
 运行时可能看到：
 
 ```text
-模型 > 第 1 次决策：读取当前消息并选择下一步。
-工具 > 第 1 步：grep 开始。
-工具 > 第 1 步：grep 完成，结果已加入当前回合。
-模型 > 第 2 次决策：读取当前消息并选择下一步。
-Agent > createModel 位于 src/models/client.ts:41。
+模型 > 第 1 次决策
+  收到：新增用户问题「找到 createModel 的定义」；Agent Loop 消息链共 1 条。
+模型 < 第 1 次决策
+  返回：1 个工具请求。
+工具 > 第 1 步：grep
+  执行：query="createModel"，glob="chapter-04-code-search/02-content-search/src/**/*.ts"。
+工具 < 第 1 步：grep 完成
+  返回：1 个匹配位置；示例：chapter-04-code-search/02-content-search/src/models/client.ts:59:17。
+  去向：结果已加入当前回合，下一次模型决策会收到。
+模型 > 第 2 次决策
+  收到：新增 1 条工具结果；Agent Loop 消息链共 3 条。
+模型 < 第 2 次决策
+  返回：最终回答，交给终端显示。
+Agent > createModel 位于 chapter-04-code-search/02-content-search/src/models/client.ts:59。
 ```
 
-`工具完成`不表示用户任务已经完成，只表示本地搜索结果已经加入 `turn`。第二次模型调用可能直接回答，也可能继续请求 `read_file`。Agent Loop 负责“是否继续”，`grepTool()` 只负责生成位置证据。
+`工具 <` 不表示用户任务已经完成，只表示本地搜索结果已经加入 `turn`。第二次模型调用可能直接回答，也可能继续请求 `read_file`。Agent Loop 负责“是否继续”，`grepTool()` 只负责生成位置证据。
+
+如果第一次模型响应同时返回两个 `grep` 请求，追踪会先显示“返回：2 个工具请求”，再依次出现工具第 1、2 步，最后才进入模型第 2 次决策。这表示两个搜索请求来自同一次模型响应；当前 Agent Loop 按顺序执行它们，并把两个结果一起交给下一次模型调用。
 
 如果正则无效，过程会变成：
 
 ```text
-工具 > 第 1 步：grep 开始。
-工具 > 第 1 步：grep 失败，错误已加入当前回合。
-模型 > 第 2 次决策：读取当前消息并选择下一步。
+工具 > 第 1 步：grep
+  执行：query="["，glob="**/*"。
+工具 < 第 1 步：grep 失败
+  返回：执行失败。
+  去向：错误已加入当前回合，下一次模型决策会收到。
+模型 > 第 2 次决策
+  收到：新增 1 条工具结果；Agent Loop 消息链共 3 条。
 ```
 
-进度事件不会打印 query、glob、调用 ID 或匹配结果，只用本地步骤号和已注册工具名说明控制流。因此即使模型参数包含换行、终端控制字符或敏感文本，也不会直接进入进度日志。这条失败记录说明 `ToolError` 已成为模型可修正的环境反馈，而不是整个进程的崩溃。
+`grepTool()` 在生成模型需要的匹配正文时，同时保存不含正文的 `{ path, line, column }` 元数据。教学渲染器根据 `grep` 的 Schema 显示 `query` 和 `glob`，再根据元数据显示位置，因此不需要从 `path:line:column:text` 字符串中反向解析字段。输出仍会移除控制字符、限制长度，并隐藏带有 secret、token、password、authorization 或 API key 特征的内容。
+
+失败事件保留真实工具请求和错误事实，普通终端只显示经过筛选的安全说明。这条失败记录说明 `ToolError` 已成为模型可修正的环境反馈，而不是整个进程的崩溃。
 
 ## 动手构建
 
-本节只扩展工具层：
+本节扩展搜索工具及其观察元数据，不修改 Agent Loop 的控制结构：
 
 | 文件 | 作用 |
 | --- | --- |
-| `src/tools/grep.ts` | 校验 query 和 glob，生成有界位置结果 |
-| `src/tools/registry.ts` | 注册 `grep` |
+| `src/tools/grep.ts` | 校验 query 和 glob，同时生成模型正文与结构化位置元数据 |
+| `src/tools/types.ts` | 在工具结果联合类型中加入 `grep` 元数据 |
+| `src/tools/registry.ts` | 注册并执行 `grep` |
+| `src/ui/teaching-trace.ts` | 根据 Schema 和位置元数据显示新的搜索步骤 |
 | `src/config/load-config.ts` | 告诉模型三个只读工具的分工 |
 
-04.1 已经建立的进度回调保持不变。完整实现位于[本节源码](src/)。
+`AgentEvent` 和 Agent Loop 保持 04.1 的结构；新增能力只进入工具结果类型和界面消费者。完整实现位于[本节源码](src/)。
 
 在仓库根目录执行：
 
@@ -252,6 +271,19 @@ grep({ "query": "[", "glob": "**/*" })
 
 答案：文件名只能缩小到文件级。行号可以直接成为下一次 `read_file` 的 `offset`；匹配文本帮助模型判断它命中的是定义、调用、注释还是字符串。列号用于更精确地引用位置，但当前 UTF-16 计算仍不是编辑器显示宽度。
 
-## 接下来
+## 本节完成后的 Agent
 
-`grep` 已经把语义目标变成真实位置，但单独一行通常不足以解释函数的分支和返回值。[04.3](../03-chunked-reading/README.md) 将把位置变成可续读的源码窗口，并解释为什么流式读取仍不是随机访问。
+此时，Agent 已经可以根据当前证据动态选择三种只读工具：
+
+```text
+用户目标 -> Agent Loop -> 模型决定下一步
+                          |-- glob(pattern) --------> 候选路径
+                          |-- grep(query, glob) ----> 候选匹配位置
+                          |     内部重新选择文件      path:line:column:text
+                          |-- read_file(path) ------> 整个文件
+                          +-- 最终回答 -------------> 结束
+
+每次工具结果 -------------------------> 返回模型继续决策
+```
+
+模型可以先调用 `glob` 了解目录，也可以直接调用带 `glob` 参数的 `grep`；程序没有规定固定顺序。Agent 现在能获得一个或多个候选匹配位置，但单独的匹配行通常没有完整函数体和上下文，读取整个大文件又会浪费模型上下文。下一节将把 `read_file` 改为按行分段读取，让模型围绕候选位置取得有限、可续读的源码窗口。

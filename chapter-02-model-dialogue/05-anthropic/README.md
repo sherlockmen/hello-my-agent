@@ -337,6 +337,15 @@ hello-my-agent --provider anthropic
 
 参考答案：OpenAI 把系统提示词放进 `messages`，Anthropic 使用独立的 `system` 字段。把差异留在模型模块后，`agentLoop()` 只处理统一消息，不需要判断服务商。
 
-## 接下来
+## 本节完成后的 Agent
 
-两种协议已经走同一个核心。下一节补充错误分类和用量显示。
+此时，Agent 的核心已经与具体模型协议分离：
+
+```text
+provider 配置
+   -> createModel()
+      |-- OpenAI 兼容协议 --|
+      |-- Anthropic 协议 ---|-> 统一 Model 接口 -> Agent Loop -> 会话历史
+```
+
+终端和 Agent Loop 只认识统一消息，不需要判断服务商。当前不同失败仍可能被压成相同提示，回答消耗了多少 token 也不可见；下一节将在模型边界分类错误和用量，再由终端统一展示。

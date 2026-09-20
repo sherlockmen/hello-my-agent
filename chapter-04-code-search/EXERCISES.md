@@ -116,6 +116,7 @@ import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { ToolError } from "../errors.js";
 import { findMatchingFiles, validateGlobPattern } from "./glob.js";
+import type { ToolExecutionResult } from "./types.js";
 import { findProjectRoot } from "./workspace.js";
 
 export const grepDefinition = {
@@ -150,6 +151,7 @@ const MAX_MATCHES = 100;
 const MAX_LINE_CHARS = 300;
 
 type GrepArguments = { query: string; glob: string; maxResults: number };
+type GrepMatch = { path: string; line: number; column: number; text: string };
 
 /**
  * 校验 grep 的 JSON 参数，并在本地编译正则表达式。
@@ -204,10 +206,10 @@ function shortenLine(line: string): string {
 }
 
 /**
- * 执行有界内容搜索，并返回可以直接定位源码的文本结果。
+ * 执行有界内容搜索，并同时产生模型正文与观察元数据。
  *
  * - 输入：模型生成的 query、glob、maxResults，项目根目录和可选取消信号。
- * - 输出：最多返回 maxResults 项，每项包含相对路径、1 起始行号、1 起始列号和匹配行。
+ * - 输出：`content` 最多返回 maxResults 条匹配正文；`metadata` 返回不含源码正文的位置事实。
  * - 关键步骤：先用 glob 选择候选文件，再跳过大文件和含 NUL 字节的二进制内容，最后逐行匹配。
  * - 失败方式：参数、模式或正则无效时抛出 `ToolError`；读取期间消失或无权限的单个文件会跳过；取消会立即向外传播。
  * - 职责边界：maxResults 只能收紧 100 项硬上限；本节不修改文件，单次正则执行仍没有时间上限。
@@ -216,12 +218,12 @@ export async function grepTool(
   argumentsJson: string,
   projectRoot = findProjectRoot(),
   signal?: AbortSignal,
-): Promise<string> {
+): Promise<ToolExecutionResult> {
   signal?.throwIfAborted();
   const input = parseArguments(argumentsJson);
   const expression = new RegExp(input.query, "u");
   const candidates = await findMatchingFiles(input.glob, projectRoot, MAX_FILES, signal);
-  const matches: string[] = [];
+  const matches: GrepMatch[] = [];
 
   for (const path of candidates.paths) {
     signal?.throwIfAborted();
@@ -241,20 +243,45 @@ export async function grepTool(
       const line = lines[index] ?? "";
       const match = expression.exec(line);
       if (!match) continue;
-      matches.push(`${path}:${index + 1}:${(match.index ?? 0) + 1}: ${shortenLine(line)}`);
+      matches.push({
+        path,
+        line: index + 1,
+        column: (match.index ?? 0) + 1,
+        text: shortenLine(line),
+      });
       if (matches.length > input.maxResults) {
-        return `${matches.slice(0, input.maxResults).join("\n")}\n`
-          + `[结果已截断，只显示前 ${input.maxResults} 项]`;
+        const selected = matches.slice(0, input.maxResults);
+        return {
+          content: `${selected.map(({ path, line, column, text }) => `${path}:${line}:${column}: ${text}`).join("\n")}\n`
+            + `[结果已截断，只显示前 ${input.maxResults} 项]`,
+          metadata: {
+            kind: "grep",
+            count: selected.length,
+            truncated: true,
+            locations: selected.map(({ path, line, column }) => ({ path, line, column })),
+          },
+        };
       }
     }
   }
 
   if (matches.length === 0) {
     const scope = candidates.truncated ? `前 ${MAX_FILES} 个候选文件` : "候选文件";
-    return `${scope}中没有匹配：${input.query}`;
+    return {
+      content: `${scope}中没有匹配：${input.query}`,
+      metadata: { kind: "grep", count: 0, truncated: candidates.truncated, locations: [] },
+    };
   }
   const suffix = candidates.truncated ? `\n[文件范围已截断，只扫描前 ${MAX_FILES} 个候选文件]` : "";
-  return `${matches.join("\n")}${suffix}`;
+  return {
+    content: `${matches.map(({ path, line, column, text }) => `${path}:${line}:${column}: ${text}`).join("\n")}${suffix}`,
+    metadata: {
+      kind: "grep",
+      count: matches.length,
+      truncated: candidates.truncated,
+      locations: matches.map(({ path, line, column }) => ({ path, line, column })),
+    },
+  };
 }
 ```
 
