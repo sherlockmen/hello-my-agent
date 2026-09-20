@@ -50,12 +50,20 @@ export interface Model {
 
 // [KEEP] 只创建用户选择的客户端。超时单位是毫秒；本章关闭自动重试，避免一次输入发送多次。
 // 显式关闭 SDK 调试日志，错误只由 errors.ts 的格式化函数转换后输出，避免记录请求头或原始响应。
+/**
+ * 根据已经校验的配置创建统一模型对象，隐藏 OpenAI 与 Anthropic SDK 的差异。
+ *
+ * - 输入：`config` 包含已选服务商、密钥、模型 ID 和基础地址。
+ * - 输出：返回只暴露 `generate()` 的 `Model`，调用方不需要判断服务商。
+ * - 关键步骤：只创建当前协议的 SDK 客户端，并关闭自动重试与 SDK 日志。
+ * - 前置条件：协议、必填值和地址已经由 `readConfig()` 校验。
+ * - 失败方式：不捕获 SDK 初始化异常；创建对象时不发送请求，真正的请求发生在 `generate()` 中。
+ */
 export function createModel(config: Config): Model {
   const options = {
     apiKey: config.apiKey, baseURL: config.baseURL,
     timeout: 60_000, maxRetries: 0, logLevel: "off" as const,
   };
-  // 显式固定认证方式，不额外混入 SDK 从环境读取的租户标识或 Bearer Token。
   const client = config.provider === "openai"
     ? new OpenAI({ ...options, organization: null, project: null })
     : new Anthropic({ ...options, authToken: null });
@@ -63,12 +71,28 @@ export function createModel(config: Config): Model {
   return { generate: (messages, signal) => requestReply(client, config.model, messages, signal) };
 }
 
-// 兼容接口不一定返回用量。缺失、负数或无效值表示未知，不能冒充 0。
+/**
+ * 把服务商返回的用量字段转换成通过基础数字检查的 token 数量。
+ *
+ * - 输入：来自远程响应的未知值，运行时可能不是数字、不是有限值或小于 0。
+ * - 输出：通过检查时返回服务商报告的非负数字；否则返回 `null`。
+ * - 关键原因：`null` 表示没有可展示的用量值，不能用 `0` 冒充没有消耗。
+ * - 准确性边界：本函数不验证统计方法或数值是否真实，只检查 JavaScript 数字格式。
+ * - 失败方式：本函数不抛错，因为用量缺失不应让已经成功的回答失败。
+ */
 function tokenCount(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
 }
 
-/** 发送当前完整上下文，返回本章需要的文本、用量和截断标记；此处不修改历史。 */
+/**
+ * 发送完整上下文，并把两种服务商响应转换成统一的文本、用量和截断状态。
+ *
+ * - 输入：SDK 客户端、模型 ID、消息数组和取消信号。
+ * - 输出：两个协议都返回同一种 `Reply`，未知用量使用 `null`。
+ * - 关键步骤：分别读取两种协议的文本、usage 和停止原因，再归一化字段名称。
+ * - 失败方式：SDK 异常向上传递；空文本或本节不支持的工具请求抛出 `UserFacingError`。
+ * - 职责边界：只做协议转换，不修改会话历史，也不估算 token 或价格。
+ */
 async function requestReply(
   client: OpenAI | Anthropic, model: string, messages: Message[], signal: AbortSignal,
 ): Promise<Reply> {

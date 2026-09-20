@@ -31,6 +31,15 @@ export type Config = { apiKey: string; model: string; baseURL: string };
 export class UserFacingError extends Error {}
 
 // [NEW 02.1] 从当前目录向上寻找最近项目的 .env；遇到 package.json 后不再越过项目边界。
+/**
+ * 从启动目录向上查找当前项目的 `.env`，并把文件内容解析成普通对象。
+ *
+ * - 输入：无显式参数；查找起点是 `process.cwd()` 返回的当前工作目录。
+ * - 输出：找到时返回解析后的键值对象；到达最近的 `package.json` 或文件系统根目录仍未找到时返回空对象。
+ * - 关键步骤：每层先检查 `.env`，再检查项目边界，然后继续进入父目录。
+ * - 失败方式：文件无法读取或语法无法解析时抛出只含安全文案的 `UserFacingError`。
+ * - 职责边界：只返回对象，不把文件中的字段批量写入全局 `process.env`。
+ */
 function readProjectEnv(): Record<string, string | undefined> {
   let directory = process.cwd();
   while (true) {
@@ -50,6 +59,15 @@ function readProjectEnv(): Record<string, string | undefined> {
   }
 }
 
+/**
+ * 合并并校验 OpenAI 兼容接口所需的运行时配置。
+ *
+ * - 输入：命令行中的 `model`、`baseUrl`，以及进程环境变量和项目 `.env`。
+ * - 输出：返回字段完整的 `Config`，下游可以直接用它创建模型客户端。
+ * - 覆盖顺序：命令行选项高于进程环境变量，进程环境变量高于 `.env`，最后才使用内置地址。
+ * - 失败方式：缺少密钥或模型、地址无效或地址携带凭据等危险字段时抛出 `UserFacingError`。
+ * - 职责边界：这里只读取和校验配置，不打印密钥，也不发送模型请求。
+ */
 export function readConfig(options: Options): Config {
   const fileEnv = readProjectEnv();
   // 空值视为没填。优先级：命令行 > 环境变量 > .env > 默认值。

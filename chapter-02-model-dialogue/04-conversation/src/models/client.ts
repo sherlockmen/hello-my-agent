@@ -29,6 +29,15 @@ export interface Model {
   generate(messages: Message[], signal: AbortSignal): Promise<Reply>;
 }
 
+/**
+ * 根据已经校验的配置创建 OpenAI 兼容模型对象。
+ *
+ * - 输入：`config` 来自 `readConfig()`，包含密钥、模型 ID 和基础地址。
+ * - 输出：返回实现 `generate()` 的 `Model`，供命令入口或 Agent Loop 调用。
+ * - 关键设置：请求最多等待 60 秒、关闭自动重试和 SDK 日志，避免一次输入被悄悄重复发送或输出敏感上下文。
+ * - 失败方式：SDK 请求异常继续向上传递；空文本或工具请求在本节会转换成 `UserFacingError`。
+ * - 职责边界：创建客户端时不会发送请求，也不会修改会话历史。
+ */
 export function createModel(config: Config): Model {
   const client = new OpenAI({
     apiKey: config.apiKey, baseURL: config.baseURL,
@@ -36,6 +45,15 @@ export function createModel(config: Config): Model {
     organization: null, project: null,
   });
   return {
+    /**
+     * 把当前消息发送给 OpenAI 兼容接口，并提取一条纯文本回答。
+     *
+     * - 输入：完整消息数组和用于取消请求的 `AbortSignal`。
+     * - 输出：响应包含非空纯文本时返回 `{ text }`。
+     * - 关键步骤：在历史前加入系统提示词，等待 SDK 请求完成，再检查第一条候选结果。
+     * - 失败方式：网络和取消等 SDK 异常向上传递；空文本或工具请求抛出 `UserFacingError`。
+     * - 职责边界：只转换模型响应，不修改外部历史数组。
+     */
     async generate(messages, signal) {
       // system 说明规则，user/assistant 保存问答；每次请求都重新传入上下文。
       const response = await client.chat.completions.create({

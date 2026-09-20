@@ -41,6 +41,14 @@ import { startTerminal, printReply } from "./ui/terminal.js";
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 
 // [KEEP 来自第 01 章练习] 环境诊断不读取模型配置，也不会发送模型请求。
+/**
+ * 显示当前 Node.js 进程的最小诊断信息，不读取模型配置。
+ *
+ * - 输入：无显式参数；版本、平台、架构和工作目录都来自 Node.js 的 `process`。
+ * - 输出：向终端依次打印 Node、Platform 和 Working directory 三行文本。
+ * - 关键原因：诊断发生在 `readConfig()` 之前，因此缺少 API Key 时也能运行。
+ * - 职责边界：不读取 `.env`，不创建模型客户端，也不发送网络请求。
+ */
 function printDoctor(): void {
   console.log(`Node: ${process.version}`);
   console.log(`Platform: ${process.platform} ${process.arch}`);

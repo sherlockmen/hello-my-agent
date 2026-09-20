@@ -23,7 +23,11 @@ import { lessons, lessonModules, verifyLesson } from "./verify-lessons.mjs";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 const chapter = "chapter-02-model-dialogue";
-const currentStep = 1; // npm run build 与无参数 compile.mjs 的默认目标都是 02.1。
+const currentStep = 6; // 当前包已包含第二章完成版的对话、错误与用量行为。
+const currentPackageModules = [
+  "agent/agent-loop", "cli", "config/load-config", "errors", "models/client",
+  "tools/glob", "tools/grep", "tools/read-file", "tools/registry", "tools/workspace", "ui/terminal",
+];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {
   throw new Error("本节检查只支持 3 或 4。");
@@ -74,14 +78,14 @@ function compileSnapshot(sourcePath, filename, label, replacement) {
 }
 
 // 包白名单按所选阶段计算。安装后离开源码目录，检查帮助、版本与该阶段的实际行为。
-async function verifyPackage(project, step, label) {
+async function verifyPackage(project, step, label, moduleOverride) {
   const destination = join(sandbox, label);
   mkdirSync(destination);
   const packed = run(npm, ["pack", "--json", "--ignore-scripts", "--pack-destination", destination], project);
   const parsed = JSON.parse(packed.stdout);
   const archive = Array.isArray(parsed) ? parsed[0] : parsed[pkg.name];
   assert.ok(archive, "npm pack 未返回当前包的信息");
-  const modules = step === 0 ? ["cli"] : lessonModules(step);
+  const modules = moduleOverride ?? (step === 0 ? ["cli"] : lessonModules(step));
   assert.deepEqual(archive.files.map((file) => file.path).sort(),
     ["LICENSE", "README.md", "package.json", ...modules.map((name) => `dist/${name}.js`)].sort());
   const prefix = join(destination, "installed");
@@ -121,7 +125,7 @@ try {
   if (process.platform !== "win32") {
     assert.equal(run(join(root, "dist/cli.js"), ["--version"], cwd).stdout.trim(), pkg.version);
   }
-  await verifyPackage(root, currentStep, "current-package");
+  await verifyPackage(root, currentStep, "current-package", currentPackageModules);
   // 回归：构建脚本收到 02.2 时，产物必须登记该节新增的 --prompt。
   run(process.execPath, [join(root, "scripts/compile.mjs"), "02.2"], root);
   assert.match(run(join(root, "dist/cli.js"), ["--help"], cwd).stdout, /--prompt/);

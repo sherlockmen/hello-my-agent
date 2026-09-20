@@ -27,6 +27,14 @@ export type ToolCall = {
 export const toolDefinitions = [readFileDefinition];
 
 // [NEW 03.2] 使用显式分支即可覆盖当前唯一工具；工具增多后再扩展注册方式。
+/**
+ * 在程序允许使用的工具列表中查找并执行模型请求的工具。
+ *
+ * - 输入：已经过协议基础字段检查的统一 `ToolCall`。
+ * - 输出：工具存在时返回它的文本结果。
+ * - 关键步骤：只根据显式允许的工具名称分派，不按模型给出的名称动态查找 JavaScript 函数。
+ * - 失败方式：工具名称未注册或具体工具校验失败时抛出 `ToolError`。
+ */
 export async function executeTool(call: ToolCall): Promise<string> {
   if (call.name === readFileDefinition.name) return readFileTool(call.arguments);
   throw new ToolError(`未知工具：${call.name}`);

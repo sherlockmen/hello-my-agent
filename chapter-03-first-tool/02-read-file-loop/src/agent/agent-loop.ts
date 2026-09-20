@@ -38,10 +38,26 @@ import { executeTool } from "../tools/registry.js";
 
 const MAX_MODEL_CALLS = 8;
 
+/**
+ * 把新一次模型调用的 token 数累加到本轮总量。
+ *
+ * - 输入：当前累计值和本次调用值；任一值都可能是表示未知的 `null`。
+ * - 输出：两项都已知时返回和；任一项未知时返回 `null`。
+ * - 关键原因：部分缺失的数据不能计算出真实总量，继续显示数字会造成误导。
+ */
 function addUsage(total: number | null, value: number | null): number | null {
   return total === null || value === null ? null : total + value;
 }
 
+/**
+ * 运行有次数上限的工具循环，直到模型给出最终回答。
+ *
+ * - 输入：统一模型、正式历史、本轮用户文字和取消信号。
+ * - 输出：返回最终 `Reply`，并在整轮成功后把用户、助手和工具消息一起提交到历史。
+ * - 关键步骤：请求模型；有工具请求时执行并回传同一调用 ID；没有工具请求时提交最终回答。
+ * - 失败方式：工具异常、取消、空回答或 8 次内没有最终回答时抛错，正式历史保持不变。
+ * - 职责边界：本节只处理工具成功结果，工具失败后的模型自我修正留到 03.3。
+ */
 export async function agentLoop(
   model: Model, history: Message[], input: string, signal: AbortSignal,
 ): Promise<Reply> {

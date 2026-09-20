@@ -57,11 +57,26 @@ export const readFileDefinition = {
 
 const MAX_FILE_BYTES = 64 * 1024;
 
+/**
+ * 判断一个路径的最终文件名是否属于禁止读取的环境配置文件。
+ *
+ * - 输入：相对路径或已经解析后的真实路径。
+ * - 输出：`.env`、`.env.*` 或 `.envrc` 返回 `true`，其他名称返回 `false`。
+ * - 关键原因：只比较不区分大小写的文件名，路径层级不会影响凭据保护。
+ */
 function isEnvironmentFile(path: string): boolean {
   const name = basename(path).toLowerCase();
   return name === ".env" || name.startsWith(".env.") || name === ".envrc";
 }
 
+/**
+ * 把模型提供的 JSON 参数解析成唯一、非空的相对文件路径。
+ *
+ * - 输入：未经信任的 `argumentsJson` 字符串。
+ * - 输出：参数恰好包含一个非空字符串 `path` 时返回去除首尾空格的路径。
+ * - 失败方式：JSON 无效、不是对象、字段多余、路径为空或使用绝对路径时抛出 `ToolError`。
+ * - 职责边界：这里只校验参数结构，不检查文件是否存在，也不读取磁盘内容。
+ */
 function parsePath(argumentsJson: string): string {
   let value: unknown;
   try {
@@ -82,7 +97,14 @@ function parsePath(argumentsJson: string): string {
   return path;
 }
 
-/** 从启动目录向上查找最近的 package.json；找不到时保留原启动目录。 */
+/**
+ * 从启动目录向上寻找最近的 `package.json`，确定工具访问的项目根目录。
+ *
+ * - 输入：可选起点；默认使用当前工作目录。
+ * - 输出：找到时返回最近项目目录；找不到时返回规范化后的原起点。
+ * - 关键步骤：逐级检查当前目录，再移动到父目录，直到找到标记或到达文件系统根。
+ * - 失败方式：本函数只检查路径是否存在，不读取文件内容，因此没有主动抛出的业务错误。
+ */
 function findProjectRoot(start = process.cwd()): string {
   let directory = resolve(start);
   while (true) {
@@ -93,7 +115,17 @@ function findProjectRoot(start = process.cwd()): string {
   }
 }
 
-/** 校验模型参数和真实路径后，读取一个不超过 64 KiB 的普通文件并按 UTF-8 解码。 */
+/**
+ * 在项目根目录边界内校验并读取一个不超过 64 KiB 的普通文件，再按 UTF-8 解码。
+ *
+ * - 输入：模型生成的参数字符串，以及默认由 `findProjectRoot()` 得到的项目根目录。
+ * - 输出：所有检查通过后，按 UTF-8 返回完整文件内容。
+ * - 关键步骤：解析参数、拒绝环境文件、解析真实路径、检查越界与文件类型、限制大小，最后读取。
+ * - 失败方式：参数、越界、目标不存在、文件类型或大小不符合规则时抛出 `ToolError`。
+ * - 系统异常：真实路径检查后的 `stat()` 或 `readFile()` 仍可能因权限变化等竞态抛出文件系统异常，由外层统一处理。
+ * - 关键原因：`realpath()` 会解析符号链接，防止表面位于项目内的路径实际指向项目外。
+ * - 内容边界：本章不识别二进制格式；任何普通文件都会尝试按 UTF-8 解码。
+ */
 export async function readFileTool(argumentsJson: string, projectRoot = findProjectRoot()): Promise<string> {
   const path = parsePath(argumentsJson);
   if (isEnvironmentFile(path)) throw new ToolError("为防止泄露凭据，read_file 不读取 .env 系列文件。");

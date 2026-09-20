@@ -36,6 +36,15 @@ import type { Message, Model, Reply } from "../models/client.js";
 
 // [NEW 02.3] 本轮只接收普通文本，成功后一起保存 user 与 assistant 消息。
 // ui/terminal.ts 一次只调用一轮；同一 history 不应同时交给多个并发调用修改。
+/**
+ * 执行一轮没有工具调用的 Agent，并在成功后一次性提交完整问答。
+ *
+ * - 输入：统一模型、可变历史数组、本轮用户文字和取消信号。
+ * - 输出：返回模型的 `Reply`，并把本轮 user/assistant 两条消息追加到 `history`。
+ * - 关键步骤：先复制历史构造候选上下文，等待模型成功，再次检查取消后才提交状态。
+ * - 失败方式：请求失败或取消时异常向上传递，原历史保持不变。
+ * - 职责边界：本节只调用模型一次，不处理工具请求。
+ */
 export async function agentLoop(
   model: Model, history: Message[], input: string, signal: AbortSignal,
 ): Promise<Reply> {

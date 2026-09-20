@@ -10,16 +10,23 @@ export async function verifyAgentLoop(modulePath) {
   const { agentLoop } = await import(pathToFileURL(modulePath).href);
   const history = [];
   const reply = { text: "已记住青柠", inputTokens: 9, outputTokens: 4, truncated: false };
+  const modelReply = { ...reply, toolCalls: [] };
   const controller = new AbortController();
   const calls = [];
   const model = { async generate(messages, signal) {
     assert.equal(signal, controller.signal, "取消信号必须传递到模型");
     calls.push(structuredClone(messages));
-    return reply;
+    return modelReply;
   } };
 
   // 一次输入只触发一次无工具调用；下一轮包含前轮完整问答。
-  assert.equal(await agentLoop(model, history, "项目叫青柠", controller.signal), reply);
+  const firstReply = await agentLoop(model, history, "项目叫青柠", controller.signal);
+  assert.deepEqual({
+    text: firstReply.text,
+    inputTokens: firstReply.inputTokens,
+    outputTokens: firstReply.outputTokens,
+    truncated: firstReply.truncated,
+  }, reply);
   await agentLoop(model, history, "记得吗", controller.signal);
   assert.deepEqual(calls[1], [
     { role: "user", content: "项目叫青柠" },
@@ -39,7 +46,7 @@ export async function verifyAgentLoop(modulePath) {
   // 处理“取消与返回同时发生”的情况：即使模型返回了文本，也不能保存已取消的轮次。
   await assert.rejects(agentLoop({ async generate() {
     controller.abort();
-    return reply;
+    return modelReply;
   } }, history, "取消轮", controller.signal), { name: "AbortError" });
   assert.deepEqual(history, completed);
 

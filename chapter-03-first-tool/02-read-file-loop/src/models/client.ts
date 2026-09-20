@@ -52,6 +52,15 @@ export interface Model {
   generate(messages: Message[], signal: AbortSignal): Promise<ModelResult>;
 }
 
+/**
+ * 根据已经校验的配置创建统一模型对象，隐藏 OpenAI 与 Anthropic SDK 的差异。
+ *
+ * - 输入：`config` 包含已选服务商、密钥、模型 ID 和基础地址。
+ * - 输出：返回只暴露 `generate()` 的 `Model`，调用方不需要判断服务商。
+ * - 关键步骤：只创建当前协议的 SDK 客户端，并关闭自动重试与 SDK 日志。
+ * - 前置条件：协议、必填值和地址已经由 `readConfig()` 校验。
+ * - 失败方式：不捕获 SDK 初始化异常；创建对象时不发送请求，真正的请求发生在 `generate()` 中。
+ */
 export function createModel(config: Config): Model {
   const options = {
     apiKey: config.apiKey, baseURL: config.baseURL,
@@ -63,10 +72,28 @@ export function createModel(config: Config): Model {
   return { generate: (messages, signal) => requestResult(client, config.model, messages, signal) };
 }
 
+/**
+ * 把服务商返回的用量字段转换成通过基础数字检查的 token 数量。
+ *
+ * - 输入：来自远程响应的未知值，运行时可能不是数字、不是有限值或小于 0。
+ * - 输出：通过检查时返回服务商报告的非负数字；否则返回 `null`。
+ * - 关键原因：`null` 表示没有可展示的用量值，不能用 `0` 冒充没有消耗。
+ * - 准确性边界：本函数不验证统计方法或数值是否真实，只检查 JavaScript 数字格式。
+ * - 失败方式：本函数不抛错，因为用量缺失不应让已经成功的回答失败。
+ */
 function tokenCount(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
 }
 
+/**
+ * 校验远程接口给出的工具调用基础字段，再建立本地 `ToolCall`。
+ *
+ * - 输入：调用 ID、工具名称和参数字符串；三项都属于不可信的外部数据。
+ * - 输出：三个字段都是非空字符串时返回统一 `ToolCall`。
+ * - 关键原因：TypeScript 类型只在编译时生效，不能保证兼容接口实际返回合法字段。
+ * - 失败方式：任一字段无效时抛出 `UserFacingError`，请求不会进入工具执行阶段。
+ * - 职责边界：这里只检查字段类型和空值；JSON 语法与工具参数由执行入口校验。
+ */
 function normalizeToolCall(id: unknown, name: unknown, argumentsJson: unknown): ToolCall {
   if (typeof id !== "string" || !id.trim()
     || typeof name !== "string" || !name.trim()
@@ -76,6 +103,14 @@ function normalizeToolCall(id: unknown, name: unknown, argumentsJson: unknown): 
   return { id, name, arguments: argumentsJson };
 }
 
+/**
+ * 把本地统一消息转换成 OpenAI Chat Completions 使用的消息结构。
+ *
+ * - 输入：可能包含 user、assistant 和 tool 的本地 `Message[]`。
+ * - 输出：返回 OpenAI 所需的消息数组，并保留工具调用 ID。
+ * - 关键步骤：工具结果转换成 `role=tool`，助手工具请求转换成 `tool_calls`。
+ * - 职责边界：只转换内存数据，不发送请求，也不执行工具。
+ */
 function toOpenAIMessages(messages: Message[]): ChatCompletionMessageParam[] {
   return messages.map((message) => {
     if (message.role === "user") return message;
@@ -94,6 +129,15 @@ function toOpenAIMessages(messages: Message[]): ChatCompletionMessageParam[] {
   });
 }
 
+/**
+ * 把本地统一消息转换成 Anthropic Messages 使用的内容块结构。
+ *
+ * - 输入：可能包含 user、assistant 和连续 tool 结果的本地 `Message[]`。
+ * - 输出：返回 Anthropic 消息数组，连续工具结果会合并到同一条 user 消息。
+ * - 关键步骤：助手调用变成 `tool_use`，工具结果变成带原调用 ID 的 `tool_result`。
+ * - 失败方式：已保存的工具参数不是有效 JSON 时，`JSON.parse()` 会抛错并停止请求。
+ * - 职责边界：只转换内存数据，不发送请求，也不执行工具。
+ */
 function toAnthropicMessages(messages: Message[]): MessageParam[] {
   const converted: MessageParam[] = [];
   for (let index = 0; index < messages.length;) {
@@ -131,7 +175,16 @@ function toAnthropicMessages(messages: Message[]): MessageParam[] {
   return converted;
 }
 
-/** 发送完整消息链，把两种协议的文本和工具请求归一化。 */
+/**
+ * 发送完整消息链和工具定义，并把服务商响应转换成统一的 `ModelResult`。
+ *
+ * - 输入：SDK 客户端、模型 ID、本地消息数组和取消信号。
+ * - 输出：统一的文本、工具请求、token 用量和截断状态。
+ * - 关键步骤：先把本地消息转换成所选协议，再发送工具定义，最后归一化响应字段。
+ * - 请求失败：网络、认证、限流、服务端、取消或协议解析异常由 SDK 向上传递。
+ * - 响应失败：没有候选结果，或结果既无文本也无工具请求时抛出 `UserFacingError`。
+ * - 职责边界：只转换请求和响应，不执行本地工具，也不提交会话历史。
+ */
 async function requestResult(
   client: OpenAI | Anthropic, model: string, messages: Message[], signal: AbortSignal,
 ): Promise<ModelResult> {

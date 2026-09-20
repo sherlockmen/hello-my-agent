@@ -32,7 +32,14 @@ import Anthropic from "@anthropic-ai/sdk";
 // [NEW 02.6] 只有这种错误的 message 可以原样显示；创建时必须使用安全文案。
 export class UserFacingError extends Error {}
 
-/** 将失败转成可操作的提示；不输出远端 message、响应体、请求头或堆栈。 */
+/**
+ * 把任意运行时错误转换成可以安全显示、便于排查的中文提示。
+ *
+ * - 输入：捕获到的未知错误，可能来自本地校验、OpenAI SDK、Anthropic SDK 或程序内部。
+ * - 输出：返回不包含密钥、响应体、请求头和堆栈的固定提示文字。
+ * - 关键步骤：先保留程序自建的安全文案，再按超时、连接和 HTTP 状态分类，最后使用兜底提示。
+ * - 失败方式：本函数不抛错；无法识别的错误也会返回通用安全文案。
+ */
 export function explainError(error: unknown): string {
   if (error instanceof UserFacingError) return error.message;
   if (error instanceof OpenAI.APIConnectionTimeoutError || error instanceof Anthropic.APIConnectionTimeoutError) {

@@ -52,6 +52,15 @@ export interface Model {
   generate(messages: Message[], signal: AbortSignal): Promise<ModelResult>;
 }
 
+/**
+ * 根据已经校验的配置创建统一模型对象，隐藏 OpenAI 与 Anthropic SDK 的差异。
+ *
+ * - 输入：`config` 包含已选服务商、密钥、模型 ID 和基础地址。
+ * - 输出：返回只暴露 `generate()` 的 `Model`，调用方不需要判断服务商。
+ * - 关键步骤：只创建当前协议的 SDK 客户端，并关闭自动重试与 SDK 日志。
+ * - 前置条件：协议、必填值和地址已经由 `readConfig()` 校验。
+ * - 失败方式：不捕获 SDK 初始化异常；创建对象时不发送请求，真正的请求发生在 `generate()` 中。
+ */
 export function createModel(config: Config): Model {
   const options = {
     apiKey: config.apiKey, baseURL: config.baseURL,
@@ -63,10 +72,28 @@ export function createModel(config: Config): Model {
   return { generate: (messages, signal) => requestResult(client, config.model, messages, signal) };
 }
 
+/**
+ * 把服务商返回的用量字段转换成通过基础数字检查的 token 数量。
+ *
+ * - 输入：来自远程响应的未知值，运行时可能不是数字、不是有限值或小于 0。
+ * - 输出：通过检查时返回服务商报告的非负数字；否则返回 `null`。
+ * - 关键原因：`null` 表示没有可展示的用量值，不能用 `0` 冒充没有消耗。
+ * - 准确性边界：本函数不验证统计方法或数值是否真实，只检查 JavaScript 数字格式。
+ * - 失败方式：本函数不抛错，因为用量缺失不应让已经成功的回答失败。
+ */
 function tokenCount(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
 }
 
+/**
+ * 校验远程接口给出的工具调用基础字段，再建立本地 `ToolCall`。
+ *
+ * - 输入：调用 ID、工具名称和参数字符串；三项都属于不可信的外部数据。
+ * - 输出：三个字段都是非空字符串时返回统一 `ToolCall`。
+ * - 关键原因：TypeScript 类型只在编译时生效，不能保证兼容接口实际返回合法字段。
+ * - 失败方式：任一字段无效时抛出 `UserFacingError`，请求不会进入工具执行阶段。
+ * - 职责边界：这里只检查字段类型和空值；JSON 语法与工具参数由执行入口校验。
+ */
 function normalizeToolCall(id: unknown, name: unknown, argumentsJson: unknown): ToolCall {
   if (typeof id !== "string" || !id.trim()
     || typeof name !== "string" || !name.trim()
@@ -76,7 +103,19 @@ function normalizeToolCall(id: unknown, name: unknown, argumentsJson: unknown): 
   return { id, name, arguments: argumentsJson };
 }
 
-/** 发送上下文和工具定义，把两种服务商响应转换成统一的 ModelResult。 */
+/**
+ * 发送上下文和工具定义，把两种服务商响应转换成统一的 `ModelResult`。
+ *
+ * - 输入：已创建的 SDK 客户端、模型 ID、当前消息和用于取消请求的 `AbortSignal`。
+ * - 输出：统一的文本、工具请求、token 用量和截断状态。
+ * - OpenAI 分支：调用 `chat.completions`，工具定义放在 `tools[].function`。
+ * - Anthropic 分支：调用 `messages`，工具参数结构放在 `tools[].input_schema`。
+ * - 共同输出：两个分支都把服务商响应转换成同一种 `ModelResult`。
+ * - 请求失败：网络、认证、限流、服务端、取消或协议解析异常由 SDK 向上传递。
+ * - 响应失败：没有可用结果，或结果既无文本也无工具请求时，抛出 `UserFacingError`。
+ * - 字段失败：工具调用字段由 `normalizeToolCall()` 检查，无效时拒绝整次响应。
+ * - 边界：这里只识别并转换工具请求，不解析参数，也不执行本地工具。
+ */
 async function requestResult(
   client: OpenAI | Anthropic, model: string, messages: Message[], signal: AbortSignal,
 ): Promise<ModelResult> {

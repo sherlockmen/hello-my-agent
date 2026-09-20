@@ -12,6 +12,7 @@ import { tmpdir } from "node:os";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const chapter = "chapter-02-model-dialogue";
 const toolChapter = "chapter-03-first-tool";
+const searchChapter = "chapter-04-code-search";
 const targets = {
   "01": "chapter-01-first-command",
   "02.1": `${chapter}/01-configuration/src`,
@@ -23,9 +24,12 @@ const targets = {
   "03.1": `${toolChapter}/01-tool-request/src`,
   "03.2": `${toolChapter}/02-read-file-loop/src`,
   "03.3": `${toolChapter}/03-error-boundary/src`,
+  "04.1": `${searchChapter}/01-file-discovery/src`,
+  "04.2": `${searchChapter}/02-content-search/src`,
+  "04.3": `${searchChapter}/03-chunked-reading/src`,
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "02.1";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "04.3";
 const source = targets[target];
 
 if (!source) {

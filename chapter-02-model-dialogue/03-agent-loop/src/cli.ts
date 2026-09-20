@@ -31,6 +31,14 @@ import { agentLoop } from "./agent/agent-loop.js";
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 
 // [KEEP 来自第 01 章练习] 环境诊断不读取模型配置，也不会发送模型请求。
+/**
+ * 显示当前 Node.js 进程的最小诊断信息，不读取模型配置。
+ *
+ * - 输入：无显式参数；版本、平台、架构和工作目录都来自 Node.js 的 `process`。
+ * - 输出：向终端依次打印 Node、Platform 和 Working directory 三行文本。
+ * - 关键原因：诊断发生在 `readConfig()` 之前，因此缺少 API Key 时也能运行。
+ * - 职责边界：不读取 `.env`，不创建模型客户端，也不发送网络请求。
+ */
 function printDoctor(): void {
   console.log(`Node: ${process.version}`);
   console.log(`Platform: ${process.platform} ${process.arch}`);
@@ -40,6 +48,13 @@ function printDoctor(): void {
 type CliOptions = Options & { prompt?: string; doctor?: boolean };
 const program = new Command();
 // 只在交互终端中加入 ANSI 颜色；重定向到文件或管道时保留纯文本。
+/**
+ * 根据输出目标决定是否给终端标签添加 ANSI 颜色。
+ *
+ * - 输入：要显示的文字和 ANSI 颜色编号。
+ * - 输出：交互终端得到带颜色的字符串；管道或文件得到原始纯文本。
+ * - 关键原因：转义字符适合人眼终端，不应混入日志、重定向文件或测试结果。
+ */
 const colorLabel = (text: string, color: number) =>
   process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;
 program
