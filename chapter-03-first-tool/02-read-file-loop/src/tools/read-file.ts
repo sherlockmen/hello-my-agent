@@ -129,6 +129,7 @@ function findProjectRoot(start = process.cwd()): string {
  *   不能抵抗恶意进程在检查后替换路径，也不能作为文件系统沙箱。
  * - 内容边界：本章不识别二进制格式；任何普通文件都会尝试按 UTF-8 解码。
  */
+// [CHANGED 03.2] read_file 从“只有工具定义”变为真正校验边界并读取文件。
 export async function readFileTool(argumentsJson: string, projectRoot = findProjectRoot()): Promise<string> {
   const path = parsePath(argumentsJson);
   if (isEnvironmentFile(path)) throw new ToolError("为防止泄露凭据，read_file 不读取 .env 系列文件。");

@@ -2,7 +2,7 @@
 
 [第三章首页](README.md) · [先完成 03.3](03-error-boundary/README.md) · [Agent Loop 源码](03-error-boundary/src/agent/agent-loop.ts) · [完整答案](#完整答案)
 
-## 问题
+## 问题：同一次响应包含两个工具请求时，程序不能只处理第一个
 
 一个模型响应不一定只包含一个工具请求。模型可能同时要求读取 `package.json` 和 `tsconfig.json`，再比较两份配置：
 

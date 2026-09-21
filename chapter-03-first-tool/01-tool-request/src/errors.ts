@@ -29,7 +29,7 @@
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 
-// [NEW 02.6] 只有这种错误的 message 可以原样显示；创建时必须使用安全文案。
+// [KEEP 来自 02.6] 只有这种错误的 message 可以原样显示；创建时必须使用安全文案。
 export class UserFacingError extends Error {}
 
 /**

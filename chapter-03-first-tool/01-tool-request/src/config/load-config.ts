@@ -27,7 +27,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { parseEnv } from "node:util";
-// [CHANGED 02.6] 错误提示集中管理，配置读取规则沿用 02.5。
+// [KEEP 来自 02.6] 错误提示集中管理，配置读取规则沿用 02.5。
 import { UserFacingError } from "../errors.js";
 
 // [KEEP] 可选字段对应 Commander 的选项；读取后统一转成必填的 Config。
@@ -39,8 +39,7 @@ export type Config = {
   baseURL: string;
 };
 
-// [KEEP] 系统提示词约束当前助手的行为，独立于 user/assistant 历史。
-// 本节只允许模型提出 read_file 请求；本地执行要到 03.2 才接入，提示词不能提前声称已能读取。
+// [CHANGED 03.1] 系统提示词新增 read_file 请求边界；本节尚不执行工具，不能提前声称已能读取。
 export const systemPrompt = "你是一个运行在命令行中的个人编程 Agent。请使用中文准确、清楚地回答编程问题。需要文件内容时，请提出 read_file 工具请求，不要猜测。当前示例只识别工具请求，尚不能把文件内容返回给你；你也不能修改文件或执行命令，不要声称已经完成这些操作。";
 
 // [KEEP] 配置读取与校验；第一章没有模型配置。

@@ -69,6 +69,7 @@ function describeToolResult(metadata: ToolResultMetadata): string {
     return `${metadata.count} 个路径${metadata.truncated ? "（已截断）" : ""}`
       + `${examples ? `；示例：${examples}` : ""}`;
   }
+  // [CHANGED 04.2] grep 只显示数量和位置示例，不回显匹配正文。
   if (metadata.kind === "grep") {
     const examples = metadata.locations.slice(0, 2)
       .map(({ path, line, column }) => `${toTraceText(path)}:${line}:${column}`)

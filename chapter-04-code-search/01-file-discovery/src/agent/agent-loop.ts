@@ -46,6 +46,7 @@ function addUsage(total: number | null, value: number | null): number | null {
   return total === null || value === null ? null : total + value;
 }
 
+// [CHANGED 04.1] agentLoop 增加观察者事件，并把取消信号继续传给文件工具。
 /**
  * 运行有次数上限的工具循环，并把可恢复的工具错误反馈给模型。
  *

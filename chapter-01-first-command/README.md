@@ -4,7 +4,7 @@
 
 **本章目标：从空目录开始，做出一个可以安装、支持帮助和版本查询的 `hello-my-agent` 命令。** 本章只输出固定文本，不调用模型，无需 API Key。本章已于 2026-09-16 确认完成。
 
-## 问题
+## 问题：TypeScript 文件还不是一个可以直接使用的命令
 
 我们要写一个 Coding Agent，也就是能理解编程目标并逐步使用工具完成任务的程序。先不考虑模型、文件和工具，只看使用者怎样启动它。
 
@@ -36,7 +36,7 @@ flowchart LR
   B -->|npm pack 打包| D[安装包]
 ```
 
-本章的入口源码是 [cli.ts](cli.ts)，编译后的运行文件是 `dist/cli.js`。Commander 负责解析命令行参数；后续章节在这个基础上增加模型和工具能力。
+本章的入口源码是 [cli.ts](cli.ts)，编译后的运行文件是 `dist/cli.js`。Commander 负责解析命令行参数；第 02 章在这个入口后接入模型，第 03 章再接入工具循环。
 
 ## 工作原理
 
@@ -130,7 +130,18 @@ const packageJson = JSON.parse(
 
 在 macOS / Linux 上，shell 先按 `PATH` 的目录顺序找到这个入口。系统读取文件第一行 `#!/usr/bin/env node` 后，再从 `PATH` 中寻找 Node，用 Node 执行其余 JavaScript。`bin` 解决“命令名对应哪个文件”，shebang 解决“这个文件交给哪个解释器”；两者缺一不可。
 
+本章只验证本地安装后的命令连接；第 36 章会沿用同一个 `bin` 入口，再补上发布白名单、版本发布、安装验证和升级迁移。
+
 例如，输入 `hello-my-agent --version` 时，完整路径是：shell 找到命令入口 → 入口到达 `dist/cli.js` → Node 执行文件 → Commander 识别 `--version` → 打印从本包 `package.json` 读取的版本 → 进程以成功状态结束。
+
+## 本章改动文件
+
+| 状态 | 文件 | 本章变化 |
+| --- | --- | --- |
+| 新增 | [cli.ts](cli.ts) | 实现命令入口、帮助、版本和默认输出。 |
+| 修改 | [package.json](../package.json) | 声明依赖、构建脚本和 `hello-my-agent` 命令入口。 |
+| 新增 | [scripts/compile.mjs](../scripts/compile.mjs) | 选择本章入口并编译到 `dist/cli.js`。 |
+| 新增 | [tsconfig.json](../tsconfig.json) | 定义 TypeScript 的通用检查与编译规则。 |
 
 ## 动手构建
 
@@ -154,7 +165,7 @@ const packageJson = JSON.parse(
  * 要解决的问题：别人安装这个包后，怎样在自己的项目里启动命令、查看帮助和版本？
  * 本章实现命令入口、帮助和版本查询；下一章在这个入口接入模型。
  *
- * 执行流程：
+ * 启动主流程（Agent Loop 尚未建立）：
  *   读取本包版本 -> 登记命令规则 -> 解析用户参数
  *                                  | 无参数        -> 显示欢迎语
  *                                  | --help / -h   -> 显示帮助，结束
@@ -165,8 +176,8 @@ const packageJson = JSON.parse(
  * 构建脚本会自动注册命令；npm 根据 package.json 的 bin 将命令名连接到入口文件。
  * 第一行的 #!/usr/bin/env node 让类 Unix 系统通过 PATH 找到 Node 执行它。
  *
- * 在项目根目录执行 npm run lesson:01，一次完成依赖安装、编译与注册。
- * 准备完成后直接运行以下命令；修改源码后重新执行小节命令即可：
+ * 在项目根目录执行 npm run lesson:01，一次完成依赖安装、编译与本地命令注册。
+ * 准备完成后直接运行以下命令；修改源码后重新执行本节命令即可：
  *   hello-my-agent           -> 显示欢迎语
  *   hello-my-agent --help    -> 显示帮助
  *   hello-my-agent --version -> 显示 package.json 中的版本；-v 是它的简写
@@ -184,6 +195,7 @@ import { Command } from "commander";
 // 若只写 readFileSync("package.json")，就会从当前工作目录查找，可能读错文件或找不到。
 // "utf8" 指定文本编码；JSON.parse 把读到的 JSON 文本转成对象，供后面读取 version。
 // 这里在启动时同步读取一次小文件；文件缺失或 JSON 无效时直接报错，便于发现安装问题。
+// [NEW 01] 下面是本章新增的完整命令入口：读取版本、登记规则并解析参数。
 const packageJson = JSON.parse(
   readFileSync(new URL("../package.json", import.meta.url), "utf8"),
 );
@@ -242,7 +254,13 @@ npm run lesson:01
 
 ```bash
 hello-my-agent
+```
+
+```bash
 hello-my-agent --help
+```
+
+```bash
 hello-my-agent --version
 ```
 
@@ -277,7 +295,7 @@ hello-my-agent --versoin
 
 错误输出中应包含 `unknown option '--versoin'`。在 macOS / Linux 终端中，紧接着执行 `echo $?`，应得到退出码 `1`。`$?` 表示上一条命令的退出码，`0` 通常表示成功，非零表示失败。改为运行 `hello-my-agent --version`，再执行 `echo $?`，应得到 `0`。
 
-Commander 帮我们拒绝未知输入。后续让其他程序自动调用 Agent 时，它们也会用退出码判断任务是否成功。
+Commander 帮我们拒绝未知输入。第 09 章增加结构化输出后，其他程序也会结合退出码判断 Agent 是否成功。
 
 如果改了源码但运行结果没变，先在该项目根目录执行 `npm run lesson:01`。若结果仍不符，用 `command -v hello-my-agent` 查看终端找到的命令位置，再按 [命令查找说明](../docs/SETUP.md#注册命令后如何找到它) 检查。
 

@@ -9,6 +9,7 @@ import type { AgentEvent } from "../agent/events.js";
 import { toolDefinitions, type ToolCall } from "../tools/registry.js";
 import type { ToolResultMetadata } from "../tools/types.js";
 
+// [NEW 04.1] 本文件以下安全摘要与教学追踪实现均为本节新增。
 const MAX_TRACE_VALUE_CHARS = 60;
 
 /**

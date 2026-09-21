@@ -4,7 +4,7 @@
 
 **本节目标：在相同的 Agent Loop 和终端流程下，增加 Anthropic Messages 协议。运行时选择协议，核心不用跟着改。**
 
-## 问题
+## 问题：更换模型服务商，不只是更换接口地址
 
 上一节的连续会话只能通过 OpenAI 兼容协议请求模型。Anthropic Messages 虽然同样接收用户与助手消息，但它的认证配置、系统提示词位置、请求方法和响应内容块都不同，不能只替换基础地址就直接复用 Chat Completions 请求。
 
@@ -18,41 +18,42 @@
 
 ## 解决方案
 
-让配置模块先确定 `provider`，再读取对应的一组凭据；让模型模块把两种协议都转换成相同的 `Reply`。Agent Loop 和终端继续只面对统一的 `Model` 接口。
+让配置模块先确定模型服务商，再读取对应的一组凭据；让模型模块负责请求格式和响应格式的转换。Agent Loop 和终端继续只面对统一的 `Model` 接口。
+
+以这次提问为例：
 
 ```text
-+----------------+
-| choose provider|
-+-------+--------+
-        |
-  +-----v-----------------------------+
-  | openai or anthropic?              |
-  +----------+------------------+------+
-             | openai           | anthropic
-             v                  v
-       read OPENAI_*      read ANTHROPIC_*
-             |                  |
-             v                  v
-       OpenAI client      Anthropic client
-             |                  |
-             v                  v
-       Chat Completions   Messages API
-             |                  |
-             +--------+---------+
-                      v
-               normalize Reply
-                      |
-                      v
-              agentLoop / terminal
-
-协议无效或缺少所选协议的配置 --> 安全提示
+hello-my-agent --provider anthropic --prompt "用一句话解释 Promise"
 ```
 
-协议差异停在配置和模型模块中。上层不需要根据服务商编写两套会话流程。
+它会沿着下面这条链路执行：
+
+```text
+用户输入文字，并选择 anthropic
+  -> 配置模块只读取 ANTHROPIC_* 配置
+  -> Agent Loop 组织统一的 Message[]
+  -> 模型模块把消息转换成 Anthropic Messages 请求
+  -> Anthropic 响应被转换成统一的 Reply
+  -> Agent Loop 保存本轮问答
+  -> 终端显示最终回答
+```
+
+如果改选 `openai`，只有配置读取和模型模块中的协议转换发生变化，Agent Loop、历史提交和终端显示仍走同一条路径。协议无效、缺少所选协议的配置或请求失败时，本轮历史不会提交；下一节再把不同失败转换成具体提示。
 
 ## 工作原理
 
-先把模型模块理解成一个**双向翻译器**。Agent Loop 使用本项目自己的 `Message` 和 `Reply`；模型模块把统一消息翻译成目标服务商的请求，再把不同响应翻译回统一结果。统一的是本地语义，服务商协议本身并没有变成同一种格式。
+先记住本节的核心结论：**Agent Loop 只表达“根据消息得到模型结果”，服务商适配器负责“这些消息在某个接口中怎样表示”。**
+
+上面那次提问可以拆成六步：
+
+1. 命令入口取得用户文字和 `anthropic` 这个服务商选择。
+2. 配置模块根据选择读取 `ANTHROPIC_API_KEY`、模型和基础地址，不接触 OpenAI 凭据。
+3. Agent Loop 把已有历史和本轮问题组成统一的 `Message[]`。
+4. 模型模块加入系统说明，把统一消息翻译成 Anthropic Messages 请求，并等待远端响应。
+5. 模型模块从响应内容块中取出文本，转换成统一的 `Reply`。
+6. Agent Loop 保存完整问答，终端显示最终文本。
+
+模型模块因此像一个**双向翻译器**：它把本地消息翻译成服务商请求，再把服务商响应翻译回本地结果。统一的是本地程序看到的含义，服务商协议本身并没有变成同一种格式。
 
 ```text
 本地 Message[]
@@ -65,7 +66,7 @@
 
 例如，同一条系统说明在 OpenAI 请求中是一条 `role: "system"` 消息，在 Anthropic 请求中却是独立的 `system` 字段；同一段回答在 OpenAI 响应中位于 `choices[0].message.content`，在 Anthropic 响应中位于 `content` 的文本块。适配层负责这两次转换，Agent Loop 只看到“输入消息，得到回答”。
 
-最容易误解的是认为换一个 `baseURL` 就等于支持另一种协议。地址只决定请求发到哪里，不能改变 JSON 字段、认证方式和响应结构。本节只支持在每次启动时选择一种协议，不支持在同一会话中途切换，也还不处理两种协议的工具调用格式。
+最容易误解的是认为换一个 `baseURL` 就等于支持另一种协议。地址只决定请求发到哪里，不能改变 JSON 字段、认证方式和响应结构。如果只改地址，程序仍会把 OpenAI 格式发给 Anthropic，远端无法按预期解析；即使请求碰巧通过，上层也读不到正确的响应字段。本节只支持在每次启动时选择一种协议，不支持在同一会话中途切换，也还不处理两种协议的工具调用格式。
 
 ### 第一步：先选协议，再选凭据
 
@@ -103,6 +104,8 @@ Agent Loop 关心的是领域语义：一组消息能否得到一个回答。Ope
 
 `requestReply()` 接收 `OpenAI | Anthropic` 联合类型，再通过运行时对象判断选择请求分支。两个分支最后都返回 `{ text }`，因此上层只能看到统一结果。协议新增字段时，修改范围仍限制在模型模块。
 
+本节只统一文本回答；第 23 章会沿用这个适配边界，再统一工具、流事件、附件、能力描述和运行中的模型切换。
+
 ### 第四步：凭据必须跟随协议选择
 
 程序先确定 provider，再读取这一组前缀对应的 Key、模型和地址。不能先混合所有配置再猜测使用哪一个，因为密钥是发送到远程地址的认证材料；选错组合不仅会请求失败，还可能把凭据交给错误的服务端。
@@ -136,15 +139,15 @@ Agent Loop 的问题是“根据消息得到下一步结果”，协议层的问
 
 本节使用 [Anthropic TypeScript SDK](https://platform.claude.com/docs/en/cli-sdks-libraries/sdks/typescript) 和 OpenAI SDK 处理各自的认证、请求路径、JSON 与错误对象，再在本地模型模块完成最小适配。这样既保留协议真实差异，也让上层只有一条执行路径。
 
-## 动手构建
+## 本节改动文件
 
-### 本节会修改哪些文件
-
-| 操作 | 文件 | 作用 |
+| 状态 | 文件 | 本节变化 |
 | --- | --- | --- |
-| 修改 | `src/config/load-config.ts` | 先选择协议，再读取对应配置。 |
-| 修改 | `src/models/client.ts` | 增加 Anthropic 请求和响应转换。 |
-| 修改 | `src/cli.ts` | 登记 `--provider`。 |
+| 修改 | [src/cli.ts](src/cli.ts) | 增加 `--provider` 选项。 |
+| 修改 | [src/config/load-config.ts](src/config/load-config.ts) | 先选择协议，再读取对应的一组凭据。 |
+| 修改 | [src/models/client.ts](src/models/client.ts) | 增加 Anthropic 分支，继续返回统一的 `Reply`。 |
+
+## 动手构建
 
 ### 第一步：让配置先选择协议
 
@@ -314,14 +317,6 @@ npm run lesson:02.5
 ```bash
 hello-my-agent --provider anthropic
 ```
-
-## 本节实现清单
-
-| 状态 | 文件 | 本节变化 |
-| --- | --- | --- |
-| 修改 | [src/cli.ts](src/cli.ts) | 增加 `--provider` 选项。 |
-| 修改 | [src/config/load-config.ts](src/config/load-config.ts) | 先选择协议，再读取对应的一组凭据。 |
-| 修改 | [src/models/client.ts](src/models/client.ts) | 增加 Anthropic 分支，继续返回相同的 `Reply`。 |
 
 ## 运行验证
 

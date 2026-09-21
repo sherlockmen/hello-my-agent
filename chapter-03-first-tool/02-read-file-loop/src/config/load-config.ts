@@ -27,7 +27,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { parseEnv } from "node:util";
-// [CHANGED 02.6] 错误提示集中管理，配置读取规则沿用 02.5。
+// [KEEP 来自 02.6] 错误提示集中管理，配置读取规则沿用 02.5。
 import { UserFacingError } from "../errors.js";
 
 // [KEEP] 可选字段对应 Commander 的选项；读取后统一转成必填的 Config。

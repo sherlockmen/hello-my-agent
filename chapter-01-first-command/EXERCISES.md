@@ -173,7 +173,13 @@ Working directory: /your/current/project
 
 ```bash
 hello-my-agent
+```
+
+```bash
 hello-my-agent --help
+```
+
+```bash
 hello-my-agent --version
 ```
 

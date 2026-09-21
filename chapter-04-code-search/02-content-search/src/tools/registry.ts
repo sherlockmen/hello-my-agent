@@ -11,6 +11,7 @@
 
 import { ToolError } from "../errors.js";
 import { globDefinition, globTool } from "./glob.js";
+// [CHANGED 04.2] 注册表接入 grep 定义与执行函数。
 import { grepDefinition, grepTool } from "./grep.js";
 import { readFileDefinition, readFileTool } from "./read-file.js";
 import type { ToolExecutionResult } from "./types.js";

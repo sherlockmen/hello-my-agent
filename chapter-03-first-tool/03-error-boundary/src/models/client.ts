@@ -34,7 +34,7 @@ import { systemPrompt, type Config } from "../config/load-config.js";
 import { UserFacingError } from "../errors.js";
 import { toolDefinitions, type ToolCall } from "../tools/registry.js";
 
-// [CHANGED 03.2] assistant 保存模型提出的调用；tool 保存本地执行结果和同一个调用 ID。
+// [KEEP 来自 03.2] assistant 保存模型提出的调用；tool 保存本地执行结果和同一个调用 ID。
 export type Message =
   | { role: "user"; content: string }
   | { role: "assistant"; content: string; toolCalls?: ToolCall[] }

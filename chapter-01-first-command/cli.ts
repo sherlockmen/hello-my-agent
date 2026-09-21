@@ -36,6 +36,7 @@ import { Command } from "commander";
 // 若只写 readFileSync("package.json")，就会从当前工作目录查找，可能读错文件或找不到。
 // "utf8" 指定文本编码；JSON.parse 把读到的 JSON 文本转成对象，供后面读取 version。
 // 这里在启动时同步读取一次小文件；文件缺失或 JSON 无效时直接报错，便于发现安装问题。
+// [NEW 01] 下面是本章新增的完整命令入口：读取版本、登记规则并解析参数。
 const packageJson = JSON.parse(
   readFileSync(new URL("../package.json", import.meta.url), "utf8"),
 );

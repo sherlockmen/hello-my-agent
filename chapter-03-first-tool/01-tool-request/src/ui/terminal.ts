@@ -103,7 +103,7 @@ export async function startTerminal(model: Model): Promise<void> {
   }
 }
 
-// [CHANGED 02.6] 同一处输出同时服务于连续对话与 --prompt 单次提问。
+// [KEEP 来自 02.6] 同一处输出同时服务于连续对话与 --prompt 单次提问。
 /**
  * 显示模型回答、本轮 token 用量和可能的截断提示。
  *

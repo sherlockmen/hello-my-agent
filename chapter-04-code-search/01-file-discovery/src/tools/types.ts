@@ -5,6 +5,7 @@
  * 元数据只保存结构化事实，不包含终端文案；普通终端、JSONL 和后续 TUI 可以各自决定怎样显示。
  */
 
+// [NEW 04.1] 本文件以下工具结果与观察元数据契约均为本节新增。
 export type ToolResultMetadata =
   | { kind: "read_file"; lineCount: number }
   | { kind: "glob"; count: number; truncated: boolean; paths: string[] };

@@ -62,6 +62,7 @@ program
   // [KEEP 来自 02.5] 本次启动选择接口协议。
   .option("--provider <type>", "接口协议：openai 或 anthropic")
   // [KEEP 来自 02.6] 沿用执行流程，只统一失败提示与结果显示。
+  // [CHANGED 04.1] 单次模式也装配教学观察者，和连续会话显示同一组事件。
   .action(async () => {
     const options = program.opts<CliOptions>();
     if (options.doctor) {

@@ -57,11 +57,30 @@ chapter-04-code-search/02-content-search/src/models/client.ts:59:17: export func
         |
         v
 返回 path:line:column:text（最多 100 项）
+        |
+        v
+Agent Loop 把位置结果交回模型
+        |
+        v
+模型继续读取上下文，或给出最终回答
 ```
 
-`glob` 控制“去哪里找”，`query` 控制“找什么”。把两者放在同一次工具调用里，模型每次搜索都必须明确范围。
+`glob` 控制“去哪里找”，`query` 控制“找什么”。把两者放在同一次工具调用里，模型每次搜索都必须明确范围。正则或参数无效时，工具返回带原调用 ID 的错误结果，模型可以修改查询后继续。
 
 ## 工作原理
+
+先用“找到 `createModel` 的定义”闭合本节主线：
+
+```text
+1. 用户提出目标，模型只有名称，不知道它位于哪个文件和哪一行
+2. 模型请求 grep，并给出 query 和 glob
+3. 本地工具校验参数，在受控候选文件中搜索真实文本
+4. 工具用原调用 ID 返回 path:line:column；正则无效时返回错误结果
+5. Agent Loop 把位置或错误结果加入本轮消息，再次请求模型
+6. 模型根据位置继续调用 read_file，或在证据已经足够时给出最终回答
+```
+
+这条链中，`grep` 只把文本目标变成位置证据。它不判断命中的是函数定义、注释还是字符串；模型必须结合下一次读取到的上下文完成判断。
 
 ### 1. `grep` 是稳定契约，搜索引擎是可替换后端
 
@@ -199,6 +218,8 @@ Agent > createModel 位于 chapter-04-code-search/02-content-search/src/models/c
 
 如果第一次模型响应同时返回两个 `grep` 请求，追踪会先显示“返回：2 个工具请求”，再依次出现工具第 1、2 步，最后才进入模型第 2 次决策。这表示两个搜索请求来自同一次模型响应；当前 Agent Loop 按顺序执行它们，并把两个结果一起交给下一次模型调用。
 
+第 27 章会在这里增加依赖与副作用判断：互不依赖的只读搜索可以受控并发，写入或相互依赖的工具仍保持串行或隔离执行。
+
 如果正则无效，过程会变成：
 
 ```text
@@ -215,19 +236,21 @@ Agent > createModel 位于 chapter-04-code-search/02-content-search/src/models/c
 
 失败事件保留真实工具请求和错误事实，普通终端只显示经过筛选的安全说明。这条失败记录说明 `ToolError` 已成为模型可修正的环境反馈，而不是整个进程的崩溃。
 
+## 本节改动文件
+
+| 状态 | 文件 | 本节变化 |
+| --- | --- | --- |
+| 新增 | [src/tools/grep.ts](src/tools/grep.ts) | 校验查询条件，生成模型正文与结构化位置元数据。 |
+| 修改 | [src/tools/types.ts](src/tools/types.ts) | 在工具结果联合类型中加入 `grep` 元数据。 |
+| 修改 | [src/tools/registry.ts](src/tools/registry.ts) | 注册并执行 `grep`。 |
+| 修改 | [src/ui/teaching-trace.ts](src/ui/teaching-trace.ts) | 根据参数 Schema 和位置元数据显示搜索步骤。 |
+| 修改 | [src/config/load-config.ts](src/config/load-config.ts) | 告诉模型三个只读工具的分工。 |
+
+`AgentEvent` 和 Agent Loop 沿用 04.1 的控制结构。内容搜索作为新工具接入注册表，不需要给主循环增加 `grep` 专用分支。
+
 ## 动手构建
 
-本节扩展搜索工具及其观察元数据，不修改 Agent Loop 的控制结构：
-
-| 文件 | 作用 |
-| --- | --- |
-| `src/tools/grep.ts` | 校验 query 和 glob，同时生成模型正文与结构化位置元数据 |
-| `src/tools/types.ts` | 在工具结果联合类型中加入 `grep` 元数据 |
-| `src/tools/registry.ts` | 注册并执行 `grep` |
-| `src/ui/teaching-trace.ts` | 根据 Schema 和位置元数据显示新的搜索步骤 |
-| `src/config/load-config.ts` | 告诉模型三个只读工具的分工 |
-
-`AgentEvent` 和 Agent Loop 保持 04.1 的结构；新增能力只进入工具结果类型和界面消费者。完整实现位于[本节源码](src/)。
+完整实现位于[本节源码](src/)。
 
 在仓库根目录执行：
 

@@ -8,6 +8,7 @@
 export type ToolResultMetadata =
   | { kind: "read_file"; lineCount: number }
   | { kind: "glob"; count: number; truncated: boolean; paths: string[] }
+  // [CHANGED 04.2] grep 为界面提供位置元数据，匹配正文仍只进入 content。
   | {
       kind: "grep";
       count: number;

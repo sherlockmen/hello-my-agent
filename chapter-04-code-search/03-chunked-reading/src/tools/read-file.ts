@@ -38,6 +38,7 @@ import { ToolError } from "../errors.js";
 import type { ToolExecutionResult } from "./types.js";
 import { findProjectRoot } from "./workspace.js";
 
+// [CHANGED 04.3] read_file 契约新增 offset/limit，执行改为按行读取有限片段。
 export const readFileDefinition = {
   name: "read_file",
   description: "按行读取项目内文件的一段内容。offset 从 1 开始，limit 最大为 400；不读取 .env 系列文件。",

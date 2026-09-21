@@ -69,6 +69,12 @@
 Agent Loop 一次性把完整 turn 提交到 history
 ```
 
+这条链有三种结束方式：
+
+- 文件参数、正则或读取失败时，Agent Loop 把错误作为工具结果交回模型，模型可以修正请求或解释原因。
+- 模型给出最终回答时，Agent Loop 才把本轮用户消息、工具请求、工具结果和回答一起提交到 `history`。
+- 用户取消、程序出现意外异常或达到模型请求上限时，本轮立即停止，尚未完成的 `turn` 不进入 `history`。
+
 这里有两个不同的循环：
 
 - **模型决策循环**由 `agentLoop()` 控制。它判断模型返回的是最终回答还是工具请求。
@@ -78,7 +84,7 @@ Agent Loop 一次性把完整 turn 提交到 history
 
 ## 为什么终端现在显示过程
 
-第三章只显示最终回答，读者很难把屏幕上的停顿对应到 Agent Loop 的哪一步。直接在 `agentLoop()` 里写 `console.log()` 虽然能看到过程，却会让核心依赖当前终端格式；以后换成 JSONL 或 TUI，还要再次修改循环。
+第三章只显示最终回答，读者很难把屏幕上的停顿对应到 Agent Loop 的哪一步。直接在 `agentLoop()` 里写 `console.log()` 虽然能看到过程，却会让核心依赖当前终端格式；第 09 章增加 JSONL、第 10 章接入 TUI 时还要再次修改循环。
 
 本章先建立一个可以继续演进的观察边界：
 
@@ -133,29 +139,40 @@ export type ToolExecutionResult = {
 
 ```text
 模型 > 第 1 次决策
-  收到：新增用户问题「找到 createModel 的定义」；Agent Loop 消息链共 1 条。
+  收到：新增用户问题「找到 createModel 的定义，解释它怎样选择模型服务」；Agent Loop 消息链共 1 条。
 模型 < 第 1 次决策
   返回：1 个工具请求。
 工具 > 第 1 步：glob
-  执行：pattern="chapter-04-code-search/02-content-search/src/**/*.ts"。
+  执行：pattern="chapter-04-code-search/03-chunked-reading/src/**/*.ts"。
 工具 < 第 1 步：glob 完成
-  返回：11 个路径；示例：chapter-04-code-search/02-content-search/src/agent/agent-loop.ts，chapter-04-code-search/02-content-search/src/cli.ts。
+  返回：11 个路径；示例：chapter-04-code-search/03-chunked-reading/src/agent/agent-loop.ts，chapter-04-code-search/03-chunked-reading/src/cli.ts。
   去向：结果已加入当前回合，下一次模型决策会收到。
 模型 > 第 2 次决策
   收到：新增 1 条工具结果；Agent Loop 消息链共 3 条。
 模型 < 第 2 次决策
   返回：1 个工具请求。
 工具 > 第 2 步：grep
-  执行：query="createModel"，glob="chapter-04-code-search/02-content-search/src/**/*.ts"。
+  执行：query="createModel"，glob="chapter-04-code-search/03-chunked-reading/src/**/*.ts"。
 工具 < 第 2 步：grep 完成
-  返回：1 个匹配位置；示例：chapter-04-code-search/02-content-search/src/models/client.ts:59:17。
+  返回：1 个匹配位置；示例：chapter-04-code-search/03-chunked-reading/src/models/client.ts:59:17。
   去向：结果已加入当前回合，下一次模型决策会收到。
 模型 > 第 3 次决策
   收到：新增 1 条工具结果；Agent Loop 消息链共 5 条。
 模型 < 第 3 次决策
+  返回：1 个工具请求。
+工具 > 第 3 步：read_file
+  执行：path="chapter-04-code-search/03-chunked-reading/src/models/client.ts"，offset=50，limit=60。
+工具 < 第 3 步：read_file 完成
+  返回：第 50—109 行源码；包含 createModel 的协议选择分支。
+  去向：结果已加入当前回合，下一次模型决策会收到。
+模型 > 第 4 次决策
+  收到：新增 1 条工具结果；Agent Loop 消息链共 7 条。
+模型 < 第 4 次决策
   返回：最终回答，交给终端显示。
-Agent > createModel 位于 chapter-04-code-search/02-content-search/src/models/client.ts:59……
+Agent > createModel 位于第 59 行。它根据 config.provider 选择 OpenAI 或 Anthropic 客户端……
 ```
+
+`grep` 返回位置时，用户任务还没有完成；模型必须读取函数体，取得足以解释选择逻辑的源码后才能回答。最终回答出现后，Agent Loop 才提交完整 `turn`。
 
 这段输出可以直接回答四个问题：
 
@@ -184,3 +201,5 @@ Agent > createModel 位于 chapter-04-code-search/02-content-search/src/models/c
 | 工具调用串行执行 | 并发需要队列、资源上限和失败汇总 | 第 27 章 |
 
 从 [04.1](01-file-discovery/README.md) 开始，先解决证据链的第一步：怎样定义并控制 Agent 的文件搜索空间。
+
+完成三个小节后，继续进入[第 05 章：在执行前作出权限决定](../chapter-05-permission-gate/README.md)，把模型的工具请求与真实执行隔开。

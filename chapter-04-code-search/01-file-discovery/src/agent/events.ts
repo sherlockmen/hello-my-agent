@@ -8,6 +8,7 @@
 import type { ToolCall } from "../tools/registry.js";
 import type { ToolExecutionResult } from "../tools/types.js";
 
+// [NEW 04.1] 本文件以下事件契约与安全发送函数均为本节新增。
 export type AgentEvent =
   | {
       type: "model_start";

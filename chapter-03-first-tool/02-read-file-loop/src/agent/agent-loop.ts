@@ -58,6 +58,7 @@ function addUsage(total: number | null, value: number | null): number | null {
  * - 失败方式：工具异常、取消、空回答或 8 次内没有最终回答时抛错，正式历史保持不变。
  * - 职责边界：本节只处理工具成功结果，工具失败后的模型自我修正留到 03.3。
  */
+// [CHANGED 03.2] 主循环开始执行已登记工具，并把带调用 ID 的结果追加到本轮候选消息。
 export async function agentLoop(
   model: Model, history: Message[], input: string, signal: AbortSignal,
 ): Promise<Reply> {

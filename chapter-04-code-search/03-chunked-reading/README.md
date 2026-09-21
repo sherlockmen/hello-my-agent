@@ -38,6 +38,7 @@ chapter-04-code-search/03-chunked-reading/src/models/client.ts:59:17: export fun
         |
         v
 校验 JSON、字段、相对路径和整数范围
+        +-- 失败 --> 带原调用 ID 的错误结果 --> 模型重新决策
         |
         v
 检查此刻的真实路径、文件类型和 10 MiB 上限
@@ -50,7 +51,12 @@ chapter-04-code-search/03-chunked-reading/src/models/client.ts:59:17: export fun
         |
         v
 返回带真实行号的片段和下一次 offset
+        |
+        v
+Agent Loop 把片段交回模型，直到模型给出最终回答
 ```
+
+路径、参数或文件检查失败时，错误结果沿用第三章的规则回到模型；取消、程序故障或轮次超限则停止本轮，不提交不完整历史。
 
 ## 工作原理
 
@@ -150,7 +156,7 @@ chapter-04-code-search/03-chunked-reading/src/models/client.ts:59:17: export fun
 - `content` 包含真正的源码，Agent Loop 把它作为工具结果发回模型。
 - `metadata` 只描述这次读取，终端用它显示“读取了第 50—109 行”。
 
-两者来自同一次工具执行。界面不需要解析源码文本，模型也不需要接收专门为界面准备的中文过程说明。后续接入 TUI 时，TUI 继续读取同一份 `metadata`，不需要修改 `read_file` 或 Agent Loop。
+两者来自同一次工具执行。界面不需要解析源码文本，模型也不需要接收专门为界面准备的中文过程说明。第 09 章会把这类结构化事件扩展为稳定的观察输出，第 10 章的 TUI 再直接消费同一份 `metadata`，不需要修改 `read_file` 或 Agent Loop。
 
 ### 4. 信息不足时，Agent Loop 怎样继续
 
@@ -181,18 +187,20 @@ chapter-04-code-search/03-chunked-reading/src/models/client.ts:59:17: export fun
 
 两次 `read_file` 调用之间，文件可能被编辑，因此续读依赖“文件在两次调用之间没有变化”。第 06 章实现文件修改时会加入外部变化检查；本节只解决如何取得有界的只读源码上下文。
 
+## 本节改动文件
+
+| 状态 | 文件 | 本节变化 |
+| --- | --- | --- |
+| 修改 | [src/tools/read-file.ts](src/tools/read-file.ts) | 校验 `offset` 和 `limit`，返回带行号的有限片段。 |
+| 修改 | [src/tools/types.ts](src/tools/types.ts) | 给 `read_file` 元数据增加行号范围和续读状态。 |
+| 修改 | [src/ui/teaching-trace.ts](src/ui/teaching-trace.ts) | 显示读取参数和真实行号范围。 |
+| 修改 | [src/config/load-config.ts](src/config/load-config.ts) | 提醒模型根据搜索位置分段读取。 |
+
+`glob`、`grep`、注册表、`AgentEvent` 和 Agent Loop 都沿用上一节。本节只扩展 `read_file` 的输入、结果元数据和显示方式。
+
 ## 动手构建
 
-本节只改变分段读取相关代码：
-
-| 文件 | 作用 |
-| --- | --- |
-| `src/tools/read-file.ts` | 校验 `offset`/`limit`，流式返回带行号片段 |
-| `src/tools/types.ts` | 给 `read_file` 元数据增加实际行号范围和续读状态 |
-| `src/ui/teaching-trace.ts` | 根据新 Schema 与元数据显示读取参数和行号范围 |
-| `src/config/load-config.ts` | 提醒模型根据搜索位置分段读取 |
-
-`glob`、`grep`、注册表、`AgentEvent` 和 Agent Loop 保持上一节契约；只有工具结果类型与界面消费者适配分段读取字段。完整实现位于[本节源码](src/)。
+完整实现位于[本节源码](src/)。
 
 在仓库根目录执行：
 
@@ -262,4 +270,4 @@ read_file({
 每次工具结果 ------------------------------> 返回模型继续决策
 ```
 
-一次任务可能经过 `glob → grep → read_file → 最终回答`，也可能跳过不需要的工具；顺序由模型根据工具结果决定。核心循环只产生结构化事件，当前终端和未来 TUI 可以各自显示同一执行过程。Agent 目前只有只读工具；下一章将在加入文件写入和命令执行之前，先建立 `allow`、`ask`、`deny` 权限决策以及需要用户确认的统一入口。
+一次任务可能经过 `glob → grep → read_file → 最终回答`，也可能跳过不需要的工具；顺序由模型根据工具结果决定。核心循环只产生结构化事件，当前终端据此显示执行过程。Agent 目前只有只读工具；[下一章](../../chapter-05-permission-gate/README.md)将在加入文件写入和命令执行之前，先建立 `allow`、`ask`、`deny` 权限决策以及需要用户确认的统一入口。

@@ -26,7 +26,7 @@ export type ToolCall = {
 
 export const toolDefinitions = [readFileDefinition];
 
-// [NEW 03.2] 使用显式分支即可覆盖当前唯一工具；工具增多后再扩展注册方式。
+// [KEEP 来自 03.2] 使用显式分支即可覆盖当前唯一工具；工具增多后再扩展注册方式。
 /**
  * 在程序允许使用的工具列表中查找并执行模型请求的工具。
  *

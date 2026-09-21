@@ -20,6 +20,7 @@ export type ToolCall = {
   arguments: string;
 };
 
+// [CHANGED 04.1] 允许列表加入 glob；工具统一返回 ToolExecutionResult。
 export const toolDefinitions = [readFileDefinition, globDefinition];
 
 /**

@@ -5,7 +5,7 @@
  * | compile  | ---> | npm pack | ---> | temp install   | ---> | run CLI |
  * +----------+      +----------+      +----------------+      +---------+
  *
- * 当前小节和 02.6 完成版检查真实 tarball；中间小节逐个独立编译、调用本地模拟服务。
+ * 当前默认构建和 02.6 完成版检查真实 tarball；中间小节逐个独立编译、调用本地模拟服务。
  * 第一章与两章练习继续回归。所有目录和安装前缀都由测试创建，结束后清理。
  * 不使用真实模型凭据，不改变用户的构建目标和全局命令链接。Windows 仍待实测。
  */
@@ -23,9 +23,11 @@ import { lessons, lessonModules, verifyLesson } from "./verify-lessons.mjs";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 const chapter = "chapter-02-model-dialogue";
-const currentStep = 6; // 当前包已包含第二章完成版的对话、错误与用量行为。
+// 复用第二章完成版的安装后对话验收；当前包的新增模块由白名单和后续章节检查覆盖。
+const currentStep = 6;
 const currentPackageModules = [
   "agent/agent-loop", "agent/events", "cli", "config/load-config", "errors", "models/client",
+  "permissions/policy",
   "tools/glob", "tools/grep", "tools/read-file", "tools/registry", "tools/types", "tools/workspace",
   "ui/teaching-trace", "ui/terminal",
 ];

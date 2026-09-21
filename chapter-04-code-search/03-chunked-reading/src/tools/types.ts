@@ -6,6 +6,7 @@
  */
 
 export type ToolResultMetadata =
+  // [CHANGED 04.3] read_file 元数据开始区分空文件和带范围的源码片段。
   | { kind: "read_file"; lineCount: 0 }
   | {
       kind: "read_file";

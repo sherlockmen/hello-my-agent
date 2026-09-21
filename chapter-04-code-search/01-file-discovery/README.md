@@ -25,7 +25,7 @@
 1. 从哪个目录开始解释相对路径。
 2. 哪些目录和文件不应进入搜索。
 3. 最多向模型返回多少条路径。
-4. 模型生成的 pattern 是否允许执行。
+4. 模型生成的路径匹配规则是否允许执行。这个参数在代码中叫 `pattern`。
 
 因此本节新增 `glob(pattern)`。核心认识是：**文件发现工具首先定义搜索空间，其次才匹配文件名。**
 
@@ -48,11 +48,30 @@
         |
         v
 返回前 200 条相对路径和截断状态
+        |
+        v
+Agent Loop 把路径列表交回模型
+        |
+        v
+模型选择具体文件继续读取，或给出最终回答
 ```
 
-`glob` 只返回路径，不读取文件内容。模型拿到候选路径后，可以选择一个路径调用 `read_file`；下一节会增加内容搜索，避免逐个读取候选文件。
+`glob` 只返回路径，不读取文件内容。参数或路径规则无效时，工具返回带原调用 ID 的错误结果，模型可以缩小范围后重试。模型拿到候选路径后，可以选择一个路径调用 `read_file`；下一节会增加内容搜索，避免逐个读取候选文件。
 
 ## 工作原理
+
+先用“找到负责读取模型配置的文件”闭合本节主线：
+
+```text
+1. 用户提出目标，模型不知道准确文件路径
+2. 模型请求 glob，并给出路径匹配规则
+3. 本地工具限制项目根、忽略目录和返回数量，再遍历真实文件系统
+4. 工具用原调用 ID 返回候选路径；规则无效时返回错误结果
+5. Agent Loop 把路径列表或错误结果加入本轮消息，再次请求模型
+6. 模型选择一个候选文件继续读取，或根据现有证据给出最终回答
+```
+
+这条链中，`glob` 只负责产生可信且有限的候选范围。它既不理解用户意图，也不决定任务是否结束；下一步始终由收到真实路径结果的模型决定。
 
 ### 1. `pattern` 是工具协议，不是 Shell 命令
 
@@ -188,22 +207,23 @@ Agent > 配置读取位于 src/config/load-config.ts。
 
 工具步骤号由 Agent Loop 生成，工具名和原始参数随事件传出。教学渲染器负责检查名称、选择 Schema 允许字段并生成安全文本。关闭观察者后，模型请求、工具结果和历史内容完全相同。
 
+## 本节改动文件
+
+| 状态 | 文件 | 本节变化 |
+| --- | --- | --- |
+| 新增 | [src/tools/workspace.ts](src/tools/workspace.ts) | 统一项目根与忽略规则。 |
+| 新增 | [src/tools/glob.ts](src/tools/glob.ts) | 校验 `pattern`，返回模型文本与结构化路径元数据。 |
+| 新增 | [src/tools/types.ts](src/tools/types.ts) | 定义工具内容和观察元数据的双输出契约。 |
+| 新增 | [src/agent/events.ts](src/agent/events.ts) | 定义可交给终端、JSONL 和 TUI 的生命周期事件。 |
+| 新增 | [src/ui/teaching-trace.ts](src/ui/teaching-trace.ts) | 把结构化事件转换成安全的教学记录。 |
+| 修改 | [src/tools/read-file.ts](src/tools/read-file.ts) | 复用项目根，并返回结构化读取元数据。 |
+| 修改 | [src/tools/registry.ts](src/tools/registry.ts) | 注册并执行 `glob`，统一返回工具结果。 |
+| 修改 | [src/agent/agent-loop.ts](src/agent/agent-loop.ts) | 在真实状态转换处发送事件。 |
+| 修改 | [src/ui/terminal.ts](src/ui/terminal.ts) | 消费教学事件并输出带颜色的过程记录。 |
+| 修改 | [src/cli.ts](src/cli.ts) | 为单次提问装配同一个观察者。 |
+| 修改 | [src/config/load-config.ts](src/config/load-config.ts) | 告诉模型当前真实工具能力。 |
+
 ## 动手构建
-
-本节修改以下位置：
-
-| 文件 | 作用 |
-| --- | --- |
-| `src/tools/workspace.ts` | 统一项目根与忽略规则 |
-| `src/tools/glob.ts` | 校验 pattern，并返回模型文本与结构化路径元数据 |
-| `src/tools/types.ts` | 定义工具内容和观察元数据的双输出契约 |
-| `src/tools/registry.ts` | 只注册并执行 `glob`，不生成界面文案 |
-| `src/agent/events.ts` | 定义以后可交给普通终端、JSONL 和 TUI 的生命周期事件 |
-| `src/agent/agent-loop.ts` | 在真实状态转换处发送事件 |
-| `src/ui/teaching-trace.ts` | 把事件转换成安全、易读的教学记录 |
-| `src/ui/terminal.ts` | 输出记录并添加终端颜色 |
-| `src/cli.ts` | 为单次提问和连续会话装配同一个观察者 |
-| `src/config/load-config.ts` | 告诉模型当前真实工具能力 |
 
 完整实现位于[本节源码](src/)。先读 `agent/agent-loop.ts` 的全局流程，再读 `tools/glob.ts` 和 `tools/workspace.ts` 的局部流程。
 

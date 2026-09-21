@@ -22,6 +22,7 @@ import { ToolError } from "../errors.js";
 import type { ToolExecutionResult } from "./types.js";
 import { findProjectRoot } from "./workspace.js";
 
+// [CHANGED 04.1] read_file 改用共享项目根，并同时返回正文与结构化元数据。
 export const readFileDefinition = {
   name: "read_file",
   description: "读取当前项目根目录内一个普通文件并按 UTF-8 解码；不读取 .env 系列环境配置文件。",

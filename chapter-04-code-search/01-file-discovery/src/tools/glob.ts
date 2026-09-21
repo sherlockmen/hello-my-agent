@@ -32,6 +32,7 @@ import { ToolError } from "../errors.js";
 import type { ToolExecutionResult } from "./types.js";
 import { createIgnoreMatcher, findProjectRoot } from "./workspace.js";
 
+// [NEW 04.1] 本文件以下 glob 契约、参数校验和遍历实现均为本节新增。
 export const globDefinition = {
   name: "glob",
   description: "按 glob 模式查找当前项目中的文件。返回相对路径并遵守忽略规则，例如 src/**/*.ts。",

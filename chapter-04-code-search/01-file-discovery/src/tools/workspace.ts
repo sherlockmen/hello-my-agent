@@ -26,6 +26,7 @@ import { dirname, join, resolve } from "node:path";
 import ignore, { type Ignore } from "ignore";
 import { ToolError } from "../errors.js";
 
+// [NEW 04.1] 本文件以下项目根查找与忽略规则实现均为本节新增。
 const BUILT_IN_IGNORES = [
   ".git/",
   "node_modules/",

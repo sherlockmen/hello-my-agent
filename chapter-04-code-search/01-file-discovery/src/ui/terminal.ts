@@ -43,6 +43,7 @@ const colorLabel = (text: string, color: number) =>
  * - 输出：先由 teaching-trace.ts 生成安全文本，再给模型与工具标签添加颜色。
  * - 关键原因：终端只渲染事件，不解析 Agent 最终回答，也不参与任何执行决策。
  */
+// [NEW 04.1] 终端开始消费 Agent Loop 的结构化事件。
 export function printProgress(event: AgentEvent): void {
   for (const line of formatTeachingTrace(event)) {
     if (line.startsWith("模型")) console.log(`${colorLabel("模型", 33)}${line.slice(2)}`);
@@ -93,6 +94,7 @@ export async function startTerminal(model: Model): Promise<void> {
       }
       try {
         // 终端只把输入交给核心，历史的提交规则集中在 agent/agent-loop.ts。
+        // [CHANGED 04.1] 连续会话把同一个教学观察者交给 Agent Loop。
         const reply = await agentLoop(model, history, text, controller.signal, printProgress);
         if (controller.signal.aborted) break;
         printReply(reply);

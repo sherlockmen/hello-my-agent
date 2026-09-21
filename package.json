@@ -15,7 +15,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node scripts/compile.mjs 04.3 --prepare",
+    "build": "node scripts/compile.mjs 05.3 --prepare",
     "lesson:01": "node scripts/compile.mjs 01 --prepare",
     "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare",
     "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare",
@@ -29,15 +29,21 @@
     "lesson:04.1": "node scripts/compile.mjs 04.1 --prepare",
     "lesson:04.2": "node scripts/compile.mjs 04.2 --prepare",
     "lesson:04.3": "node scripts/compile.mjs 04.3 --prepare",
+    "lesson:05.1": "node scripts/compile.mjs 05.1 --prepare",
+    "lesson:05.2": "node scripts/compile.mjs 05.2 --prepare",
+    "lesson:05.3": "node scripts/compile.mjs 05.3 --prepare",
     "exercise:02": "node tests/verify-exercise-02.mjs",
     "exercise:04": "node tests/verify-exercise-04.mjs",
+    "exercise:05": "node tests/verify-exercise-05.mjs",
     "check:03": "node tests/verify-chapter-03.mjs",
     "check:04": "node tests/verify-chapter-04.mjs",
+    "check:05": "node tests/verify-chapter-05.mjs",
+    "check:tutorial": "node tests/verify-tutorial-markers.mjs",
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/compile.mjs 04.3",
-    "verify": "npm run typecheck && node scripts/compile.mjs 04.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs"
+    "prepack": "node scripts/compile.mjs 05.3",
+    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 05.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node scripts/compile.mjs 05.3 && node -e \"if (!require('node:fs').existsSync('dist/permissions/policy.js')) throw new Error('默认构建未恢复到 05.3')\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.126.0",

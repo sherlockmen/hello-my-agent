@@ -71,7 +71,7 @@ program
   .option("--prompt <text>", "提问一次后退出")
   // [KEEP 来自 02.5] 本次启动选择接口协议。
   .option("--provider <type>", "接口协议：openai 或 anthropic")
-  // [CHANGED 02.6] 沿用执行流程，只统一失败提示与结果显示。
+  // [KEEP 来自 02.6] 沿用执行流程，只统一失败提示与结果显示。
   .action(async () => {
     const options = program.opts<CliOptions>();
     if (options.doctor) {

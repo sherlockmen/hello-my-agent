@@ -77,6 +77,7 @@ function describeToolResult(metadata: ToolResultMetadata): string {
       + `${examples ? `；示例：${examples}` : ""}`;
   }
 
+  // [CHANGED 04.3] 分段读取显示真实起止行，而不是只显示行数。
   if (metadata.lineCount === 0 || !("startLine" in metadata)) return "0 行文件内容";
   return `${metadata.lineCount} 行源码（第 ${metadata.startLine}—${metadata.endLine} 行）`;
 }

@@ -33,6 +33,7 @@ import { findMatchingFiles, validateGlobPattern } from "./glob.js";
 import type { ToolExecutionResult } from "./types.js";
 import { findProjectRoot } from "./workspace.js";
 
+// [NEW 04.2] 本文件以下 grep 契约、参数校验和内容搜索均为本节新增。
 export const grepDefinition = {
   name: "grep",
   description: "用正则表达式搜索项目文件内容，返回文件路径、行号、列号和匹配行。",

@@ -12,7 +12,7 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 ## 开始学习
 
-[从第一章开始](chapter-01-first-command/README.md) · [已完成：第三章](chapter-03-first-tool/README.md) · [继续第四章](chapter-04-code-search/README.md) · [从空目录跟写](docs/SETUP.md)
+[从第一章开始](chapter-01-first-command/README.md) · [已完成：第四章](chapter-04-code-search/README.md) · [当前：第五章](chapter-05-permission-gate/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
 
 第一次学习时先构建第一章：
 
@@ -43,7 +43,8 @@ npm run lesson:02.1
 | [第 01 章：从空目录到自己的命令](chapter-01-first-command/README.md) | 怎样把源码变成可安装的命令？ | [cli.ts](chapter-01-first-command/cli.ts)，已确认完成 |
 | [第 02 章：接通模型并持续对话](chapter-02-model-dialogue/README.md) | 怎样接通模型并建立 Agent Loop 的无工具路径？ | [六个递进小节](chapter-02-model-dialogue/README.md)，已确认完成 |
 | [第 03 章：第一个工具与 Agent Loop](chapter-03-first-tool/README.md) | 怎样执行模型请求的工具，再回传结果？ | [三个递进小节](chapter-03-first-tool/README.md)，已确认完成 |
-| [第 04 章：让 Agent 找到代码](chapter-04-code-search/README.md) | 怎样发现文件、定位代码并分段读取？ | [三个递进小节](chapter-04-code-search/README.md)，待确认完成 |
+| [第 04 章：让 Agent 找到代码](chapter-04-code-search/README.md) | 怎样发现文件、定位代码并分段读取？ | [三个递进小节](chapter-04-code-search/README.md)，已确认完成 |
+| [第 05 章：在执行前作出权限决定](chapter-05-permission-gate/README.md) | 怎样在执行工具前强制区分允许、询问和拒绝？ | [三个递进小节](chapter-05-permission-gate/README.md)，待确认 |
 
 完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。
 
@@ -109,6 +110,14 @@ hello-my-agent/
         read-file.ts        分段读取
       src/ui/
         teaching-trace.ts    把事件转换成安全的中文教学记录
+  chapter-05-permission-gate/ 第 05 章：在执行前作出权限决定
+    README.md               权限决策、审批与会话范围的完整原理
+    EXERCISES.md             主动撤销会话授权的练习与答案
+    01-policy-decision/      05.1 allow、ask、deny 策略
+    02-terminal-approval/    05.2 终端一次审批
+    03-session-grants/       05.3 会话范围授权
+      src/permissions/
+        policy.ts            执行前权限判断与审批契约
   .env.example              模型配置模板，不含真实密钥
   docs/
     SETUP.md                环境与从空目录搭建
@@ -129,15 +138,15 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取。这些检查使用本地模拟接口，不需要真实密钥。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围。这些检查使用本地模拟接口，不需要真实密钥。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。
 
 第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
 完成第二章 `/reset` 练习后，运行 `npm run exercise:02`。这条命令编译读者实际修改的终端文件，并用本地模拟接口检查两种协议中的历史是否真正清空。
 
-[第四章练习](chapter-04-code-search/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第四章验证记录](docs/verification/04-code-search.md)
+[第五章练习](chapter-05-permission-gate/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第五章验证记录](docs/verification/05-permission-gate.md)
 
-第一章到第三章已确认完成；第四章正文、代码和本地验收已经具备，等待你的完成确认。npm 包尚未发布。
+第一章到第四章已确认完成；第五章的正文、代码与练习已完成，等待你确认。npm 包尚未发布。
 
 ## 许可证
 
