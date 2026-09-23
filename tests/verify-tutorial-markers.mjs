@@ -94,9 +94,18 @@ for (const lessonDirectory of lessonDirectories) {
 
     const sourcePathFromRoot = relative(sourceDirectory, sourcePath);
     const previousPath = join(previousSourceDirectory, sourcePathFromRoot);
-    const previousSource = lessonId === "03.1" && sourcePathFromRoot === "ui/terminal.ts"
+    let previousSource = lessonId === "03.1" && sourcePathFromRoot === "ui/terminal.ts"
       ? `${resetSolution}\n`
       : existsSync(previousPath) ? readFileSync(previousPath, "utf8") : null;
+    if (lessonId === "07.1" && sourcePathFromRoot === "tools/edit-file.ts" && previousSource) {
+      const editExercise = readFileSync(join(root, "chapter-06-precise-edit/EXERCISES.md"), "utf8");
+      const answer = editExercise.match(/<!-- solution: findUniqueMatch -->\s*```ts\n([\s\S]*?)\n```/)?.[1];
+      assert.ok(answer, "第六章练习必须保留匹配计数的完整答案");
+      const start = previousSource.indexOf("function findUniqueMatch(");
+      const end = previousSource.indexOf("\n}\n", start) + 3;
+      previousSource = previousSource.slice(0, start) + answer.slice(answer.indexOf("function findUniqueMatch("))
+        + "\n" + previousSource.slice(end);
+    }
     const actualStatus = previousSource === null
       ? "NEW"
       : sourceTokens(previousSource, previousPath) === sourceTokens(source, sourcePath)
@@ -124,8 +133,8 @@ for (const lessonDirectory of lessonDirectories) {
     `${relative(root, readmePath)} 必须先列本节改动文件，再进入动手构建`);
   const section = readme.slice(changeHeading, buildHeading);
   const listedFiles = new Map();
-  for (const match of section.matchAll(/^\| (新增|修改) \| \[([^\]]+\.ts)\]\([^\)]+\) \|/gm)) {
-    listedFiles.set(match[2], match[1] === "新增" ? "NEW" : "CHANGED");
+  for (const match of section.matchAll(/^\| (新增|修改|NEW|CHANGED) \| \[([^\]]+\.ts)\]\([^\)]+\) \|/gm)) {
+    listedFiles.set(match[2], ["新增", "NEW"].includes(match[1]) ? "NEW" : "CHANGED");
   }
   assert.deepEqual([...listedFiles].sort(), [...expectedFiles].sort(),
     `${relative(root, readmePath)} 的改动文件表必须与源码真实差异一致`);
