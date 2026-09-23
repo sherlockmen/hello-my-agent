@@ -3,7 +3,7 @@
  *
  * 学习目标：隐藏 OpenAI 与 Anthropic 的字段差异，让上层只调用统一的 Model.generate()。
  * 输入：Config、当前消息数组和 AbortSignal。
- * 输出：统一的文本、token 用量和截断标记；空文本、工具调用或不支持的内容会抛出安全错误。
+ * 输出：统一的文本、token 用量和截断标记；没有可用文本或响应要求工具调用时抛出提示。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   +-----------------+
@@ -22,7 +22,7 @@
  *                                    | 失败 --> UserFacingError
  *                                    | 成功 --> Reply
  *
- * 关键点：SDK 负责 HTTP、认证和取消；本模块负责协议转换与响应边界。上层不出现服务商字段。
+ * 关键点：SDK 负责发送请求、认证和处理取消；本模块转换消息格式并检查响应，调用方只使用 Reply。
  * 运行观察：切换 provider 后，agentLoop() 和终端仍收到相同形状的 Reply。
  */
 
@@ -51,13 +51,12 @@ export interface Model {
 // [KEEP] 只创建用户选择的客户端。超时单位是毫秒；本章关闭自动重试，避免一次输入发送多次。
 // 显式关闭 SDK 调试日志，错误只由 errors.ts 的格式化函数转换后输出，避免记录请求头或原始响应。
 /**
- * 根据已经校验的配置创建统一模型对象，隐藏 OpenAI 与 Anthropic SDK 的差异。
+ * 按已选协议准备客户端，让调用方仍然只使用 generate()。
  *
- * - 输入：`config` 包含已选服务商、密钥、模型 ID 和基础地址。
- * - 输出：返回只暴露 `generate()` 的 `Model`，调用方不需要判断服务商。
- * - 关键步骤：只创建当前协议的 SDK 客户端，并关闭自动重试与 SDK 日志。
- * - 前置条件：协议、必填值和地址已经由 `readConfig()` 校验。
- * - 失败方式：不捕获 SDK 初始化异常；创建对象时不发送请求，真正的请求发生在 `generate()` 中。
+ * config 包含经过本地检查的协议、密钥、模型和基础地址。
+ * 这里只创建当前需要的 SDK 客户端，关闭自动重试与日志，再返回带 generate() 的普通对象。
+ * 实际请求由 generate() 转交 requestReply()，因此创建对象本身不会发送消息。
+ * SDK 初始化若失败，异常交回入口；这里不保存会话历史。
  */
 export function createModel(config: Config): Model {
   const options = {
@@ -71,27 +70,26 @@ export function createModel(config: Config): Model {
   return { generate: (messages, signal) => requestReply(client, config.model, messages, signal) };
 }
 
+// [NEW 02.6] 用量缺失或不是有限的非负数字时，统一记为未知。
 /**
- * 把服务商返回的用量字段转换成通过基础数字检查的 token 数量。
+ * 检查服务商返回的用量能否作为一个数字显示。
  *
- * - 输入：来自远程响应的未知值，运行时可能不是数字、不是有限值或小于 0。
- * - 输出：通过检查时返回服务商报告的非负数字；否则返回 `null`。
- * - 关键原因：`null` 表示没有可展示的用量值，不能用 `0` 冒充没有消耗。
- * - 准确性边界：本函数不验证统计方法或数值是否真实，只检查 JavaScript 数字格式。
- * - 失败方式：本函数不抛错，因为用量缺失不应让已经成功的回答失败。
+ * value 来自远端响应，可能缺失或不是数字；只保留有限的非负数字，其余返回 null。
+ * null 表示未知，不能换成 0，否则会把没有统计误写成没有消耗。
+ * 这里只检查数字格式，不验证服务商的统计方法；用量缺失也不会让已经返回的文本失败。
  */
 function tokenCount(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
 }
 
 /**
- * 发送完整上下文，并把两种服务商响应转换成统一的文本、用量和截断状态。
+ * 把当前消息发给所选服务，返回文本、用量和停止信息。
  *
- * - 输入：SDK 客户端、模型 ID、消息数组和取消信号。
- * - 输出：两个协议都返回同一种 `Reply`，未知用量使用 `null`。
- * - 关键步骤：分别读取两种协议的文本、usage 和停止原因，再归一化字段名称。
- * - 失败方式：SDK 异常向上传递；空文本或本节不支持的工具请求抛出 `UserFacingError`。
- * - 职责边界：只做协议转换，不修改会话历史，也不估算 token 或价格。
+ * 输入包括 SDK 客户端、模型 ID、消息和取消信号。
+ * 两个分支按各自协议读取文本、usage 和停止原因，最后都返回同一种 Reply。
+ * 没有可显示的用量时使用 null；达到输出上限时标记 truncated，仍保留已经得到的文本。
+ * 请求失败时继续抛出 SDK 异常；空文本或当前不能处理的工具请求则抛出 UserFacingError。
+ * 这里只转换消息和响应，不修改历史，也不按文本长度估算 token 或费用。
  */
 async function requestReply(
   client: OpenAI | Anthropic, model: string, messages: Message[], signal: AbortSignal,
@@ -108,6 +106,7 @@ async function requestReply(
     if (typeof text !== "string" || !text.trim() || choice?.message?.tool_calls?.length) {
       throw new UserFacingError("接口没有返回可用的纯文本回答，请检查模型是否支持本章的聊天接口。");
     }
+    // [CHANGED 02.6] 保留文本，同时转换 OpenAI 的用量和停止原因。
     return {
       text, inputTokens: tokenCount(response.usage?.prompt_tokens),
       outputTokens: tokenCount(response.usage?.completion_tokens),
@@ -126,6 +125,7 @@ async function requestReply(
   if (!text.trim() || response.stop_reason === "tool_use") {
     throw new UserFacingError("接口没有返回可用的纯文本回答，请检查模型是否支持本章的聊天接口。");
   }
+  // [CHANGED 02.6] Anthropic 字段也转换成同一种 Reply。
   return {
     text, inputTokens: tokenCount(response.usage?.input_tokens),
     outputTokens: tokenCount(response.usage?.output_tokens),

@@ -14,7 +14,7 @@ assistant
 
 如果程序执行第一个工具后立刻再次请求模型，`call_b` 就没有对应结果。协议消息链不完整，模型也无法在同一次推理中使用两份文件。
 
-本练习要验证：**Agent Loop 会先执行同一响应中的全部工具请求，保留各自调用 ID，然后才再次请求模型。**
+03.3 的工具循环已经会处理整个请求数组。这个练习中，我们不再加一个工具，而是换成行为固定的内存模型，亲自检查：两个文件的结果是否都回来了，是否各自配上原来的 ID，以及模型什么时候再次运行。
 
 ## 练习要求
 
@@ -29,7 +29,7 @@ assistant
   -> 返回最终回答
 ```
 
-验收至少检查：
+需要检查这些现象：
 
 1. 模型总共调用 2 次。
 2. 第二次请求前已经有 2 条工具结果。
@@ -53,7 +53,7 @@ node chapter-03-first-tool/multi-tool-check.mjs
 
 ## 提示
 
-内存模型只需要实现与正式模型相同的 `generate(messages)` 方法。第一次返回两个 `toolCalls`，第二次检查 `messages` 后返回空工具列表和最终文本。
+内存模型不会访问远程服务，它只实现和正式模型相同的 `generate(messages)` 方法。这样我们能规定第一次必定返回两个请求，第二次必定先检查收到的消息，再给出最终回答；本地的文件读取仍然真实执行。
 
 模型响应的最小形状是：
 
@@ -73,7 +73,7 @@ node chapter-03-first-tool/multi-tool-check.mjs
 /**
  * 第 03 章练习答案 | [NEW] multi-tool-check.mjs
  *
- * 学习目标：验证一个模型响应中的多个工具请求会全部执行后再进入下一轮。
+ * 学习目标：让固定响应替代模型随机选择，看清同一批工具结果何时一起返回。
  * 输入：内存模型返回两个 read_file 调用；工具读取当前项目中的两个真实文件。
  * 输出：全部断言通过后打印完成提示；断言或工具失败时进程以错误结束。
  *
@@ -98,13 +98,15 @@ node chapter-03-first-tool/multi-tool-check.mjs
  *             v
  *        final answer -> commit history
  *
- * 关键点：两个结果分别保留 call_a 和 call_b。第二次模型调用发生在两个工具都完成之后。
+ * 两个结果分别保留 call_a 和 call_b，因此模型能知道每段内容来自哪个请求。
+ * 第二次模型调用发生在两个工具都完成之后，最终回答出现前不保存本轮历史。
  * 运行观察：终端输出“✓ 多工具请求顺序正确”，history 最终包含 5 条消息。
  */
 
 import assert from "node:assert/strict";
 import { agentLoop } from "../dist/agent/agent-loop.js";
 
+// [NEW 练习] 以下内存模型与断言只用于观察已实现的工具循环。
 const history = [];
 let modelCalls = 0;
 
@@ -137,6 +139,8 @@ const model = {
     assert.deepEqual(toolResults.map((result) => result.toolCallId), ["call_a", "call_b"]);
     assert.match(toolResults[0].content, /@sherlockmen\/hello-my-agent/);
     assert.match(toolResults[1].content, /compilerOptions/);
+    // 最终回答尚未返回，本轮消息此时还不能提交到 history。
+    assert.equal(history.length, 0);
 
     return {
       text: "两份配置都已读取。",
@@ -183,4 +187,6 @@ console.log("✓ 多工具请求顺序正确");
 
 只有内层工具循环结束，外层模型循环才回到顶部，因此第二次 `generate()` 能同时看到两份结果。最终 `history` 有五条消息：一条用户输入、一条工具请求、两条工具结果和一条最终回答。
 
-这个练习使用内存模型，所以结果由代码决定，不受真实模型选择影响；文件读取仍调用第三章的真实 `read_file` 实现。
+两个工具虽然来自同一次模型响应，本章仍然按顺序执行。这个练习证明了结果配对和再次请求的时机，没有实现并发。
+
+到这里，第三章的读取循环已经完整：一条或多条请求都能执行，预期失败也能反馈。接下来进入[第四章](../chapter-04-code-search/README.md)，让模型在不知道准确路径时，也能先找到需要读的文件。

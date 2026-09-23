@@ -1,7 +1,7 @@
 /**
  * 02.6 说明错误与显示用量 | [CHANGED] config/load-config.ts
  *
- * 学习目标：先确定协议，再把命令行、环境变量和 .env 合并成可用配置。
+ * 学习目标：先选协议，再按优先级从命令行、环境变量和 .env 选出本次要用的配置。
  * 输入：provider、model、baseUrl 选项，以及 OPENAI_* / ANTHROPIC_* 环境配置。
  * 输出：经过校验的 Config；缺少配置或地址无效时抛出 UserFacingError。
  *
@@ -40,18 +40,18 @@ export type Config = {
 };
 
 // [KEEP] 系统提示词约束当前助手的行为，独立于 user/assistant 历史。
-// 本章没有工具，不能让助手误以为自己已经能读取文件或运行命令。
+// 本章没有工具，所以系统说明也明确告诉模型：还不能读取文件或运行命令。
 export const systemPrompt = "你是一个运行在命令行中的个人编程 Agent。请使用中文准确、清楚地回答编程问题。当前阶段只能进行文本对话，尚未获得读取文件、修改代码或执行命令的工具；不要声称已经执行这些操作。";
 
 // [KEEP] 配置读取与校验；第一章没有模型配置。
 /**
- * 从启动目录向上查找当前项目的 `.env`，并把文件内容解析成普通对象。
+ * 找到当前项目使用的 .env，把文件中的键和值读成普通对象。
  *
- * - 输入：无显式参数；查找起点是 `process.cwd()` 返回的当前工作目录。
- * - 输出：找到时返回解析后的键值对象；到达最近的 `package.json` 或文件系统根目录仍未找到时返回空对象。
- * - 关键步骤：每层先检查 `.env`，再检查项目边界，然后继续进入父目录。
- * - 失败方式：文件无法读取或语法无法解析时抛出只含安全文案的 `UserFacingError`。
- * - 职责边界：只返回对象，不把文件中的字段批量写入全局 `process.env`。
+ * 从用户启动命令的目录开始，每一层先找 .env，再看是否已到 package.json。
+ * 找到文件就返回解析结果；到达项目边界或根目录仍未找到时，返回空对象，
+ * 让调用方继续使用命令行和环境变量提供的配置。
+ * 读取或解析抛出异常时，改用固定的 UserFacingError，避免回显配置正文。
+ * 返回的对象与 process.env 分开，文件内容不会自动覆盖进程环境。
  */
 function readProjectEnv(): Record<string, string | undefined> {
   let directory = process.cwd();
@@ -73,14 +73,12 @@ function readProjectEnv(): Record<string, string | undefined> {
 }
 
 /**
- * 选择模型协议，再合并并校验该协议专用的运行时配置。
+ * 先选接口协议，再取得这次请求应使用的一组配置。
  *
- * - 输入：命令行选项、进程环境变量和项目 `.env`。
- * - 输出：返回包含 `provider`、密钥、模型 ID 和基础地址的完整 `Config`。
- * - 覆盖顺序：命令行选项高于进程环境变量，进程环境变量高于 `.env`，最后才使用内置默认值。
- * - 关键原因：先确定 `openai` 或 `anthropic`，再只读取对应前缀的配置，防止混用密钥。
- * - 失败方式：协议名不支持、必填字段缺失或地址不安全时抛出 `UserFacingError`。
- * - 职责边界：这里只处理配置，不创建 SDK 客户端，也不发送请求。
+ * 选择顺序仍是命令行、进程环境、项目 .env，最后使用内置默认值。
+ * provider 选定后，只取对应 OPENAI_* 或 ANTHROPIC_* 字段，不能拿另一组密钥补空缺。
+ * 成功返回包含协议、密钥、模型与地址的 Config；不支持的协议、缺项或地址格式错误会抛出提示。
+ * 这里检查本地输入，不创建客户端，也不能证明地址归属或账号权限。
  */
 export function readConfig(options: Options): Config {
   const fileEnv = readProjectEnv();
@@ -99,7 +97,7 @@ export function readConfig(options: Options): Config {
   if (!model) throw new UserFacingError(`缺少 ${prefix}_MODEL。请填写服务商提供的模型 ID，或使用 --model。`);
   const baseURL = options.baseUrl?.trim() || env(`${prefix}_BASE_URL`) ||
     (provider === "openai" ? "https://api.openai.com/v1" : "https://api.anthropic.com");
-  // 只验证地址结构，不打印原值；地址中也可能误填凭据。
+  // 这里只检查地址结构，不能验证服务商归属；报错不打印原值，以免地址中误填了凭据。
   let url: URL;
   try { url = new URL(baseURL); } catch {
     throw new UserFacingError("接口地址无效，请检查所选协议的 BASE_URL 或 --base-url。");

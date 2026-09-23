@@ -28,7 +28,8 @@ const currentStep = 6;
 const currentPackageModules = [
   "agent/agent-loop", "agent/events", "cli", "config/load-config", "errors", "models/client",
   "permissions/policy",
-  "tools/glob", "tools/grep", "tools/read-file", "tools/registry", "tools/types", "tools/workspace",
+  "tools/change-preview", "tools/edit-file", "tools/glob", "tools/grep", "tools/read-file",
+  "tools/registry", "tools/types", "tools/workspace", "tools/write-file",
   "ui/teaching-trace", "ui/terminal",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);

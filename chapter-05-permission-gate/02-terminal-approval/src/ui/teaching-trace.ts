@@ -1,8 +1,10 @@
 /**
  * 05.2 在终端中完成一次审批 | [CHANGED] ui/teaching-trace.ts
  *
- * 本节增加审批开始与审批结果的过程记录，让读者看见工具在哪个状态暂停。
- * 记录来自 AgentEvent；真正收集 y/n 的回调位于 terminal.ts，二者不能混为一层。
+ * 学习目标：把主循环的事件写成终端中可以跟着阅读的过程记录。
+ * 输入：模型、权限、审批、工具的原始事件。
+ * 输出：选取必要字段、缩短过长文字并隐藏常见凭据后的文本行，不修改原事件。
+ * 本节区分开始等待和取得回答，输入 y/n 的代码仍在 terminal.ts。
  */
 
 import type { AgentEvent } from "../agent/events.js";
@@ -12,11 +14,10 @@ import type { ToolResultMetadata } from "../tools/types.js";
 const MAX_TRACE_VALUE_CHARS = 60;
 
 /**
- * 把不可信文字转换成可以放进单行终端记录的短文本。
+ * 把文字整理成可以放进一行过程记录的短文本。
  *
- * - 输入：用户问题、工具参数或路径，以及本次允许的最大字符数。
- * - 输出：移除控制字符、合并空白、隐藏常见凭据特征并按长度截断的字符串。
- * - 职责边界：只处理界面副本，不修改 Agent Event 中的原始值。
+ * 清理控制字符、合并空白、隐藏常见凭据特征，再按指定长度截断。
+ * 返回值只用于显示，不修改原始事件。
  */
 function toTraceText(value: string, maxChars = MAX_TRACE_VALUE_CHARS): string {
   const oneLine = value.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
@@ -25,11 +26,10 @@ function toTraceText(value: string, maxChars = MAX_TRACE_VALUE_CHARS): string {
 }
 
 /**
- * 根据本地工具 Schema 生成名称和参数摘要。
+ * 从工具请求中取出名称和需要显示的参数。
  *
- * - 输入：事件中的原始 ToolCall。
- * - 输出：已注册工具只显示 Schema 声明的字段；未知工具使用固定名称且不展示参数。
- * - 安全边界：解析失败、超长参数、控制字符和敏感值都不会原样进入终端。
+ * 只显示已登记工具 Schema 中声明的字段；未知工具、无效或过长参数会显示固定提示。
+ * 参数值继续经过 toTraceText，避免把原始请求直接打印到终端。
  */
 function describeToolCall(call: ToolCall): { name: string; input: string } {
   const definition = toolDefinitions.find((tool) => tool.name === call.name);
@@ -57,11 +57,10 @@ function describeToolCall(call: ToolCall): { name: string; input: string } {
 }
 
 /**
- * 把工具产生的结构化元数据转换成终端结果摘要。
+ * 从工具的元数据生成结果摘要。
  *
- * - 输入：工具在生成模型正文时同步产生的数量、位置或行号范围。
- * - 输出：只包含结果规模和少量路径示例的短文本。
- * - 关键原因：界面不读取 content，因此不会把匹配行或文件正文误当成展示字段。
+ * 根据工具类型显示数量、行号或少量位置示例，不读取给模型的 content。
+ * 这样终端不用解析源码正文，也能说明这次工具返回了什么规模的结果。
  */
 function describeToolResult(metadata: ToolResultMetadata): string {
   if (metadata.kind === "glob") {

@@ -1,9 +1,9 @@
 /**
  * 05.1 让工具调用先经过权限策略 | [NEW] permissions/policy.ts
  *
- * 学习目标：在任何工具接触真实环境前，由本地程序作出 allow、ask 或 deny 决定。
- * 输入：模型生成的工具名称与原始 JSON 参数。
- * 输出：带原因的权限决定；本文件不执行工具或读取文件内容，只解析现有路径的真实位置。
+ * 学习目标：先分清可以直接读取、需要确认和必须拒绝的请求。
+ * 输入：模型给出的工具名、JSON 参数和项目位置。
+ * 输出：allow、ask 或 deny，并带上原因；这里只检查路径，不读取正文或执行工具。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   ToolCall
@@ -14,9 +14,9 @@
  *      +-- read_file 读取 .git/.agents/.codex ----------> ask
  *      +-- 其他已登记的项目内只读请求 ------------------> allow
  *
- * 关键点：deny 先于 ask，ask 先于 allow。模型可以提出请求，却不能用提示词改变这条顺序。
- * 05.1 尚未接入人工审批，因此 ask 会阻止执行；05.2 再让终端处理它。
- * 运行观察：普通源码读取继续执行；.env 和项目外路径不执行；.git/HEAD 停在 ask。
+ * 先拒绝明确禁止的请求，再处理需要确认的读取，最后才允许普通读取。
+ * 本节还没有审批界面，ask 会让当前请求先失败；下一节再由终端取得用户选择。
+ * 运行观察：普通源码可以直接读取，.env 被拒绝，.git 文件停在需要确认的状态。
  */
 
 import { realpath } from "node:fs/promises";
@@ -24,7 +24,7 @@ import { isAbsolute, relative, resolve, sep, win32 } from "node:path";
 import { toolDefinitions, type ToolCall } from "../tools/registry.js";
 import { findProjectRoot } from "../tools/workspace.js";
 
-// [NEW 05.1] 本文件以下权限决定、路径分类与策略函数均为本节新增。
+// [NEW 05.1] 本文件以下类型和检查函数均为本节新增。
 export type PermissionDecision =
   | { action: "allow"; reason: string }
   | { action: "ask"; reason: string; resource: string; scope: string }
@@ -33,12 +33,10 @@ export type PermissionDecision =
 const APPROVAL_DIRECTORIES = new Set([".git", ".agents", ".codex"]);
 
 /**
- * 把未经信任的工具参数解析成顶层对象。
+ * 把模型给出的 JSON 参数读成可检查的对象。
  *
- * - 输入：模型返回的 JSON 字符串。
- * - 输出：普通对象；JSON 无效、数组或非对象返回 `null`。
- * - 关键原因：权限判断发生在工具参数校验之前，不能直接相信 TypeScript 类型。
- * - 职责边界：这里只读取权限判断需要的顶层字段，完整 Schema 仍由具体工具校验。
+ * - 传入原始参数字符串；能解析为非空对象时返回它，数组、其他值或无效 JSON 返回 null。
+ * - 权限判断比具体工具校验更早，只取它需要的字段，不在这里重复校验行号等全部参数。
  */
 function parseArguments(argumentsJson: string): Record<string, unknown> | null {
   try {
@@ -52,11 +50,10 @@ function parseArguments(argumentsJson: string): Record<string, unknown> | null {
 }
 
 /**
- * 从不同文件工具的参数中取出决定访问范围的路径字段。
+ * 从工具参数中取出这次准备访问的路径。
  *
- * - 输入：工具名称和已解析的顶层参数。
- * - 输出：`read_file.path`、`glob.pattern` 或 `grep.glob`；字段缺失或类型错误时返回 `null`。
- * - 关键原因：权限层只关心工具准备访问哪里，不重复实现 query、offset、limit 等业务校验。
+ * read_file 使用 path，glob 使用 pattern，grep 使用 glob；缺失或不是非空字符串就返回 null。
+ * 这里只确定要访问哪里，query、offset 和 limit 等参数仍交给具体工具检查。
  */
 function getRequestedPath(call: ToolCall, input: Record<string, unknown>): string | null {
   const value = call.name === "read_file"
@@ -70,11 +67,8 @@ function getRequestedPath(call: ToolCall, input: Record<string, unknown>): strin
 }
 
 /**
- * 判断路径文字是否明确要求离开当前项目。
- *
- * - 输入：相对路径或 glob 模式。
- * - 输出：绝对路径，或任一目录段为 `..` 时返回 `true`。
- * - 职责边界：这是执行前的快速拒绝；符号链接和真实路径仍由具体文件工具检查。
+ * 先从路径文字中找出明确离开项目的请求。
+ * 绝对路径或任一目录段为 .. 时返回 true；符号链接的实际目标还需要后续解析。
  */
 function leavesProject(path: string): boolean {
   if (isAbsolute(path) || win32.isAbsolute(path)) return true;
@@ -82,11 +76,8 @@ function leavesProject(path: string): boolean {
 }
 
 /**
- * 判断路径是否点名环境配置文件。
- *
- * - 输入：已经统一为 `/` 分隔的相对路径。
- * - 输出：任一目录段是 `.env`、`.env.*` 或 `.envrc` 时返回 `true`。
- * - 关键原因：命中 deny 后不提供审批入口，后续人工批准也不能覆盖它。
+ * 检查路径中有没有禁止访问的环境配置文件名。
+ * 传入已经统一为 / 分隔的路径；任一段是 .env、.env.* 或 .envrc 就返回 true，匹配不区分大小写。
  */
 function containsEnvironmentFile(path: string): boolean {
   return path.toLowerCase().split("/").some((segment) =>
@@ -94,23 +85,22 @@ function containsEnvironmentFile(path: string): boolean {
 }
 
 /**
- * 找出需要人工确认的项目元数据目录。
+ * 找出路径中第一个需要确认的目录名。
  *
- * - 输入：已经统一为 `/` 分隔的相对路径。
- * - 输出：路径中的第一个 `.git`、`.agents` 或 `.codex`；普通源码路径返回 `null`。
- * - 关键原因：批准范围按目录族表示，05.3 才能明确复用同一范围而不扩大到所有读取。
+ * .git、.agents 或 .codex 返回对应名称；没有则返回 null。
+ * 本节用它说明为什么要询问，还不保存会话批准。05.3 会补上目录前的完整项目内路径，
+ * 以便区分位置不同但同名的目录。
  */
 function findApprovalDirectory(path: string): string | null {
   return path.toLowerCase().split("/").find((segment) => APPROVAL_DIRECTORIES.has(segment)) ?? null;
 }
 
 /**
- * 把现有文件的表面路径转换成项目内真实路径，防止符号链接隐藏受保护目标。
+ * 解析真实目标，避免普通文件名隐藏了受保护文件。
  *
- * - 输入：模型提供的相对路径和当前项目根目录。
- * - 输出：文件存在时返回相对于真实项目根的路径；目标不存在时保留原路径交给工具报错。
- * - 失败方式：真实目标位于项目外时返回 `null`，权限层据此 deny。
- * - 竞态边界：检查与工具打开文件仍是两步；本章不能把它描述成操作系统沙箱。
+ * - 传入模型路径和项目根目录；解析成功时返回相对于真实项目根的路径。
+ * - 真实目标在项目外时返回 null，让策略拒绝；无法解析时保留原路径，后续由工具报告访问失败。
+ * - 这次检查还没有打开文件读取正文。检查与后续打开之间仍可能发生替换，不能当成系统沙箱。
  */
 async function resolvePermissionPath(path: string, projectRoot: string): Promise<string | null> {
   try {
@@ -125,12 +115,12 @@ async function resolvePermissionPath(path: string, projectRoot: string): Promise
 }
 
 /**
- * 按 deny、ask、allow 的固定优先级决定一次工具调用能否执行。
+ * 检查一次工具请求应该直接执行、询问还是拒绝。
  *
- * - 输入：模型生成、尚未执行的 ToolCall。
- * - 输出：本地权限决定及可向用户解释的原因；ask 还包含可批准的明确范围。
- * - 关键步骤：先拒绝未知或越界请求，再识别需要确认的元数据读取，最后允许普通只读工具。
- * - 职责边界：决定不等于执行；即使返回 allow，工具仍要完成自己的参数和真实路径校验。
+ * - 接收尚未执行的 ToolCall 和项目根目录，返回决定及原因。
+ * - 先拒绝未知工具、无效权限参数、越界和受保护文件，再识别需要确认的元数据读取。
+ * - ask 还带上文件说明和批准记录；普通项目读取返回 allow。
+ * - 这里只检查权限，即使允许，具体工具仍要检查全部参数和当前文件。
  */
 export async function decideToolPermission(
   call: ToolCall,

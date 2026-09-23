@@ -30,13 +30,11 @@ import { UserFacingError } from "../errors.js";
 import type { Message, Model, Reply } from "../models/client.js";
 
 /**
- * 执行一轮 Agent，并把“最终回答”和“尚未支持的工具请求”分开处理。
+ * 区分最终回答和工具请求，先让主循环认识新的响应形式。
  *
- * - 输入：统一模型、已有历史、本轮用户文字和取消信号。
- * - 输出：只有得到非空最终文本时才返回 `Reply` 并提交完整问答。
- * - 关键步骤：先请求模型，再检查 `toolCalls`，最后检查文本和取消状态。
- * - 失败方式：收到工具请求、空回答、模型异常或取消时抛错，历史保持不变。
- * - 职责边界：本节只识别工具请求，不解析参数，也不执行文件读取。
+ * 输入是模型、已完成历史、本次用户文字和取消信号。请求时使用历史加本次输入的临时数组。
+ * 只有非空最终文本才和用户消息一起加入 history；收到工具请求时用阶段提示停止。
+ * 模型异常、空回答或取消同样不提交本次消息。本节还不解析参数，也不读取文件。
  */
 export async function agentLoop(
   model: Model, history: Message[], input: string, signal: AbortSignal,

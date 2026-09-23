@@ -53,13 +53,12 @@ export interface Model {
 }
 
 /**
- * 根据已经校验的配置创建统一模型对象，隐藏 OpenAI 与 Anthropic SDK 的差异。
+ * 按配置创建模型客户端，让主循环始终通过 generate() 请求模型。
  *
- * - 输入：`config` 包含已选服务商、密钥、模型 ID 和基础地址。
- * - 输出：返回只暴露 `generate()` 的 `Model`，调用方不需要判断服务商。
- * - 关键步骤：只创建当前协议的 SDK 客户端，并关闭自动重试与 SDK 日志。
- * - 前置条件：协议、必填值和地址已经由 `readConfig()` 校验。
- * - 失败方式：不捕获 SDK 初始化异常；创建对象时不发送请求，真正的请求发生在 `generate()` 中。
+ * config 已由 readConfig() 检查；这里只创建所选协议的 SDK 对象，不立即发送请求。
+ * 返回的 generate() 记住客户端和模型 ID，之后接收消息与取消信号。
+ * 关闭 SDK 自动重试和日志，让本章的一次调用对应一次请求，避免额外输出请求细节。
+ * 初始化异常继续交给调用方处理；网络请求发生在 generate() 中。
  */
 export function createModel(config: Config): Model {
   const options = {
@@ -73,26 +72,22 @@ export function createModel(config: Config): Model {
 }
 
 /**
- * 把服务商返回的用量字段转换成通过基础数字检查的 token 数量。
+ * 读取服务商报告的用量；缺少可用数字时保留“未知”。
  *
- * - 输入：来自远程响应的未知值，运行时可能不是数字、不是有限值或小于 0。
- * - 输出：通过检查时返回服务商报告的非负数字；否则返回 `null`。
- * - 关键原因：`null` 表示没有可展示的用量值，不能用 `0` 冒充没有消耗。
- * - 准确性边界：本函数不验证统计方法或数值是否真实，只检查 JavaScript 数字格式。
- * - 失败方式：本函数不抛错，因为用量缺失不应让已经成功的回答失败。
+ * value 来自远程响应，只有有限且不小于 0 的数字才原样返回，否则返回 null。
+ * null 不能换成 0，否则会把“接口没报告”显示成“没有消耗”。
+ * 这里只检查数字格式，不验证服务商的统计是否准确，也不因用量缺失让回答失败。
  */
 function tokenCount(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
 }
 
 /**
- * 校验远程接口给出的工具调用基础字段，再建立本地 `ToolCall`。
+ * 把服务商返回的工具字段整理成主循环能使用的 ToolCall。
  *
- * - 输入：调用 ID、工具名称和参数字符串；三项都属于不可信的外部数据。
- * - 输出：三个字段都是非空字符串时返回统一 `ToolCall`。
- * - 关键原因：TypeScript 类型只在编译时生效，不能保证兼容接口实际返回合法字段。
- * - 失败方式：任一字段无效时抛出 `UserFacingError`，请求不会进入工具执行阶段。
- * - 职责边界：这里只检查字段类型和空值；JSON 语法与工具参数由执行入口校验。
+ * ID、名称和参数都必须是非空字符串，否则抛出 UserFacingError，停止处理本次响应。
+ * SDK 的类型不能保证兼容接口实际返回了什么，所以仍要在运行时检查。
+ * 这里还不解析参数 JSON，也不判断工具是否存在；这些工作留给本地工具入口。
  */
 function normalizeToolCall(id: unknown, name: unknown, argumentsJson: unknown): ToolCall {
   if (typeof id !== "string" || !id.trim()
@@ -104,13 +99,13 @@ function normalizeToolCall(id: unknown, name: unknown, argumentsJson: unknown): 
 }
 
 /**
- * 把本地统一消息转换成 OpenAI Chat Completions 使用的消息结构。
+ * 把本地消息转换成 OpenAI 接口能识别的工具对话。
  *
- * - 输入：可能包含 user、assistant 和 tool 的本地 `Message[]`。
- * - 输出：返回 OpenAI 所需的消息数组，并保留工具调用 ID。
- * - 关键步骤：工具结果转换成 `role=tool`，助手工具请求转换成 `tool_calls`。
- * - 职责边界：只转换内存数据，不发送请求，也不执行工具。
+ * 输入包含用户文字、模型请求和工具结果。输出保留原来的消息顺序与调用 ID，
+ * 让 tool_call_id 能找到前面 assistant 消息中的请求。
+ * 这里只转换内存中的数据，不发送请求，也不执行工具。
  */
+// [NEW 03.2] 把本地三类消息转成 OpenAI 的工具消息。
 function toOpenAIMessages(messages: Message[]): ChatCompletionMessageParam[] {
   return messages.map((message) => {
     if (message.role === "user") return message;
@@ -130,14 +125,13 @@ function toOpenAIMessages(messages: Message[]): ChatCompletionMessageParam[] {
 }
 
 /**
- * 把本地统一消息转换成 Anthropic Messages 使用的内容块结构。
+ * 把本地消息转换成 Anthropic 的内容块，并把工具结果配回请求。
  *
- * - 输入：可能包含 user、assistant 和连续 tool 结果的本地 `Message[]`。
- * - 输出：返回 Anthropic 消息数组，连续工具结果会合并到同一条 user 消息。
- * - 关键步骤：助手调用变成 `tool_use`，工具结果变成带原调用 ID 的 `tool_result`。
- * - 失败方式：已保存的工具参数不是有效 JSON 时，`JSON.parse()` 会抛错并停止请求。
- * - 职责边界：只转换内存数据，不发送请求，也不执行工具。
+ * 模型请求转换为 tool_use，结果转换为同 ID 的 tool_result；
+ * 连续的工具结果放进同一条 user 消息，满足这个接口对结果消息的组织方式。
+ * 返回转换后的数组，不发送请求。若历史里的参数不是合法 JSON，转换会抛错。
  */
+// [NEW 03.2] 把连续工具结果合成 Anthropic 的同一条 user 消息。
 function toAnthropicMessages(messages: Message[]): MessageParam[] {
   const converted: MessageParam[] = [];
   for (let index = 0; index < messages.length;) {
@@ -176,15 +170,14 @@ function toAnthropicMessages(messages: Message[]): MessageParam[] {
 }
 
 /**
- * 发送完整消息链和工具定义，并把服务商响应转换成统一的 `ModelResult`。
+ * 发送消息和当前工具说明，再把服务商响应整理成 ModelResult。
  *
- * - 输入：SDK 客户端、模型 ID、本地消息数组和取消信号。
- * - 输出：统一的文本、工具请求、token 用量和截断状态。
- * - 关键步骤：先把本地消息转换成所选协议，再发送工具定义，最后归一化响应字段。
- * - 请求失败：网络、认证、限流、服务端、取消或协议解析异常由 SDK 向上传递。
- * - 响应失败：没有候选结果，或结果既无文本也无工具请求时抛出 `UserFacingError`。
- * - 职责边界：只转换请求和响应，不执行本地工具，也不提交会话历史。
+ * 输入是客户端、模型 ID、消息数组和取消信号；根据客户端协议发送相应字段。
+ * 返回文本、工具请求、用量和截断状态。只要含有工具请求，文本为空也可以是正常响应。
+ * 既没有文字也没有工具请求时抛出 UserFacingError；工具基础字段由 normalizeToolCall() 检查。
+ * 网络、认证、取消或消息转换失败继续向外抛出；这里不执行工具，也不保存会话历史。
  */
+// [CHANGED 03.2] 发送前调用对应转换函数，把上一轮工具结果也带给模型。
 async function requestResult(
   client: OpenAI | Anthropic, model: string, messages: Message[], signal: AbortSignal,
 ): Promise<ModelResult> {

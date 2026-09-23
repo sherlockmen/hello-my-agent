@@ -3,7 +3,7 @@
  *
  * 学习目标：隐藏 OpenAI 与 Anthropic 的字段差异，让上层只调用统一的 Model.generate()。
  * 输入：Config、当前消息数组和 AbortSignal。
- * 输出：统一的纯文本 Reply；空文本、工具调用或不支持的内容会抛出安全错误。
+ * 输出：统一的纯文本 Reply；没有可用文本或响应要求工具调用时抛出提示。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   +-----------------+
@@ -22,7 +22,7 @@
  *                                    | 失败 --> UserFacingError
  *                                    | 成功 --> Reply
  *
- * 关键点：SDK 负责 HTTP、认证和取消；本模块负责协议转换与响应边界。上层不出现服务商字段。
+ * 关键点：SDK 负责发送请求、认证和处理取消；本模块转换消息格式并检查响应，调用方只使用 Reply。
  * 运行观察：切换 provider 后，agentLoop() 和终端仍收到相同形状的 Reply。
  */
 
@@ -44,13 +44,12 @@ export interface Model {
 // [KEEP] 只创建用户选择的客户端。超时单位是毫秒；本章关闭自动重试，避免一次输入发送多次。
 // 显式关闭 SDK 调试日志，错误由入口或终端转换为固定提示后输出，避免记录请求头或原始响应。
 /**
- * 根据已经校验的配置创建统一模型对象，隐藏 OpenAI 与 Anthropic SDK 的差异。
+ * 按已选协议准备客户端，让调用方仍然只使用 generate()。
  *
- * - 输入：`config` 包含已选服务商、密钥、模型 ID 和基础地址。
- * - 输出：返回只暴露 `generate()` 的 `Model`，调用方不需要判断服务商。
- * - 关键步骤：只创建当前协议的 SDK 客户端，并关闭自动重试与 SDK 日志。
- * - 前置条件：协议、必填值和地址已经由 `readConfig()` 校验。
- * - 失败方式：不捕获 SDK 初始化异常；创建对象时不发送请求，真正的请求发生在 `generate()` 中。
+ * config 包含经过本地检查的协议、密钥、模型和基础地址。
+ * 这里只创建当前需要的 SDK 客户端，关闭自动重试与日志，再返回带 generate() 的普通对象。
+ * 实际请求由 generate() 转交 requestReply()，因此创建对象本身不会发送消息。
+ * SDK 初始化若失败，异常交回入口；这里不保存会话历史。
  */
 export function createModel(config: Config): Model {
   const options = {
@@ -58,7 +57,7 @@ export function createModel(config: Config): Model {
     timeout: 60_000, maxRetries: 0, logLevel: "off" as const,
   };
   // 显式固定认证方式，不额外混入 SDK 从环境读取的租户标识或 Bearer Token。
-  // [CHANGED 02.5] 工厂按协议创建客户端，对外仍提供 generate。
+  // [CHANGED 02.5] 按协议创建需要的客户端，对外仍提供同一个 generate 方法。
   const client = config.provider === "openai"
     ? new OpenAI({ ...options, organization: null, project: null })
     : new Anthropic({ ...options, authToken: null });
@@ -66,14 +65,15 @@ export function createModel(config: Config): Model {
   return { generate: (messages, signal) => requestReply(client, config.model, messages, signal) };
 }
 
+// [CHANGED 02.5] 把原来的 OpenAI 请求移入这里，再加入 Anthropic 分支。
 /**
- * 发送完整上下文，并把两种服务商响应转换成统一的纯文本结果。
+ * 把当前消息发给所选服务，再把回答转换成统一结果。
  *
- * - 输入：SDK 客户端、模型 ID、消息数组和取消信号。
- * - 输出：OpenAI 与 Anthropic 分支都返回相同的 `{ text }`。
- * - 关键步骤：OpenAI 使用 `chat.completions`，Anthropic 使用 `messages`；两边分别读取自己的文本字段。
- * - 失败方式：SDK 异常向上传递；空文本或本节不支持的工具请求抛出 `UserFacingError`。
- * - 职责边界：只做协议转换，不修改会话历史。
+ * 输入包括 SDK 客户端、模型 ID、消息和取消信号。
+ * OpenAI 分支使用 chat.completions，Anthropic 分支使用 messages，分别按各自的字段收发。
+ * 两个分支都返回 { text }，所以调用方不必判断服务商。
+ * 请求失败时继续抛出 SDK 异常；空文本或当前不能处理的工具请求则抛出 UserFacingError。
+ * 这里只转换消息和响应，不修改会话历史。
  */
 async function requestReply(
   client: OpenAI | Anthropic, model: string, messages: Message[], signal: AbortSignal,

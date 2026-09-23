@@ -1,9 +1,9 @@
 /**
  * 05.2 在终端中完成一次审批 | [CHANGED] agent/agent-loop.ts
  *
- * 学习目标：让 ask 决定暂停工具执行，并等待独立审批回调返回明确结果。
- * 输入：终端文本、history、Model、取消信号、可选观察者和可选 ApprovalHandler。
- * 输出：用户允许一次才执行 ask 工具；拒绝结果回给模型；最终成功才提交整轮消息。
+ * 学习目标：需要确认时等用户回答，再把工具的实际结果交回模型。
+ * 输入：本轮文字、已有历史、模型、取消信号、观察者和审批函数。
+ * 输出：批准后执行，拒绝则返回原因；模型给出最终回答后才提交本轮历史。
  *
  * 全局主流程（本节版本）：
  *
@@ -53,14 +53,14 @@ function addUsage(total: number | null, value: number | null): number | null {
 }
 
 /**
- * 运行有次数上限的工具循环，并把可恢复的工具错误反馈给模型。
+ * 让模型根据工具的实际结果继续工作，直到给出最终回答。
  *
- * - 输入：统一模型、正式历史、本轮用户文字、取消信号和可选事件观察者。
- * - 输出：得到最终回答时返回累计 `Reply`，并一次性提交本轮全部消息。
- * - 关键步骤：allow 直接执行，deny 直接回传，ask 等待 ApprovalHandler 后再决定是否执行。
- * - 失败方式：取消、未知异常、空回答或 8 次内没有最终回答时停止，正式历史保持不变。
- * - 职责边界：核心不读取键盘、不生成终端文案；观察者不能批准，只有 ApprovalHandler 可以。
- *   Agent Loop 会等待审批回调；只有它明确返回 allow_once，ask 请求才会进入工具注册表。
+ * - 接收本轮输入和已有历史，每次工具请求先检查权限。
+ * - ask 时等待审批函数，允许才执行；拒绝和工具错误也会交回模型。
+ * - 得到最终回答才把 turn 加入 history，返回回答和本轮累计用量。
+ * - 取消、空回答、未知异常或 8 次内没有最终回答时停止，不提交本轮历史。
+ *
+ * 观察者只显示状态，不能批准工具；核心也不直接读取键盘。
  */
 export async function agentLoop(
   model: Model,
@@ -68,7 +68,7 @@ export async function agentLoop(
   input: string,
   signal: AbortSignal,
   observer?: AgentObserver,
-  // [CHANGED 05.2] 审批 handler 是控制依赖，与只读 observer 分开传入。
+  // [CHANGED 05.2] 主循环要等待审批回答；观察者只显示进度，两者分别传入。
   requestApproval?: ApprovalHandler,
 ): Promise<Reply> {
   signal.throwIfAborted();

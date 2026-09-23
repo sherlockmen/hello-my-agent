@@ -4,21 +4,17 @@
 
 **本节目标：在相同的 Agent Loop 和终端流程下，增加 Anthropic Messages 协议。运行时选择协议，核心不用跟着改。**
 
-## 问题：更换模型服务商，不只是更换接口地址
+## 问题：更换模型服务商，为什么只改地址还不够
 
-上一节的连续会话只能通过 OpenAI 兼容协议请求模型。Anthropic Messages 虽然同样接收用户与助手消息，但它的认证配置、系统提示词位置、请求方法和响应内容块都不同，不能只替换基础地址就直接复用 Chat Completions 请求。
+上一节已经能连续对话。现在，我们想保留同样的输入方式和聊天历史，改用 Anthropic 的模型。
 
-接入第二种协议会产生三个问题：
+如果新服务兼容 OpenAI 的 Chat Completions，换一组配置就可能继续使用；Anthropic 原生的 Messages 接口却使用另一种消息格式。比如，OpenAI 把系统说明放进消息数组，Anthropic 把它放在单独的 `system` 字段。只改地址，发出去的仍然是旧格式，接收方并不会自动理解。
 
-1. **怎样发送不同格式的请求？** 两种协议放置系统提示词和历史消息的位置不同，调用的 SDK 方法也不同。
-2. **怎样得到相同格式的结果？** OpenAI 兼容接口从 `choices` 读取文本和用量，Anthropic 从内容块和 `usage` 读取。如果上层直接处理这些字段，Agent Loop 就必须分别编写两套逻辑。
-3. **怎样避免混用凭据？** 选择 Anthropic 后误用 OpenAI Key，不只是请求失败，还可能把认证材料发送到错误的地址。
+所以，这一节要增加的是另一种协议的发送和接收方式。用户仍按原来的方法提问，Agent 也仍按原来的规则保存历史。
 
-因此，本节要解决的问题是：**怎样在运行时选择 OpenAI 或 Anthropic，把两种协议转换成同一种本地模型能力，并确保每种协议只使用自己的配置？** 本节只增加第二种模型协议，不改变连续会话和一轮 Agent 执行规则。
+## 解决方案：模型模块负责两种格式之间的转换
 
-## 解决方案
-
-让配置模块先确定模型服务商，再读取对应的一组凭据；让模型模块负责请求格式和响应格式的转换。Agent Loop 和终端继续只面对统一的 `Model` 接口。
+我们让配置模块先选协议，再读取对应的密钥、模型和地址。模型模块收到统一消息后，按所选协议发出请求；收到响应后，再取出文本，返回同一种 `Reply`。
 
 以这次提问为例：
 
@@ -26,7 +22,7 @@
 hello-my-agent --provider anthropic --prompt "用一句话解释 Promise"
 ```
 
-它会沿着下面这条链路执行：
+程序会这样处理：
 
 ```text
 用户输入文字，并选择 anthropic
@@ -38,22 +34,24 @@ hello-my-agent --provider anthropic --prompt "用一句话解释 Promise"
   -> 终端显示最终回答
 ```
 
-如果改选 `openai`，只有配置读取和模型模块中的协议转换发生变化，Agent Loop、历史提交和终端显示仍走同一条路径。协议无效、缺少所选协议的配置或请求失败时，本轮历史不会提交；下一节再把不同失败转换成具体提示。
+换成 `openai` 后，中间的请求与响应转换不同，历史保存和终端显示仍然相同。`provider` 在本章表示使用哪种接口协议，并不意味着所有提供 OpenAI 兼容接口的服务都属于 OpenAI。
 
 ## 工作原理
 
-先记住本节的核心结论：**Agent Loop 只表达“根据消息得到模型结果”，服务商适配器负责“这些消息在某个接口中怎样表示”。**
+### 同一段对话，为什么会有两种写法
 
-上面那次提问可以拆成六步：
+对 Agent 来说，一段对话就是按顺序排列的用户问题与模型回答；对远端 API 来说，这些内容要放进它规定的字段。我们要保留对话的含义，只改变它在请求和响应里的表示方式。
 
-1. 命令入口取得用户文字和 `anthropic` 这个服务商选择。
-2. 配置模块根据选择读取 `ANTHROPIC_API_KEY`、模型和基础地址，不接触 OpenAI 凭据。
-3. Agent Loop 把已有历史和本轮问题组成统一的 `Message[]`。
-4. 模型模块加入系统说明，把统一消息翻译成 Anthropic Messages 请求，并等待远端响应。
-5. 模型模块从响应内容块中取出文本，转换成统一的 `Reply`。
-6. Agent Loop 保存完整问答，终端显示最终文本。
+| 同一份对话 | OpenAI 兼容接口 | Anthropic Messages |
+| --- | --- | --- |
+| SDK 调用 | `chat.completions.create()` | `messages.create()` |
+| 系统提示词 | `messages` 内的 `system` 消息 | 独立的 `system` 字段 |
+| 问答历史 | `user` / `assistant` | `user` / `assistant` |
+| 文本结果 | `choices[0].message.content` | `content` 中的 `text` 块 |
 
-模型模块因此像一个**双向翻译器**：它把本地消息翻译成服务商请求，再把服务商响应翻译回本地结果。统一的是本地程序看到的含义，服务商协议本身并没有变成同一种格式。
+例如，同样是“用中文回答编程问题”，OpenAI 请求把它作为第一条 `system` 消息，Anthropic 请求则单独填写 `system`。用户的 Promise 问题仍是一条 `user` 消息，之前的问答也仍按原顺序发送。
+
+模型模块要做两次转换：先把本地消息写成服务商的请求，之后再把响应中的文本取回来。
 
 ```text
 本地 Message[]
@@ -64,80 +62,41 @@ hello-my-agent --provider anthropic --prompt "用一句话解释 Promise"
                                                          统一为 Reply
 ```
 
-例如，同一条系统说明在 OpenAI 请求中是一条 `role: "system"` 消息，在 Anthropic 请求中却是独立的 `system` 字段；同一段回答在 OpenAI 响应中位于 `choices[0].message.content`，在 Anthropic 响应中位于 `content` 的文本块。适配层负责这两次转换，Agent Loop 只看到“输入消息，得到回答”。
+这就是本节的协议适配。统一的是程序内部使用的 `Message` 和 `Reply`，并不是把两个服务商的 API 改成了一样。
 
-最容易误解的是认为换一个 `baseURL` 就等于支持另一种协议。地址只决定请求发到哪里，不能改变 JSON 字段、认证方式和响应结构。如果只改地址，程序仍会把 OpenAI 格式发给 Anthropic，远端无法按预期解析；即使请求碰巧通过，上层也读不到正确的响应字段。本节只支持在每次启动时选择一种协议，不支持在同一会话中途切换，也还不处理两种协议的工具调用格式。
+### Anthropic 为什么返回一个内容块数组
 
-### 第一步：先选协议，再选凭据
+[Anthropic Messages](https://platform.claude.com/docs/en/api/messages/create) 的 `content` 可以包含多段内容，每段用 `type` 标明种类。本节只接收文本，所以程序取出 `type === "text"` 的块，再把其中的文字用换行连接。
 
-在 [src/config/load-config.ts](src/config/load-config.ts) 为 `Options` 和 `Config` 增加 `provider`。选择优先级是 `--provider → AGENT_PROVIDER 环境变量 → .env → openai`。
+如果没有非空文本，或者停止原因是 `tool_use`，就不能把它当作这一轮已完成的回答。第三章才会让程序处理工具请求，本节继续遵守纯文本问答的限制。
 
-选择 `openai` 后读取 `OPENAI_*`，选择 `anthropic` 后读取 `ANTHROPIC_*`。模型和基础地址继续允许命令行覆盖；密钥只读取选定协议那一组。如果没有 Anthropic Key，应提示缺少配置，不应拿另一组密钥尝试。
+请求还需要 `max_tokens`。这里填写 `2048`，表示允许本次最多生成这么多个 token，不是要求每次都生成这么多。达到上限时回答可能没说完，下一节会把这种停止原因显示给用户。
 
-### 第二步：把两种协议转换成同一种结果
+### 选了协议，为什么还要跟着选凭据
 
-[src/models/client.ts](src/models/client.ts) 的 `createModel()` 现在按协议创建 OpenAI 或 Anthropic 客户端。两者仍提供相同的 `generate(messages, signal)`，返回 `{ text }`。
+密钥要随请求发给目标服务。假如选择了 Anthropic，却在缺少配置时借用 OpenAI Key，程序就可能把一家的凭据交给另一家。因此先确定 `provider`，再读取这一组配置，不能拿另一组填空。
 
-| 同一份对话 | OpenAI 兼容接口 | Anthropic Messages |
-| --- | --- | --- |
-| SDK 调用 | `chat.completions.create()` | `messages.create()` |
-| 系统提示词 | `messages` 内的 `system` 消息 | 独立的 `system` 字段 |
-| 问答历史 | `user` / `assistant` | `user` / `assistant` |
-| 文本结果 | `choices[0].message.content` | `content` 中的 `text` 块 |
+协议的选择顺序是 `--provider`、`AGENT_PROVIDER` 环境变量、`.env`，最后默认 `openai`。选择 `openai` 就使用 `OPENAI_*`，选择 `anthropic` 就使用 `ANTHROPIC_*`。读取 `.env` 时仍会把文件解析成对象，但选择本次配置时只取对应前缀的字段。
 
-Anthropic 的 `max_tokens: 2048` 是本次最多生成的 token 数，不表示一定生成这么多。`content` 可能包含多种内容块，当前只接收纯文本，工具调用仍留给第三章。
+模型名和地址仍允许命令行覆盖；这些覆盖值也必须适用于当前所选协议。程序会检查地址结构，却不能判断某个网址是否真属于某家服务商，所以使用兼容网关时，密钥、模型与地址仍应来自同一服务。
 
-[Anthropic Messages](https://platform.claude.com/docs/en/api/messages/create) 的请求和响应有两个关键结构：
+基础地址只写到服务商要求的位置。OpenAI 的默认值包含 `/v1`；Anthropic 官方基础地址是 `https://api.anthropic.com`，无需手动加 `/v1/messages`，具体请求路径由 SDK 补上。
 
-- 请求把系统提示词放在独立的 `system` 字段，把对话放在 `messages` 数组。
-- 响应的 `content` 是内容块数组，每个块可能是文本或工具请求。
+### 核心为什么可以继续用原来的代码
 
-本节遍历所有文本块并用换行连接。如果没有文本，或者停止原因是 `tool_use`，就不能把它当作本章已经完成的回答。
+02.2 已经约定了 `generate(messages, signal)`。调用方把消息交进去，拿到 `Reply`，不直接访问服务商字段。本节只要在这个方法内部加入另一种转换，就能继续使用原来的 Agent Loop。
 
-两种请求的转换集中在 `requestReply()`。OpenAI 分支生成 Chat Completions 字段，Anthropic 分支生成 Messages 字段。两个分支都把服务商响应转换成 `{ text }`，因此 Agent Loop 和终端不需要判断服务商。
+实际运行时，`createModel()` 根据配置创建 OpenAI 或 Anthropic 客户端，再返回带有 `generate()` 的普通对象。请求进入 `requestReply()` 后，程序根据客户端种类选择相应 SDK 方法，两个分支最终都返回 `{ text }`。
 
-### 第三步：理解协议适配为什么放在模型层
+因此，核心不需要知道系统提示词放在哪个字段，也不用判断回答来自 `choices` 还是 `content`。它仍然只负责准备本轮消息、等待结果、成功后保存问答。这种分工让协议的变化留在处理协议的地方。
 
-Agent Loop 关心的是领域语义：一组消息能否得到一个回答。OpenAI 和 Anthropic 的 SDK 类型、系统提示词位置、响应内容块和停止原因属于传输协议。把传输字段暴露给 Agent Loop，会让核心同时承担调度和服务商转换两种职责。
+### 为什么继续用一个模型文件
 
-模型模块把两种外部协议收敛成同一个本地接口。这不是在运行时创建新的 `Model` 类型；TypeScript 类型已经被删除。运行时实际发生的是：`createModel()` 根据 `config.provider` 创建对应 SDK 实例，并返回一个带 `generate()` 函数的普通对象。
+当前只有两种协议，转换代码也不长，把两个分支放在 `models/client.ts` 中便于对照。为每种服务复制整个 Agent，会把终端、历史和取消规则也复制一遍；在核心里直接判断协议，则会让这些规则和请求字段混在一起。
 
-`requestReply()` 接收 `OpenAI | Anthropic` 联合类型，再通过运行时对象判断选择请求分支。两个分支最后都返回 `{ text }`，因此上层只能看到统一结果。协议新增字段时，修改范围仍限制在模型模块。
+两家的 SDK 分别处理认证、网络和错误对象，我们负责把消息与回答接到本地接口上。本节采用 [Anthropic TypeScript SDK](https://platform.claude.com/docs/en/cli-sdks-libraries/sdks/typescript) 与已有 OpenAI SDK。以后某一套转换明显变长，再按协议拆文件即可。
 
-本节只统一文本回答；第 23 章会沿用这个适配边界，再统一工具、流事件、附件、能力描述和运行中的模型切换。
-
-### 第四步：凭据必须跟随协议选择
-
-程序先确定 provider，再读取这一组前缀对应的 Key、模型和地址。不能先混合所有配置再猜测使用哪一个，因为密钥是发送到远程地址的认证材料；选错组合不仅会请求失败，还可能把凭据交给错误的服务端。
-
-`baseURL` 是 SDK 拼接接口路径的基础地址。OpenAI 兼容地址通常包含 `/v1`，Anthropic 官方基础地址不附加 `/v1/messages`，具体请求路径由 SDK 加入。基础地址和模型 ID 必须遵循目标服务商的约定。
-
-### 第五步：入口登记 --provider
-
-在 [src/cli.ts](src/cli.ts) 加入这一项规则：
-
-```ts
-.option("--provider <type>", "接口协议：openai 或 anthropic")
-```
-
-入口把 `--provider` 交给 `readConfig()`，再把得到的 `Config` 交给 `createModel()`。入口只传递选择结果，不拼装任何服务商请求字段。
-
-### 为什么选择适配层
-
-Agent Loop 的问题是“根据消息得到下一步结果”，协议层的问题是“怎样向某个 HTTP API 表达这些消息”。让 `createModel()` 返回统一的 `generate()`，可以把稳定的 Agent 语义与会变化的服务商字段分开。新增协议时，只要完成“本地消息 → 请求”和“响应 → Reply”两次转换。
-
-当前只有两个协议，而且转换代码仍然很短，所以使用一个文件中的联合类型和分支已经足够。等协议数量增加，或某个适配器本身变大，再拆成 `openai.ts`、`anthropic.ts`；现在提前拆分只会增加跳转文件。
-
-### 还有哪些方案
-
-| 方案 | 优点 | 代价 |
-| --- | --- | --- |
-| 在 `agentLoop()` 中判断 provider | 可以直接访问所有协议字段 | 核心会同时负责调度与传输转换，每增加服务商都要修改核心。 |
-| 为两个服务商复制完整 Agent | 每份代码只看一种协议 | 会复制历史、取消和终端逻辑，修复时容易出现行为差异。 |
-| 统一发送 OpenAI 格式给兼容代理 | 本地只保留一种协议 | 依赖额外代理，且无法学习或使用 Anthropic 原生 Messages 差异。 |
-| 手写 `fetch()` 适配器 | 不依赖服务商 SDK | 需要自己维护认证头、错误对象、版本头和响应类型。 |
-
-本节使用 [Anthropic TypeScript SDK](https://platform.claude.com/docs/en/cli-sdks-libraries/sdks/typescript) 和 OpenAI SDK 处理各自的认证、请求路径、JSON 与错误对象，再在本地模型模块完成最小适配。这样既保留协议真实差异，也让上层只有一条执行路径。
+本节是在每次启动时选择一种协议，还不能在会话中途切换。第 23 章会继续扩展这处转换，处理模型能力差异以及运行中的切换。
 
 ## 本节改动文件
 
@@ -148,6 +107,8 @@ Agent Loop 的问题是“根据消息得到下一步结果”，协议层的问
 | 修改 | [src/models/client.ts](src/models/client.ts) | 增加 Anthropic 分支，继续返回统一的 `Reply`。 |
 
 ## 动手构建
+
+从空目录跟写时，把已经完成的 `chapter-02-model-dialogue/04-conversation/src/` 复制到 `chapter-02-model-dialogue/05-anthropic/src/`，再在这份代码上继续。下面的 `src/` 均指本节目录；已有配套仓库时无需复制。
 
 ### 第一步：让配置先选择协议
 
@@ -190,13 +151,19 @@ const baseURL = options.baseUrl?.trim() || env(`${prefix}_BASE_URL`) ||
   (provider === "openai" ? "https://api.openai.com/v1" : "https://api.anthropic.com");
 ```
 
-地址校验仍沿用上一节，函数最后改为返回：
+地址校验的规则沿用上一节，但解析失败的提示也要跟上协议选择。找到 `new URL(baseURL)` 后的 `catch`，把其中原来提示检查 `OPENAI_BASE_URL` 的 `throw` 替换为：
+
+```ts
+throw new UserFacingError("接口地址无效，请检查所选协议的 BASE_URL 或 --base-url。");
+```
+
+这样选择 Anthropic 时，地址写错也不会仍然提示检查 OpenAI 配置。后面的 HTTP(S) 与凭据字段检查保持原样，函数最后改为返回：
 
 ```ts
 return { provider, apiKey, model, baseURL };
 ```
 
-这段代码先确定 `provider`，再计算变量前缀。它不会同时读取两组密钥，也不会在缺少 Anthropic Key 时退回 OpenAI Key。完整上下文见[配置源码](src/config/load-config.ts)。
+这段代码先确定 `provider`，再计算变量前缀。它只选择对应前缀的密钥，也不会在缺少 Anthropic Key 时退回 OpenAI Key。完整上下文见[配置源码](src/config/load-config.ts)。
 
 ### 第二步：增加 Anthropic 协议分支
 
@@ -209,67 +176,68 @@ import Anthropic from "@anthropic-ai/sdk";
 把 `createModel()` 改成按协议创建客户端：
 
 ```ts
+/**
+ * 按已选协议准备客户端，让调用方仍然只使用 generate()。
+ *
+ * config 包含经过本地检查的协议、密钥、模型和基础地址。
+ * 这里只创建当前需要的 SDK 客户端，关闭自动重试与日志，再返回带 generate() 的普通对象。
+ * 实际请求由 generate() 转交 requestReply()，因此创建对象本身不会发送消息。
+ * SDK 初始化若失败，异常交回入口；这里不保存会话历史。
+ */
 export function createModel(config: Config): Model {
   const options = {
-    apiKey: config.apiKey,
-    baseURL: config.baseURL,
-    timeout: 60_000,
-    maxRetries: 0,
-    logLevel: "off" as const,
+    apiKey: config.apiKey, baseURL: config.baseURL,
+    timeout: 60_000, maxRetries: 0, logLevel: "off" as const,
   };
+  // 显式固定认证方式，不额外混入 SDK 从环境读取的租户标识或 Bearer Token。
+  // [CHANGED 02.5] 按协议创建需要的客户端，对外仍提供同一个 generate 方法。
   const client = config.provider === "openai"
     ? new OpenAI({ ...options, organization: null, project: null })
     : new Anthropic({ ...options, authToken: null });
-
-  return {
-    generate: (messages, signal) =>
-      requestReply(client, config.model, messages, signal),
-  };
+  // 调用方只需发送消息；SDK 对象、模型 ID 和两种协议的字段差异留在本模块。
+  return { generate: (messages, signal) => requestReply(client, config.model, messages, signal) };
 }
 ```
 
-新增 `requestReply()`。函数先用 `instanceof OpenAI` 进入原有 OpenAI 分支；不满足时，TypeScript 会把 `client` 收窄为 Anthropic 客户端。完整结构如下：
+在 `createModel()` 后新增 `requestReply()`，把原来 `generate()` 中的请求逻辑移到它的 OpenAI 分支，再加入 Anthropic 分支。函数先用 `instanceof OpenAI` 判断客户端；不满足时，TypeScript 将它收窄为 Anthropic 客户端。完整结构如下：
 
 ```ts
+// [CHANGED 02.5] 把原来的 OpenAI 请求移入这里，再加入 Anthropic 分支。
+/**
+ * 把当前消息发给所选服务，再把回答转换成统一结果。
+ *
+ * 输入包括 SDK 客户端、模型 ID、消息和取消信号。
+ * OpenAI 分支使用 chat.completions，Anthropic 分支使用 messages，分别按各自的字段收发。
+ * 两个分支都返回 { text }，所以调用方不必判断服务商。
+ * 请求失败时继续抛出 SDK 异常；空文本或当前不能处理的工具请求则抛出 UserFacingError。
+ * 这里只转换消息和响应，不修改会话历史。
+ */
 async function requestReply(
-  client: OpenAI | Anthropic,
-  model: string,
-  messages: Message[],
-  signal: AbortSignal,
+  client: OpenAI | Anthropic, model: string, messages: Message[], signal: AbortSignal,
 ): Promise<Reply> {
   if (client instanceof OpenAI) {
-    const response = await client.chat.completions.create(
-      {
-        model,
-        messages: [{ role: "system", content: systemPrompt }, ...messages],
-        stream: false,
-      },
-      { signal },
-    );
+    // OpenAI 兼容接口：系统说明也放在 messages 中；SDK 负责 JSON、HTTP 和认证头。
+    const response = await client.chat.completions.create({
+      model, messages: [{ role: "system", content: systemPrompt }, ...messages],
+      stream: false,
+    }, { signal });
     const choice = response.choices?.[0];
     const text = choice?.message?.content;
+    // 本章没有注册工具。遇到空文本或工具调用，明确失败，不把空回答写入历史。
     if (typeof text !== "string" || !text.trim() || choice?.message?.tool_calls?.length) {
       throw new UserFacingError("接口没有返回可用的纯文本回答，请检查模型是否支持本章的聊天接口。");
     }
     return { text };
   }
 
-  const response = await client.messages.create(
-    {
-      model,
-      system: systemPrompt,
-      messages,
-      max_tokens: 2048,
-      stream: false,
-    },
-    { signal },
-  );
-
-  const text = response.content
-    .filter((block) => block.type === "text")
-    .map((block) => block.text)
-    .join("\n");
-
+  // [NEW 02.5] Anthropic Messages：system 是独立字段，messages 保存 user/assistant 对话。
+  // max_tokens 是本次最多生成的 token 数，并不表示一定会生成这么多。
+  const response = await client.messages.create({
+    model, system: systemPrompt, messages, max_tokens: 2048, stream: false,
+  }, { signal });
+  // content 是内容块数组；本章只接收文本，工具调用留给后续章节。
+  const text = response.content.filter((block) => block.type === "text")
+    .map((block) => block.text).join("\n");
   if (!text.trim() || response.stop_reason === "tool_use") {
     throw new UserFacingError("接口没有返回可用的纯文本回答，请检查模型是否支持本章的聊天接口。");
   }
@@ -277,7 +245,7 @@ async function requestReply(
 }
 ```
 
-两个分支都返回 `{ text }`，这是 Agent Loop 能继续保持不变的原因。包含逐行说明的版本见[模型源码](src/models/client.ts)。
+两个分支都返回 `{ text }`，这是 Agent Loop 能继续保持不变的原因。两个函数在[模型源码](src/models/client.ts)中的位置与这里一致。
 
 ### 第三步：登记协议选项
 
@@ -343,4 +311,4 @@ provider 配置
       |-- Anthropic 协议 ---|-> 统一 Model 接口 -> Agent Loop -> 会话历史
 ```
 
-终端和 Agent Loop 只认识统一消息，不需要判断服务商。当前不同失败仍可能被压成相同提示，回答消耗了多少 token 也不可见；下一节将在模型边界分类错误和用量，再由终端统一展示。
+现在，两种服务都能接上同一套连续会话。模型模块把各自的消息格式转来转去，核心仍只保存成功问答。不过，请求失败时的提示还不够具体，成功时也没显示用量；下一节补上这些信息，让用户知道结果意味着什么。

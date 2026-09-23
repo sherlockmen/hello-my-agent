@@ -2,9 +2,9 @@
 
 [第四章首页](README.md) · [先完成 04.3](03-chunked-reading/README.md) · [grep 源码](03-chunked-reading/src/tools/grep.ts) · [完整答案](#完整答案)
 
-**本练习只解决一个问题：怎样允许模型减少本次工具输出，同时不能让模型突破程序的硬上限？**
+完成 04.3 后，Agent 已经能搜索位置、读取片段并继续回答。现在再改进一个使用细节：如果当前只想看前 5 个匹配，工具有没有必要返回最多 100 个？
 
-正式实现把 `grep` 上限固定为 100 项。这个值保护本地程序和模型上下文，却无法表达一次具体任务只需要 5 项结果。
+正式实现把 `grep` 的返回上限固定为 100 项。这个上限限制进入模型上下文的结果条数，我们可以允许模型在本次调用中选一个更小的数，但仍由本地程序守住 100 项上限。
 
 ```text
 模型本次需求：maxResults = 5
@@ -12,12 +12,12 @@
 合法关系：     1 <= maxResults <= MAX_MATCHES
 ```
 
-这是 Agent 工具常见的两层预算：
+这里有两个数字，分别由不同角色决定：
 
-- **调用预算**由模型根据当前任务选择，可以主动缩小。
-- **系统硬上限**由程序维护者决定，模型不能扩大。
+- **本次返回数量**由模型根据任务选择，例如只要 5 项。
+- **程序硬上限**仍为 100。模型请求 101 项时，本地检查会拒绝。
 
-## 为什么参数必须穿过完整契约
+## 新参数怎样从模型一路传到搜索循环
 
 增加 `maxResults` 不能只修改循环中的常量。数据要经过：
 
@@ -37,7 +37,7 @@ GrepArguments 保存可信内部值
 grepTool() 用本次预算停止并输出
 ```
 
-只改 Schema，兼容接口、旧历史或手写请求仍可能绕过范围；只改执行代码，模型又不知道该生成什么字段。工具定义和运行时校验共同组成契约。
+只在 Schema 写上“最多 100”，本地执行仍可能接到 101；只改搜索循环，模型又不知道新增了什么字段。所以我们既要告诉模型该怎么填写，也要让程序检查本次实际收到的值，再让循环使用它。
 
 ## 为什么仍要多观察一项
 
@@ -56,7 +56,7 @@ if (matches.length > input.maxResults) {
 }
 ```
 
-`maxResults` 只控制返回给模型的匹配数量。它不会改变候选文件数、单文件大小、正则 CPU 时间或工具超时。
+`maxResults` 会收紧返回的匹配数量，也会影响搜索循环何时停止。候选文件仍最多选出 500 个，单文件的 1 MiB 大小限制也不变；但找到第 `maxResults + 1` 个匹配后，函数就会提前返回。较小的预算因此可能减少实际检查的内容和耗时，不过它不能限制一次同步正则匹配的 CPU 时间，也不提供工具超时保证。
 
 ## 练习要求
 
@@ -66,6 +66,8 @@ if (matches.length > input.maxResults) {
 2. 在 `parseArguments()` 中拒绝缺失、多余、非整数或越界值。
 3. 用 `input.maxResults` 控制停止、切片和截断提示。
 4. 保留 `MAX_MATCHES = 100` 作为不可突破的本地硬上限。
+
+第五章的配套代码继续使用 04.3 的正式版：`grep` 只接收 `query` 和 `glob`，固定最多返回 100 项。我们在自己的跟写工程中可以保留本练习的 `maxResults`；第五章权限层只从 `grep` 参数中提取 `glob` 来判断文件范围，新增的返回数量不会影响这一步。
 
 在仓库根目录运行：
 
@@ -87,7 +89,7 @@ npm run exercise:04
 /**
  * 第 04 章练习答案 | [CHANGED 练习] tools/grep.ts
  *
- * 学习目标：让模型用正则表达式搜索文件内容，并获得带文件名和行号的真实位置。
+ * 学习目标：让模型为本次搜索选择更少的返回结果，同时保留程序的 100 项硬上限。
  * 输入：query 正则表达式、glob 文件范围和 1 到 100 的 maxResults。
  * 输出：path:line:column: text 格式的匹配结果；返回数量由本次 maxResults 收紧。
  *
@@ -108,7 +110,9 @@ npm run exercise:04
  *   逐行匹配 --> path:line:column --> 前 maxResults 项 + 截断说明
  *
  * 关键点：glob 缩小文件范围，grep 再检查内容。结果包含真实文件位置，模型才能继续调用 read_file。
- * 文件数、文件大小、匹配数和单行长度分别受限，避免一个宽泛查询占满内存和模型上下文。
+ * maxResults 不改变候选文件和单文件大小上限；找到第 maxResults + 1 个匹配时会提前返回。
+ * 较小预算可能减少实际内容扫描量和耗时，但不提供正则 CPU 时间或工具超时保证。
+ * 大小检查后文件仍可能增大。
  * 运行观察：maxResults=2 时最多返回两项；0、101 或小数会作为工具错误反馈给模型。
  */
 
@@ -133,6 +137,7 @@ export const grepDefinition = {
         type: "string" as const,
         description: "文件范围，例如 src/**/*.ts；搜索全部文件时传入 **/*。",
       },
+      // [NEW 练习] 模型每次明确选择 1 到 100 的返回数量。
       maxResults: {
         type: "integer" as const,
         minimum: 1,
@@ -140,6 +145,7 @@ export const grepDefinition = {
         description: "本次最多返回多少个匹配结果。",
       },
     },
+    // [CHANGED 练习] 新字段必须和查询、范围一起提供。
     required: ["query", "glob", "maxResults"],
     additionalProperties: false,
   },
@@ -150,16 +156,17 @@ const MAX_FILE_BYTES = 1024 * 1024;
 const MAX_MATCHES = 100;
 const MAX_LINE_CHARS = 300;
 
+// [CHANGED 练习] 校验后的本次上限要传给搜索循环。
 type GrepArguments = { query: string; glob: string; maxResults: number };
 type GrepMatch = { path: string; line: number; column: number; text: string };
 
 /**
- * 校验 grep 的 JSON 参数，并在本地编译正则表达式。
+ * 确认搜索条件可用，并检查模型选择的返回数量没有超过程序上限。
  *
- * - 输入：未经信任的工具参数字符串。
- * - 输出：返回正则查询、经过边界检查的 glob 模式和不超过硬上限的 maxResults。
- * - 关键步骤：拒绝多余字段，再用 `RegExp` 验证查询语法，避免执行阶段才发现格式错误。
- * - 失败方式：JSON、字段类型、glob 边界、maxResults 范围或正则语法无效时抛出 `ToolError`。
+ * 输入是模型的 JSON 参数；只接受 query、glob 和必填整数 maxResults。
+ * query 必须是非空且不超过 500 字符的正则，glob 通过路径检查，maxResults 必须在 1 到 100 之间。
+ * 通过时返回这些内部参数；缺字段、多余字段、错误类型、越界或正则语法错误都抛出 ToolError。
+ * 正则编译成功只说明语法合法，不保证执行一定很快。
  */
 function parseArguments(argumentsJson: string): GrepArguments {
   let value: unknown;
@@ -172,6 +179,7 @@ function parseArguments(argumentsJson: string): GrepArguments {
     throw new ToolError("grep 参数必须是对象。");
   }
   const input = value as Record<string, unknown>;
+  // [CHANGED 练习] 只接收已经声明的三个字段。
   const allowed = new Set(["query", "glob", "maxResults"]);
   if (Object.keys(input).some((key) => !allowed.has(key))) {
     throw new ToolError("grep 参数只能包含 query、glob 和 maxResults。");
@@ -181,6 +189,7 @@ function parseArguments(argumentsJson: string): GrepArguments {
   }
   if (input.query.length > 500) throw new ToolError("grep query 不能超过 500 个字符。");
   const filePattern = validateGlobPattern(input.glob);
+  // [NEW 练习] 本地重新检查，不能只相信发给模型的 Schema。
   if (!Number.isInteger(input.maxResults)
     || (input.maxResults as number) < 1
     || (input.maxResults as number) > MAX_MATCHES) {
@@ -191,28 +200,30 @@ function parseArguments(argumentsJson: string): GrepArguments {
   } catch {
     throw new ToolError(`grep query 不是有效的正则表达式：${input.query}`);
   }
+  // [CHANGED 练习] 把已检查的值交给执行函数。
   return { query: input.query, glob: filePattern, maxResults: input.maxResults as number };
 }
 
 /**
- * 缩短过长的匹配行，同时保留匹配位置附近的可读文本。
+ * 只保留匹配行的开头，避免超长正文占满模型上下文。
  *
- * - 输入：一整行文本。
- * - 输出：保留前 300 个原字符；超出时再追加省略标记。
- * - 关键原因：结果数量有限仍可能遇到超长压缩行，单行上限可继续保护模型上下文。
+ * 输入是一整行，超过 300 个原字符时保留前 300 个，再追加省略号。
+ * 这不是围绕匹配处截取；匹配发生在第 300 个字符之后时，返回的正文可能不含目标词，
+ * 但 grepTool() 仍会单独返回它的行号和列号。
  */
 function shortenLine(line: string): string {
   return line.length <= MAX_LINE_CHARS ? line : `${line.slice(0, MAX_LINE_CHARS)}…`;
 }
 
 /**
- * 执行有界内容搜索，并同时产生模型正文与观察元数据。
+ * 在候选文件中逐行查找，并按模型本次选择的数量返回结果。
  *
- * - 输入：模型生成的 query、glob、maxResults，项目根目录和可选取消信号。
- * - 输出：`content` 最多返回 maxResults 条匹配正文；`metadata` 返回不含源码正文的位置事实。
- * - 关键步骤：先用 glob 选择候选文件，再跳过大文件和含 NUL 字节的二进制内容，最后逐行匹配。
- * - 失败方式：参数、模式或正则无效时抛出 `ToolError`；读取期间消失或无权限的单个文件会跳过；取消会立即向外传播。
- * - 职责边界：maxResults 只能收紧 100 项硬上限；本节不修改文件，单次正则执行仍没有时间上限。
+ * 输入是 query、glob、maxResults、项目根和可选取消信号；先用 glob 选出最多 500 个候选文件。
+ * 跳过检查时超过 1 MiB、含 NUL 或无法读取的文件，每行只取第一处匹配。
+ * 多看到第 maxResults + 1 项才截断；content 含匹配正文，metadata 只保存位置和数量。
+ * 参数或正则无效会抛出 ToolError；单个文件读取失败会跳过，取消继续向外传播。
+ * maxResults 只能收紧 100 项返回上限，候选文件上限和单文件大小限制不变。
+ * 较小预算可能更早触发返回，减少实际内容扫描量和耗时；正则 CPU 时间和工具总耗时仍没有保证。
  */
 export async function grepTool(
   argumentsJson: string,
@@ -249,6 +260,7 @@ export async function grepTool(
         column: (match.index ?? 0) + 1,
         text: shortenLine(line),
       });
+      // [CHANGED 练习] 多看一项再判断截断，切片和提示都使用本次选择的上限。
       if (matches.length > input.maxResults) {
         const selected = matches.slice(0, input.maxResults);
         return {
@@ -293,10 +305,10 @@ export async function grepTool(
 | --- | --- | --- |
 | 实际 3 项，`maxResults=2` | 返回 2 项并显示截断 | 调用预算控制输出，并观察了额外一项 |
 | 实际正好 2 项，`maxResults=2` | 返回 2 项，不显示截断 | 不会把“达到上限”误判成“超过上限” |
-| 缺少 `maxResults` | `ToolError` | 字段是契约必需部分 |
+| 缺少 `maxResults` | `ToolError` | 模型必须明确给出本次数量 |
 | 多余字段 | `ToolError` | 未实现参数不会被静默忽略 |
 | `0`、`101`、`2.5`、`"2"` | `ToolError` | 本地重新检查范围和整数类型 |
 
-完整答案修改了五个位置：Schema、`required`、内部参数类型、运行时校验和搜索停止条件。这五处共同保证“模型可以收紧预算，但不能扩大系统边界”。
+完整答案把新字段连过了五处：Schema 的字段定义、`required`、内部参数类型、运行时校验和搜索停止条件。前两处告诉模型需要填写什么，中间两处确认值能用，最后一处才让它改变本次返回数量。
 
-这个原则会继续用于后面的命令超时、文件读取范围和子 Agent 预算：模型表达本次需求，本地程序决定不可突破的上限。
+完成练习后，模型可以为每次搜索选择返回数量，而不能越过本地的 100 项上限。接下来我们再处理另一个问题：参数合法、工具也存在，是否就应该立即执行？这需要独立的权限判断。

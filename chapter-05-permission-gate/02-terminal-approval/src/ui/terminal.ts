@@ -1,9 +1,9 @@
 /**
  * 05.2 在终端中完成一次审批 | [CHANGED] ui/terminal.ts
  *
- * 学习目标：在聊天输入流中安全地读取一次审批决定，不让两个 readline 争抢 stdin。
- * 输入：逐行用户文本、审批选择 y/n、/reset、/exit、EOF 或 Ctrl+C。
- * 输出：普通文本进入 agentLoop；ask 时返回 allow_once 或 deny；继续显示过程和回答。
+ * 学习目标：聊天和审批共用一份输入，保证 y/n 回答的是当前问题。
+ * 输入：聊天文字、审批选择、/reset、/exit、EOF 和 Ctrl+C。
+ * 输出：聊天进入 agentLoop，审批返回允许一次或拒绝；终端继续显示过程和回答。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   read line
@@ -58,13 +58,13 @@ export function printProgress(event: AgentEvent): void {
 
 // [NEW 05.2] 终端适配器把 y/n 转成结构化审批结果。
 /**
- * 建立使用当前终端输入流的一次性审批回调。
+ * 创建一个等待当前审批回答的函数。
  *
- * - 输入：与聊天循环共用的行迭代器，以及当前是否为交互终端。
- * - 输出：ask 请求出现时读取 `y` 或 `n`；只有 `y` 返回 allow_once，其他输入均拒绝。
- * - 关键原因：审批必须复用聊天循环的行迭代器，不能创建第二个 readline 争抢 stdin。
- * - 失败方式：非交互运行或 EOF 会拒绝；Ctrl+C 由外层同时 abort 并关闭 readline，解除这里的输入等待。
- * - 职责边界：终端只收集决定，权限规则和是否执行工具仍由 Agent 核心控制。
+ * - 接收与聊天共用的行迭代器，以及是否为交互终端。
+ * - 显示请求与原因后读取一行，y 允许一次，其他输入拒绝。
+ * - 非交互运行或 EOF 返回拒绝。连续会话中的 Ctrl+C 会由外层关闭 readline，解除等待。
+ *
+ * 这里只取得选择，不执行工具，也不把聊天输入另开一个读取者。
  */
 export function createApprovalHandler(
   lines: AsyncIterator<string> | undefined,
@@ -157,12 +157,11 @@ export async function startTerminal(model: Model): Promise<void> {
 }
 
 /**
- * 执行 `--prompt` 单次提问，并在交互终端中复用同一套审批输入。
+ * 执行一次 --prompt 提问，并为可能出现的审批准备输入。
  *
- * - 输入：统一 Model 和已经校验为非空的用户问题。
- * - 输出：显示过程与最终回答；结束前关闭为审批创建的 readline。
- * - 关键原因：单次模式也可能收到 ask，不能绕过连续会话使用的权限入口。
- * - 失败方式：stdin 或 stdout 不是 TTY 时，审批回调默认拒绝需要确认的工具。
+ * - 接收模型和非空问题；交互终端中创建 readline，并把审批函数传给 Agent Loop。
+ * - 没有交互终端时，审批函数会拒绝需要确认的请求，普通 allow 工具仍能运行。
+ * - 显示回答后结束；无论成功还是抛错，finally 都会关闭本函数创建的输入。
  */
 // [NEW 05.2] --prompt 模式复用相同审批适配器，不绕过权限入口。
 export async function runSinglePrompt(model: Model, prompt: string): Promise<void> {

@@ -1,8 +1,11 @@
 /**
  * 05.1 让工具调用先经过权限策略 | [CHANGED] agent/events.ts
  *
- * 本节增加 permission_check，让界面知道工具为什么被允许、待确认或拒绝。
- * 事件只描述事实；当前终端、第 09 章 JSONL 和第 10 章 TUI 使用同一接口。
+ * 学习目标：让界面知道每次工具执行前的权限判断。
+ * 输入：Agent Loop 刚刚产生的模型、权限或工具事件。
+ * 输出：观察者收到事件副本；观察者不存在或抛错时，不改变主循环的处理。
+ * permission_check 只报告判断，不能凭事件执行工具。
+ * 副本防止观察者改动原对象，但不会自动隐藏参数；界面仍要挑选适合显示的字段。
  */
 
 import type { ToolCall } from "../tools/registry.js";
@@ -44,12 +47,10 @@ export type AgentEvent =
 export type AgentObserver = (event: AgentEvent) => void;
 
 /**
- * 把事件快照交给可选观察者，同时隔离观察者自身的异常。
+ * 把刚发生的事件交给观察者，并避免显示失败打断主循环。
  *
- * - 输入：可选观察者和 Agent Loop 刚刚产生的生命周期事实。
- * - 输出：观察者存在时同步收到一份深拷贝；不存在时直接返回。
- * - 关键原因：structuredClone() 防止观察者修改工具请求或结果对象。
- * - 失败方式：终端或 TUI 观察者抛出的异常会被隔离，不会改变核心执行。
+ * 有观察者就同步交给它一份深拷贝，没有则直接返回。副本防止改动原对象，
+ * try/catch 则隔离观察者抛出的异常；这两步都不负责审批或隐藏事件中的内容。
  */
 export function emitAgentEvent(observer: AgentObserver | undefined, event: AgentEvent): void {
   try {

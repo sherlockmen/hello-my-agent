@@ -1,9 +1,10 @@
 /**
- * 05.3 让批准只在明确范围内复用 | [KEEP 来自 05.1] config/load-config.ts
+ * 05.3 让 Agent 记住本次运行的批准 | [KEEP 来自 05.1] config/load-config.ts
  *
- * 学习目标：告诉模型工具会经过本地权限策略，聊天文字不能充当批准。
- * 输入：provider、model、baseUrl 选项，以及所选协议对应的环境配置。
- * 输出：经过校验的 Config 和只声明真实能力的 systemPrompt。
+ * 学习目标：读出模型连接配置，并告诉模型当前工具需要经过本地权限检查。
+ * 输入：provider、model、baseUrl 选项，以及对应的环境配置。
+ * 输出：校验后的 Config 和说明当前只读能力的 systemPrompt。
+ * 提示词帮助模型选择工具；实际能否执行，仍由权限策略检查。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   provider --> 选择 OPENAI_* 或 ANTHROPIC_* --> 合并配置 --> 校验 --> Config

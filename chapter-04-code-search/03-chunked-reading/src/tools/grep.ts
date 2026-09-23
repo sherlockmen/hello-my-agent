@@ -62,12 +62,11 @@ type GrepArguments = { query: string; glob: string };
 type GrepMatch = { path: string; line: number; column: number; text: string };
 
 /**
- * 校验 grep 的 JSON 参数，并在本地编译正则表达式。
+ * 在扫描文件前确认搜索条件可用。
  *
- * - 输入：未经信任的工具参数字符串。
- * - 输出：返回正则查询和经过边界检查的 glob 模式。
- * - 关键步骤：拒绝多余字段，再用 `RegExp` 验证查询语法，避免执行阶段才发现格式错误。
- * - 失败方式：JSON、字段类型、glob 边界或正则语法无效时抛出 `ToolError`。
+ * 输入是模型的 JSON 参数；只接受非空且不超过 500 字符的 query，以及通过检查的 glob。
+ * 正则会先编译一次，语法错误可立即作为 ToolError 返回，不必等到读取文件后才发现。
+ * 成功返回查询和路径模式。编译成功只说明语法合法，不保证正则执行一定很快。
  */
 function parseArguments(argumentsJson: string): GrepArguments {
   let value: unknown;
@@ -98,24 +97,24 @@ function parseArguments(argumentsJson: string): GrepArguments {
 }
 
 /**
- * 缩短过长的匹配行，同时保留匹配位置附近的可读文本。
+ * 只保留匹配行的开头，避免超长正文占满模型上下文。
  *
- * - 输入：一整行文本。
- * - 输出：保留前 300 个原字符；超出时再追加省略标记。
- * - 关键原因：结果数量有限仍可能遇到超长压缩行，单行上限可继续保护模型上下文。
+ * 输入是一整行，超过 300 个原字符时保留前 300 个，再追加省略号。
+ * 这不是围绕匹配处截取；匹配发生在第 300 个字符之后时，返回的正文可能不含目标词，
+ * 但 grepTool() 仍会单独返回它的行号和列号。
  */
 function shortenLine(line: string): string {
   return line.length <= MAX_LINE_CHARS ? line : `${line.slice(0, MAX_LINE_CHARS)}…`;
 }
 
 /**
- * 执行有界内容搜索，并返回可以直接定位源码的文本结果。
+ * 在候选文件中逐行查找，把位置和匹配行一起返回给模型。
  *
- * - 输入：模型生成的参数字符串、项目根目录和可选取消信号。
- * - 输出：`content` 给模型提供位置与匹配行；`metadata` 给界面提供不含源码正文的位置事实。
- * - 关键步骤：先用 glob 选择候选文件，再跳过大文件和含 NUL 字节的二进制内容，最后逐行匹配。
- * - 失败方式：参数、模式或正则无效时抛出 `ToolError`；读取期间消失或无权限的单个文件会跳过；取消会立即向外传播。
- * - 职责边界：本节按顺序扫描文件，不修改文件；JavaScript 正则的单次执行目前没有时间上限。
+ * 输入是模型参数、项目根和可选取消信号；先用 glob 选出最多 500 个候选文件。
+ * 跳过检查时超过 1 MiB、含 NUL 或无法读取的文件；每行只保留第一处匹配。
+ * 观察到第 101 个匹配后，返回前 100 个并标记截断。content 含匹配行，metadata 只含位置与数量。
+ * 参数或正则无效会抛出 ToolError；读取单个文件失败会跳过，取消则继续向外传播。
+ * 空结果只说明实际检查的文本没有命中。同步正则没有时间上限，执行期间无法响应取消；第 07 章再迁移到受控 rg。
  */
 export async function grepTool(
   argumentsJson: string,

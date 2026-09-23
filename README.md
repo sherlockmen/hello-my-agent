@@ -4,17 +4,17 @@
 
 Build Your Own TUI Coding Agent — From Scratch to npm
 
-用 TypeScript 从第一个命令开始，逐章构建自己的 Coding Agent：接通模型、增加工具和权限、制作 TUI、管理会话与上下文、实现扩展与协作，最终发布别人可以安装使用的 npm 包。
+我们用 TypeScript 从第一个命令开始，逐章做出自己的 Coding Agent：先接通模型，让它能使用工具，再加入权限、会话、上下文和 TUI，继续实现扩展与协作，最终发布别人可以安装使用的 npm 包。
 
 CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持续刷新内容、响应键盘操作的交互界面；Coding Agent 则是在程序控制下调用模型和本地工具来完成编程任务的 Agent。本书先建立 CLI 和 Agent 核心，再逐步增加 TUI。
 
-**每章讲清一个主要机制，并提供可以运行的完整实现。** 本书面向具备 TypeScript 基础、使用过 Coding Agent、希望理解内部原理的开发者。你会从熟悉的产品行为出发，按顺序理解执行流程、修改代码并检查结果。
+**每章讲清一个主要机制，并提供可以运行的完整实现。** 本书面向具备 TypeScript 基础、用过 Coding Agent、想弄明白它怎样工作的开发者。我们先从熟悉的使用过程理解问题，再看程序用什么方法解决，最后跟着代码实现并检查结果。每节的解释都放在正文中，不需要先打开源码补课。
 
 ## 开始学习
 
-[从第一章开始](chapter-01-first-command/README.md) · [已完成：第四章](chapter-04-code-search/README.md) · [当前：第五章](chapter-05-permission-gate/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
+[从第一章开始](chapter-01-first-command/README.md) · [已完成：第四章](chapter-04-code-search/README.md) · [待确认：第五章](chapter-05-permission-gate/README.md) · [当前：第六章](chapter-06-precise-edit/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
 
-第一次学习时先构建第一章：
+第一次学习，先阅读[第一章的问题与原理](chapter-01-first-command/README.md)，到“动手构建”时再运行：
 
 ```bash
 npm run lesson:01
@@ -24,7 +24,7 @@ npm run lesson:01
 hello-my-agent
 ```
 
-第一章不需要 API Key。完成第一章及 `--doctor` 练习后，再按 [02.1 配置说明](chapter-02-model-dialogue/01-configuration/README.md#填写第一组配置) 填写根目录 `.env`，进入第二章：
+第一章不需要 API Key。完成第一章及 `--doctor` 练习后，再按 [02.1 配置说明](chapter-02-model-dialogue/01-configuration/README.md#第三步填写第一组配置) 填写根目录 `.env`，进入第二章：
 
 ```bash
 npm run lesson:02.1
@@ -34,7 +34,7 @@ npm run lesson:02.1
 
 本地注册的命令指向当前仓库的构建产物。遇到找不到命令或运行了另一份代码时，按 [环境说明](docs/SETUP.md#注册命令后如何找到它) 检查。
 
-第一章无需 API Key；02.1 只验证配置，不请求模型，02.2 才开始单次请求，02.4 开始连续会话，02.5 接入 Anthropic。帮助与版本始终无需密钥。Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS arm64 验证，其他平台待验证。
+Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS arm64 验证，其他平台待验证。需要从空目录一步步建立工程时，按[环境准备](docs/SETUP.md)完成初始化，再回到第一章继续。
 
 ## 章节目录
 
@@ -44,7 +44,8 @@ npm run lesson:02.1
 | [第 02 章：接通模型并持续对话](chapter-02-model-dialogue/README.md) | 怎样接通模型并建立 Agent Loop 的无工具路径？ | [六个递进小节](chapter-02-model-dialogue/README.md)，已确认完成 |
 | [第 03 章：第一个工具与 Agent Loop](chapter-03-first-tool/README.md) | 怎样执行模型请求的工具，再回传结果？ | [三个递进小节](chapter-03-first-tool/README.md)，已确认完成 |
 | [第 04 章：让 Agent 找到代码](chapter-04-code-search/README.md) | 怎样发现文件、定位代码并分段读取？ | [三个递进小节](chapter-04-code-search/README.md)，已确认完成 |
-| [第 05 章：在执行前作出权限决定](chapter-05-permission-gate/README.md) | 怎样在执行工具前强制区分允许、询问和拒绝？ | [三个递进小节](chapter-05-permission-gate/README.md)，待确认 |
+| [第 05 章：工具执行之前，先检查权限](chapter-05-permission-gate/README.md) | 怎样在执行工具前强制区分允许、询问和拒绝？ | [三个递进小节](chapter-05-permission-gate/README.md)，待确认 |
+| [第 06 章：让 Agent 先预览，再修改文件](chapter-06-precise-edit/README.md) | 怎样让用户先看清改动，并在文件变化后取消旧修改？ | [三个递进小节](chapter-06-precise-edit/README.md)，待确认 |
 
 完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。
 
@@ -110,7 +111,7 @@ hello-my-agent/
         read-file.ts        分段读取
       src/ui/
         teaching-trace.ts    把事件转换成安全的中文教学记录
-  chapter-05-permission-gate/ 第 05 章：在执行前作出权限决定
+  chapter-05-permission-gate/ 第 05 章：工具执行之前，先检查权限
     README.md               权限决策、审批与会话范围的完整原理
     EXERCISES.md             主动撤销会话授权的练习与答案
     01-policy-decision/      05.1 allow、ask、deny 策略
@@ -118,10 +119,22 @@ hello-my-agent/
     03-session-grants/       05.3 会话范围授权
       src/permissions/
         policy.ts            执行前权限判断与审批契约
+  chapter-06-precise-edit/    第 06 章：让 Agent 先预览，再修改文件
+    README.md                预览、唯一替换、变化检测与备份原理
+    EXERCISES.md             重复匹配计数练习与完整答案
+    01-create-with-preview/  06.1 先预览，再创建文件
+    02-exact-replacement/    06.2 找到原文，只替换这一处
+    03-change-guard/         06.3 保存之前，检查文件有没有变化
+      src/tools/
+        change-preview.ts   生成安全、完整的差异预览
+        write-file.ts       新文件预览与创建
+        edit-file.ts        精确替换、变化检测与备份
   .env.example              模型配置模板，不含真实密钥
   docs/
     SETUP.md                环境与从空目录搭建
-    AUTHORING.md            章节编写规则
+    EDITORIAL-WORKFLOW.md   主 Agent、作者子 Agent 与学习者读者的编审流程
+    AUTHORING.md            作者子 Agent 的统一教程写作规则
+    READER-REVIEW.md        Agent 开发学习者的读懂检查规则
     PROGRESS.md             36 章目录、完成状态与完成日期
     planning/               原规划与完整能力清单
     verification/           实际验证记录
@@ -138,15 +151,15 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围。这些检查使用本地模拟接口，不需要真实密钥。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份。这些检查使用本地模拟接口，不需要真实密钥。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。
 
 第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
 完成第二章 `/reset` 练习后，运行 `npm run exercise:02`。这条命令编译读者实际修改的终端文件，并用本地模拟接口检查两种协议中的历史是否真正清空。
 
-[第五章练习](chapter-05-permission-gate/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第五章验证记录](docs/verification/05-permission-gate.md)
+[第六章练习](chapter-06-precise-edit/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第六章验证记录](docs/verification/06-precise-edit.md)
 
-第一章到第四章已确认完成；第五章的正文、代码与练习已完成，等待你确认。npm 包尚未发布。
+第一章到第四章已确认完成；第五章和第六章的正文、代码与练习已完成，等待分别确认。npm 包尚未发布。
 
 ## 许可证
 

@@ -23,7 +23,7 @@
  *                              v
  *                         ModelResult
  *
- * 关键点：模型只“提出”工具请求；协议适配层不拥有文件权限，也不执行工具。
+ * 关键点：模型只“提出”工具请求；协议适配层只整理数据，不在这里执行工具。
  * OpenAI 的 arguments 本来就是 JSON 字符串；Anthropic 的 input 先转成字符串，
  * 让后续本地执行入口使用同一套解析和校验规则。服务商响应属于外部输入，
  * 即使 SDK 提供了 TypeScript 类型，也要在运行时检查三个字段确实是非空字符串。
@@ -48,18 +48,18 @@ export type Reply = {
 // [NEW 03.1] 一次模型响应可以给出最终文本，也可以要求程序执行一个或多个工具。
 export type ModelResult = Reply & { toolCalls: ToolCall[] };
 
+// [CHANGED 03.1] generate() 的结果现在包含工具请求。
 export interface Model {
   generate(messages: Message[], signal: AbortSignal): Promise<ModelResult>;
 }
 
 /**
- * 根据已经校验的配置创建统一模型对象，隐藏 OpenAI 与 Anthropic SDK 的差异。
+ * 按配置创建模型客户端，让主循环始终通过 generate() 请求模型。
  *
- * - 输入：`config` 包含已选服务商、密钥、模型 ID 和基础地址。
- * - 输出：返回只暴露 `generate()` 的 `Model`，调用方不需要判断服务商。
- * - 关键步骤：只创建当前协议的 SDK 客户端，并关闭自动重试与 SDK 日志。
- * - 前置条件：协议、必填值和地址已经由 `readConfig()` 校验。
- * - 失败方式：不捕获 SDK 初始化异常；创建对象时不发送请求，真正的请求发生在 `generate()` 中。
+ * config 已由 readConfig() 检查；这里只创建所选协议的 SDK 对象，不立即发送请求。
+ * 返回的 generate() 记住客户端和模型 ID，之后接收消息与取消信号。
+ * 关闭 SDK 自动重试和日志，让本章的一次调用对应一次请求，避免额外输出请求细节。
+ * 初始化异常继续交给调用方处理；网络请求发生在 generate() 中。
  */
 export function createModel(config: Config): Model {
   const options = {
@@ -73,27 +73,24 @@ export function createModel(config: Config): Model {
 }
 
 /**
- * 把服务商返回的用量字段转换成通过基础数字检查的 token 数量。
+ * 读取服务商报告的用量；缺少可用数字时保留“未知”。
  *
- * - 输入：来自远程响应的未知值，运行时可能不是数字、不是有限值或小于 0。
- * - 输出：通过检查时返回服务商报告的非负数字；否则返回 `null`。
- * - 关键原因：`null` 表示没有可展示的用量值，不能用 `0` 冒充没有消耗。
- * - 准确性边界：本函数不验证统计方法或数值是否真实，只检查 JavaScript 数字格式。
- * - 失败方式：本函数不抛错，因为用量缺失不应让已经成功的回答失败。
+ * value 来自远程响应，只有有限且不小于 0 的数字才原样返回，否则返回 null。
+ * null 不能换成 0，否则会把“接口没报告”显示成“没有消耗”。
+ * 这里只检查数字格式，不验证服务商的统计是否准确，也不因用量缺失让回答失败。
  */
 function tokenCount(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
 }
 
 /**
- * 校验远程接口给出的工具调用基础字段，再建立本地 `ToolCall`。
+ * 把服务商返回的工具字段整理成主循环能使用的 ToolCall。
  *
- * - 输入：调用 ID、工具名称和参数字符串；三项都属于不可信的外部数据。
- * - 输出：三个字段都是非空字符串时返回统一 `ToolCall`。
- * - 关键原因：TypeScript 类型只在编译时生效，不能保证兼容接口实际返回合法字段。
- * - 失败方式：任一字段无效时抛出 `UserFacingError`，请求不会进入工具执行阶段。
- * - 职责边界：这里只检查字段类型和空值；JSON 语法与工具参数由执行入口校验。
+ * ID、名称和参数都必须是非空字符串，否则抛出 UserFacingError，停止处理本次响应。
+ * SDK 的类型不能保证兼容接口实际返回了什么，所以仍要在运行时检查。
+ * 这里还不解析参数 JSON，也不判断工具是否存在；这些工作留给本地工具入口。
  */
+// [NEW 03.1] 服务商字段进入主循环之前，先检查基本类型。
 function normalizeToolCall(id: unknown, name: unknown, argumentsJson: unknown): ToolCall {
   if (typeof id !== "string" || !id.trim()
     || typeof name !== "string" || !name.trim()
@@ -104,18 +101,14 @@ function normalizeToolCall(id: unknown, name: unknown, argumentsJson: unknown): 
 }
 
 /**
- * 发送上下文和工具定义，把两种服务商响应转换成统一的 `ModelResult`。
+ * 发送消息和当前工具说明，再把服务商响应整理成 ModelResult。
  *
- * - 输入：已创建的 SDK 客户端、模型 ID、当前消息和用于取消请求的 `AbortSignal`。
- * - 输出：统一的文本、工具请求、token 用量和截断状态。
- * - OpenAI 分支：调用 `chat.completions`，工具定义放在 `tools[].function`。
- * - Anthropic 分支：调用 `messages`，工具参数结构放在 `tools[].input_schema`。
- * - 共同输出：两个分支都把服务商响应转换成同一种 `ModelResult`。
- * - 请求失败：网络、认证、限流、服务端、取消或协议解析异常由 SDK 向上传递。
- * - 响应失败：没有可用结果，或结果既无文本也无工具请求时，抛出 `UserFacingError`。
- * - 字段失败：工具调用字段由 `normalizeToolCall()` 检查，无效时拒绝整次响应。
- * - 边界：这里只识别并转换工具请求，不解析参数，也不执行本地工具。
+ * 输入是客户端、模型 ID、消息数组和取消信号；根据客户端协议发送相应字段。
+ * 返回文本、工具请求、用量和截断状态。只要含有工具请求，文本为空也可以是正常响应。
+ * 既没有文字也没有工具请求时抛出 UserFacingError；工具基础字段由 normalizeToolCall() 检查。
+ * 网络、认证、取消或消息转换失败继续向外抛出；这里不执行工具，也不保存会话历史。
  */
+// [CHANGED 03.1] 请求携带工具说明，响应同时保留文本与工具请求。
 async function requestResult(
   client: OpenAI | Anthropic, model: string, messages: Message[], signal: AbortSignal,
 ): Promise<ModelResult> {

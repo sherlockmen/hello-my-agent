@@ -1,10 +1,10 @@
-# 第 05 章练习：主动撤销本次会话授权
+# 第 05 章练习：撤销本次运行的批准
 
 [第五章首页](README.md) · [先完成 05.3](03-session-grants/README.md) · [终端源码](03-session-grants/src/ui/terminal.ts) · [完整答案](#完整答案)
 
-**本练习只解决一个问题：会话授权保存在内存中以后，用户怎样在不退出 Agent 的情况下明确撤销它？**
+05.3 可以用 `/permissions` 查看已经批准的读取，但想撤销时，还得退出整个 Agent。接下来，我们增加一个单独的清空命令，让用户不用结束会话就能重新要求审批。
 
-05.3 已经提供 `/permissions` 查看当前范围，但删除权限只能退出整个进程。把撤销并入 `/reset` 会混淆对话状态和权限状态，因此增加一个含义明确的本地命令：
+不能把这件事顺手并入 `/reset`。那个命令表示重新开始对话，如果同时撤销权限，用户就很难判断它究竟改变了什么。因此保留三种明确的动作：
 
 ```text
 /permissions        -> 只查看 sessionGrants
@@ -12,32 +12,28 @@
 /reset              -> 只清空 history
 ```
 
-这三个命令都由终端在调用 Agent Loop 前处理，不会发送给模型。
+它们都由终端在调用 Agent Loop 之前处理，不会发给模型。
 
 ## 练习要求
 
-修改 `chapter-05-permission-gate/03-session-grants/src/ui/terminal.ts` 中的 `handlePermissionCommand()`：
+修改 `chapter-05-permission-gate/03-session-grants/src/ui/terminal.ts` 中的 `handlePermissionCommand()`，并同步函数说明：
 
-1. 在查看分支之前识别 `/permissions clear`。
-2. 调用 `sessionGrants.clear()`，输出 `已清空本次会话的权限范围。`。
-3. 返回 `true`，让终端循环使用已有的 `continue`，保证命令不会进入 Agent Loop。
-4. 保持 `/permissions` 和 `/reset` 的原有含义不变。
+1. 识别 `/permissions clear`，清空 `sessionGrants`。
+2. 输出 `已清空本次会话的权限范围。`，再返回 `true`。
+3. 保留 `/permissions` 的查看功能，普通聊天仍返回 `false`。
+4. 不修改 `/reset` 的处理，不清空对话历史。
 
-完成后在仓库根目录运行：
+原参数类型是 `ReadonlySet<string>`，因为函数只负责查看。现在要调用 `clear()`，也需要把参数类型改为 `Set<string>`。
 
-```bash
-npm run exercise:05
-```
+## 提示：让已有的终端循环继续负责分流
 
-预期输出：
+终端已经通过 `handlePermissionCommand()` 的布尔返回值判断是否执行 `continue`。新命令只要处理后返回 `true`，这一行就不会进入模型消息，不需要再给 Agent Loop 增加命令判断。
 
-```text
-✓ 第 05 章练习：会话授权可以被明确撤销
-```
+可以把清空分支放在查看分支之前。清空之后，再次读取刚才批准过的目录时，请求仍照常经过权限策略；它查不到之前的记录，就会重新返回 `ask`。
 
 ## 完整答案
 
-找到原来的 `handlePermissionCommand()`：
+找到原来的函数：
 
 ```ts
 export function handlePermissionCommand(
@@ -50,17 +46,18 @@ export function handlePermissionCommand(
 }
 ```
 
-替换为：
+将它连同前面的函数说明替换为：
 
 <!-- solution: handlePermissionCommand -->
 ```ts
 /**
  * 处理只属于本地终端的权限命令。
  *
- * - 输入：一行用户文字和当前进程共享的 sessionGrants。
- * - 输出：识别查看或清空命令时返回 `true`；普通文字返回 `false`。
- * - 关键原因：调用方根据布尔值 `continue`，本地命令不会进入模型消息。
- * - 职责边界：只管理当前进程的权限范围，不修改对话历史。
+ * - 接收一行用户文字和当前运行共用的 sessionGrants。
+ * - 查看或清空记录后返回 true，普通文字返回 false。
+ * - 终端据此 continue，已处理的命令不会再进入模型消息。
+ *
+ * [CHANGED 练习] 现在需要清空 Set，所以参数不再使用 ReadonlySet；对话历史保持不变。
  */
 export function handlePermissionCommand(
   text: string,
@@ -78,9 +75,9 @@ export function handlePermissionCommand(
 }
 ```
 
-## 为什么 `clear()` 之后会重新询问
+这里清空的是终端与 Agent Loop 共用的同一个 Set，没有创建新集合，也没有修改 `history`。所以后续请求能立刻看到记录已经移除，而原来的对话还在。
 
-下一次工具请求仍从权限策略开始：
+## 为什么下一次会重新询问
 
 ```text
 sessionGrants.clear()
@@ -92,4 +89,20 @@ sessionGrants.clear()
 deny 规则未命中 -> 计算 scope -> Set 中不存在 -> ask
 ```
 
-撤销不需要通知模型，也不需要修改 Agent Loop。`handlePermissionCommand()` 返回 `true`，`startTerminal()` 使用已有的 `continue` 跳过 Agent Loop；集合清空后，同一个请求自然恢复为待审批状态。这也说明把权限状态放在终端会话、把权限判断放在策略层的价值：界面管理生命周期，策略解释当前请求，工具保持不变。
+权限策略每次都查询当前 Set，不保存“上次已经允许”的额外缓存。记录消失后，原本需要确认的读取自然恢复为 `ask`。普通源码仍可直接读取，`.env` 等禁止请求仍然被拒绝，清空批准不会改变这两类规则。
+
+## 运行验证
+
+完成修改后，在仓库根目录运行：
+
+```bash
+npm run exercise:05
+```
+
+预期输出：
+
+```text
+✓ 第 05 章练习：会话授权可以被明确撤销
+```
+
+检查重点是命令清空了批准记录、没有修改历史，并且仍被识别为本地命令。实际会话中，也可以先批准一次 `.git` 读取，再执行 `/permissions clear`，随后重新请求读取 `.git/HEAD`，观察审批是否再次出现。

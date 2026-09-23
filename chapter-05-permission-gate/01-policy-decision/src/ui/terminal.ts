@@ -1,9 +1,9 @@
 /**
  * 05.1 让工具调用先经过权限策略 | [KEEP 来自 04.3] ui/terminal.ts
  *
- * 学习目标：持续读取终端输入，并让多轮对话共享同一份 history。
- * 输入：逐行用户文本、/reset、/exit、EOF 或 Ctrl+C。
- * 输出：普通文本交给 agentLoop()；执行期间显示教学追踪，最后显示回答。
+ * 学习目标：继续接收聊天输入，把主循环的权限检查结果显示出来。
+ * 输入：用户逐行输入、/reset、/exit、EOF 和 Ctrl+C。
+ * 输出：普通消息交给 agentLoop，显示过程和回答；本节还不收集审批输入。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   read line

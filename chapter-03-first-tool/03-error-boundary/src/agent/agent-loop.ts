@@ -42,24 +42,21 @@ import { executeTool } from "../tools/registry.js";
 const MAX_MODEL_CALLS = 8;
 
 /**
- * 把新一次模型调用的 token 数累加到本轮总量。
+ * 累加本轮各次模型请求报告的用量。
  *
- * - 输入：当前累计值和本次调用值；任一值都可能是表示未知的 `null`。
- * - 输出：两项都已知时返回和；任一项未知时返回 `null`。
- * - 关键原因：部分缺失的数据不能计算出真实总量，继续显示数字会造成误导。
+ * total 或 value 为 null，表示有一次用量未知，合计也只能返回 null。
+ * 两项都有数字时才相加，避免把不完整的统计显示成完整总量。
  */
 function addUsage(total: number | null, value: number | null): number | null {
   return total === null || value === null ? null : total + value;
 }
 
 /**
- * 运行有次数上限的工具循环，并把可恢复的工具错误反馈给模型。
+ * 让模型根据工具的成功或失败结果继续处理当前用户要求。
  *
- * - 输入：统一模型、正式历史、本轮用户文字和取消信号。
- * - 输出：得到最终回答时返回累计 `Reply`，并一次性提交本轮全部消息。
- * - 关键步骤：成功结果和 `ToolError` 都带原调用 ID 回传；模型据此继续推理。
- * - 失败方式：取消、未知异常、空回答或 8 次内没有最终回答时停止，正式历史保持不变。
- * - 职责边界：只把经过设计的 `ToolError` 文案交给模型，内部异常不会伪装成工具结果。
+ * 输入是模型、已完成历史、用户文字和取消信号。本轮消息先放在 turn，最终回答出现后才一起加入 history。
+ * 工具成功和 ToolError 都用原调用 ID 返回；其他异常、取消或 8 次内仍无最终回答时停止，本轮不保存。
+ * 第 8 次若还请求工具，先停止，不执行已经没有机会反馈的最后一批操作。
  */
 export async function agentLoop(
   model: Model, history: Message[], input: string, signal: AbortSignal,

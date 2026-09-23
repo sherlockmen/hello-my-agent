@@ -44,13 +44,11 @@ export const systemPrompt = "你是一个运行在命令行中的个人编程 Ag
 
 // [KEEP] 配置读取与校验；第一章没有模型配置。
 /**
- * 从启动目录向上查找当前项目的 `.env`，并把文件内容解析成普通对象。
+ * 从启动位置向上找 .env，让子目录启动也能找到项目配置。
  *
- * - 输入：无显式参数；查找起点是 `process.cwd()` 返回的当前工作目录。
- * - 输出：找到时返回解析后的键值对象；到达最近的 `package.json` 或文件系统根目录仍未找到时返回空对象。
- * - 关键步骤：每层先检查 `.env`，再检查项目边界，然后继续进入父目录。
- * - 失败方式：文件无法读取或语法无法解析时抛出只含安全文案的 `UserFacingError`。
- * - 职责边界：只返回对象，不把文件中的字段批量写入全局 `process.env`。
+ * 每层先看 .env，再看 package.json；找到 .env 就解析并返回其中的键值。
+ * 到最近的 package.json 或文件系统根目录仍没找到时，返回空对象。
+ * 这里只读取配置，不把整份文件写进 process.env；读取或解析失败时抛出 UserFacingError。
  */
 function readProjectEnv(): Record<string, string | undefined> {
   let directory = process.cwd();
@@ -72,14 +70,11 @@ function readProjectEnv(): Record<string, string | undefined> {
 }
 
 /**
- * 选择模型协议，再合并并校验该协议专用的运行时配置。
+ * 选择要连接的模型服务，并把不同来源的配置合成一个 Config。
  *
- * - 输入：命令行选项、进程环境变量和项目 `.env`。
- * - 输出：返回包含 `provider`、密钥、模型 ID 和基础地址的完整 `Config`。
- * - 覆盖顺序：命令行选项高于进程环境变量，进程环境变量高于 `.env`，最后才使用内置默认值。
- * - 关键原因：先确定 `openai` 或 `anthropic`，再只读取对应前缀的配置，防止混用密钥。
- * - 失败方式：协议名不支持、必填字段缺失或地址不安全时抛出 `UserFacingError`。
- * - 职责边界：这里只处理配置，不创建 SDK 客户端，也不发送请求。
+ * 先确定 provider，再只读取对应的 OPENAI_* 或 ANTHROPIC_*，避免混用密钥。
+ * 同一项按命令行选项、进程环境变量、项目 .env、内置默认值的顺序取第一个可用值。
+ * 协议、必填项和基础地址检查失败时抛出 UserFacingError；成功只返回配置，不发送请求。
  */
 export function readConfig(options: Options): Config {
   const fileEnv = readProjectEnv();

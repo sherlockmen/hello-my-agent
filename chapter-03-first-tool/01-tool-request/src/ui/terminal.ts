@@ -34,24 +34,22 @@ import type { Message, Model, Reply } from "../models/client.js";
 // ANSI 颜色只用于交互终端：用户标签为青色，Agent 标签为紫色。
 // 输出被管道或文件接收时不加控制字符，便于日志和脚本读取。
 /**
- * 根据输出目标决定是否给终端标签添加 ANSI 颜色。
+ * 只在交互终端给标签加颜色。
  *
- * - 输入：要显示的文字和 ANSI 颜色编号。
- * - 输出：交互终端得到带颜色的字符串；管道或文件得到原始纯文本。
- * - 关键原因：转义字符适合人眼终端，不应混入日志、重定向文件或测试结果。
+ * text 是待显示文字，color 是 ANSI 颜色编号。输出到终端时返回带颜色的文字，
+ * 输出到管道或文件时返回原文，避免颜色转义字符混进后续脚本处理的数据。
  */
 const colorLabel = (text: string, color: number) =>
   process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;
 
 // [KEEP 来自 02.4] history 的生命周期等于本次会话，agentLoop 负责每轮的提交规则。
 /**
- * 持续读取终端输入，并让每轮对话按顺序共享同一份可重置历史。
+ * 让连续输入共用一份历史，并在请求模型前处理本地命令。
  *
- * - 输入：已经创建的统一 `Model`；用户文字和本地命令来自标准输入。
- * - 输出：逐轮显示回答；`/reset` 清空历史，`/exit`、EOF 或 Ctrl+C 结束会话。
- * - 关键步骤：在调用 Agent 前识别本地命令，普通文字才进入 `agentLoop()`。
- * - 失败方式：单轮失败会显示安全提示且不提交失败轮次；Ctrl+C 会取消请求并设置退出码 130。
- * - 职责边界：`/reset` 和 `/exit` 不会发送给模型，历史也不会写入磁盘。
+ * 输入来自终端；传入的 model 用于处理普通问题。history 放在循环外，因此后一次输入可以带上之前的问答。
+ * /reset 清空历史，/exit、EOF 或 Ctrl+C 结束会话；这些本地命令不发给模型，也不写入磁盘。
+ * 单轮失败后显示提示并等待下一次输入；Ctrl+C 取消请求、关闭输入并设置退出码 130。
+ * 最终无论怎样退出，都关闭输入并移除进程监听，避免残留的资源继续占用进程。
  */
 export async function startTerminal(model: Model): Promise<void> {
   const history: Message[] = [];
@@ -105,12 +103,10 @@ export async function startTerminal(model: Model): Promise<void> {
 
 // [KEEP 来自 02.6] 同一处输出同时服务于连续对话与 --prompt 单次提问。
 /**
- * 显示模型回答、本轮 token 用量和可能的截断提示。
+ * 把最终回答、累计用量和输出截断提示显示到终端。
  *
- * - 输入：包含文本、用量和截断状态的统一 `Reply`。
- * - 输出：先打印回答，再打印用量；未知值显示“未知”，截断时追加提示。
- * - 关键原因：只展示接口报告的数据，不根据文本长度估算 token 或费用。
- * - 职责边界：只负责显示，不修改历史，也不再次调用模型。
+ * reply 来自主循环；用量为 null 时显示“未知”，不拿文本长度估算 token。
+ * 这里只显示结果，不修改历史，也不再次请求模型。
  */
 export function printReply(reply: Reply): void {
   console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);

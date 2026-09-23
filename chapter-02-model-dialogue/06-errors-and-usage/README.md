@@ -4,22 +4,17 @@
 
 **本节目标：把失败转换成可执行的排查提示，并在成功回答后显示服务商报告的用量与截断状态。**
 
-## 问题：同一句“模型请求失败”无法告诉用户怎样处理
+## 问题：请求失败了，接下来应该检查什么
 
-上一节已经能通过两种协议持续对话，但所有未知异常最终都会变成近似的“模型请求失败”。用户无法判断应该检查网络、密钥、权限、模型 ID，还是等待限流恢复。直接打印 SDK 的原始异常虽然信息更多，却可能把远端响应体、请求地址或其他敏感上下文带到终端。
+上一节已经能用两种协议持续对话，但网络断开、密钥不对、请求太频繁，最后都可能显示相同的“模型请求失败”。这些问题的处理方式不同，同一句提示却没有告诉用户从哪里查起。
 
-现在的失败提示和成功结果分别缺少关键信息：
+成功时也还有信息没有显示：这次用了多少 token，模型是不是因为输出达到上限才停下。如果回答停在半句话，单看文本无法判断发生了什么。
 
-1. **怎样让错误可以排查？** 网络中断、认证失败、权限不足、模型不存在和限流需要不同处理方法；全部显示成同一句话，用户不知道下一步该做什么。
-2. **怎样避免错误信息泄密？** SDK 原始异常可能包含响应体、请求地址或其他上下文，不能不加筛选地显示在终端。
-3. **怎样准确显示 token 用量？** 模型响应可能包含输入 token 和输出 token，兼容接口也可能完全不返回用量。缺少数据时显示 `0`，会错误地表示本轮没有消耗。
-4. **怎样知道回答是否完整？** 模型会用停止原因说明它为何结束生成。如果因为达到输出上限而停止，程序需要明确提示回答可能被截断。
+这一节让运行结果更容易理解。失败时说明可以检查什么；成功时保留回答，同时显示服务商报告的用量和停止信息。
 
-因此，本节要解决的问题是：**怎样把失败转换成安全、可执行的排查提示，同时统一两种协议的 token 用量和停止原因，并明确表示缺失数据？** 本节只完善错误提示和运行结果信息，不增加新的 Agent 能力。
+## 解决方案：失败解释原因，成功显示回答和用量
 
-## 解决方案
-
-把成功结果统一为“文本、用量、是否截断”，把失败交给 `explainError()` 转换成安全提示。两条分支都从同一次用户输入开始，并明确决定本轮历史是否提交。
+我们保留现有的请求和历史规则。模型模块把成功响应整理成统一的 `Reply`，加入用量和截断标记；请求失败时仍然抛出异常，由入口或终端调用同一个 `explainError()`，转成可以显示的提示。
 
 ```text
 程序启动 -> 读取并检查配置
@@ -47,40 +42,23 @@
                     和可能的截断提示      固定安全提示
 ```
 
-成功和失败是两条独立分支：用量来自成功响应，错误提示来自异常对象。程序不会根据错误响应猜测 token 用量。
+网络或 HTTP 错误不会产生本轮 `Reply`，所以核心也不会保存本轮问答。成功响应即使用量缺失，仍然可以保留文本，只把用量显示为“未知”。
 
 ## 工作原理
 
-先记住本节的核心结论：**失败通道回答“为什么没有结果”，成功通道回答“得到了什么以及消耗了什么”。** 异常分类只处理失败；文本、用量和停止原因只来自成功响应。两条通道不能互相猜测。
+### 从请求走到哪一步，判断应该检查哪里
 
-假设用户输入“解释 Promise”，完整执行过程是：
+一次请求失败，可能发生在不同位置。先按这个过程理解错误，比先记状态码更容易：
 
-```text
-1. 终端把问题交给 Agent Loop，Agent Loop 准备本轮消息
-2. 模型模块发送请求
-3. 请求成功时，模型模块返回统一 Reply
-4. Agent Loop 提交用户问题和模型回答
-5. 终端显示文本、用量，以及可能存在的截断提示
+| 发生的位置 | 例子 | 用户可以先检查什么 |
+| --- | --- | --- |
+| 还没发送请求 | 缺少 Key、基础地址格式不对 | 本地 `.env`、环境变量或命令选项 |
+| 发送后没有正常取得响应 | 网络连接失败、超时 | 网络和接口地址 |
+| 远端已经返回 HTTP 错误 | 认证失败、权限不足、请求受限 | 对应账号、模型、额度或服务状态 |
 
-如果第 2 步发生网络或 HTTP 异常：
-3. Agent Loop 立即退出，本轮消息不写入正式历史
-4. 终端用 explainError() 判断网络或 HTTP 错误
-5. 终端只显示对应的固定排查提示
-```
+配置错误由程序自己发现，可以直接写出明确的提示。网络和 HTTP 错误则来自 SDK，需要根据其错误类型与状态码解释：
 
-配置错误发生得更早：程序在创建模型和进入 Agent Loop 之前调用 `readConfig()`。缺少 Key 或 URL 无效时，CLI 外层的 `catch` 直接调用 `explainError()` 并结束，因此这类失败没有“本轮历史是否提交”的问题。
-
-例如，服务返回 401 时没有可信回答，也没有本轮成功用量；程序只显示“检查 API Key 与接口是否匹配”。服务返回文本并以 `max_tokens` 停止时，请求已经成功，程序应显示回答和用量，再提醒回答可能不完整。把第二种情况当异常，会丢掉仍然有用的文本。
-
-最容易误解的是“信息越原始越方便排错”。SDK 原始异常可能携带响应体、请求地址或调试上下文，直接输出会扩大泄露范围；字符长度也不能可靠推算 token。本节只展示固定错误分类和服务商明确报告的用量，不计算费用，也不自动重试。
-
-### 第一步：规定哪些错误可以直接显示
-
-在 [src/errors.ts](src/errors.ts) 中定义 `UserFacingError`，让配置和模型模块都能标记程序自己编写、可以直接展示的安全提示。
-
-新增 `explainError()` 分类 SDK 错误。入口处理启动失败，终端处理每轮请求失败，但两处使用同一套提示规则：
-
-| 情况 | 提示你检查什么 |
+| 情况 | 提示用户检查什么 |
 | --- | --- |
 | 超时 / 网络连接失败 | 网络和接口地址 |
 | 401 | 密钥是否与接口匹配 |
@@ -89,59 +67,50 @@
 | 429 | 额度，或稍后重试 |
 | 服务端错误 | 稍后重试 |
 
-只展示固定文案，不打印 SDK 的原始 `message`、响应体、请求头或堆栈。本节把原来的通用提示细分为可以采取行动的检查建议。
+例如收到 401，程序提示检查 API Key 与接口是否匹配；收到 429，则提示检查额度或稍后重试。提示不是代替服务商诊断所有原因，而是让用户知道下一步从哪一类问题查起。
 
-### 第二步：区分配置错误、传输错误和 HTTP 错误
+### 为什么不直接打印 SDK 的错误文字
 
-配置错误发生在发送请求之前，例如缺少 Key 或 URL 无效；程序可以为它编写确定且安全的 `UserFacingError`。传输错误表示没有正常取得 HTTP 响应，例如 DNS、连接失败或超时。HTTP 错误表示远端已经响应，但拒绝或无法处理请求。
+外部错误可能带有响应正文、请求地址或其他调试信息。直接输出 `error.message` 虽然省事，却会把这些内容一并带到终端和日志。我们只需要告诉用户如何处理，并不需要显示整份请求。
 
-这三层错误需要不同提示，因为修复动作不同。把所有异常都写成“模型请求失败”，读者无法判断应该检查本地配置、网络还是账号权限。另一方面，直接输出远端原始错误又会扩大日志中的敏感信息，所以这里只根据受控类型和状态码选择固定文案。
+因此，`explainError()` 区分两种来源：程序自己创建的 `UserFacingError` 使用已经写好的提示；SDK 错误只取类型和状态码，选择固定文案。不认识的异常也使用通用提示，不把原始对象展开。
 
-本节只把错误翻译成安全提示；第 34 章会在这些分类上增加结构化日志、关联 ID、重试退避和无进展检测，让失败可以定位和恢复。
+这里的 `UserFacingError` 只是一个错误类型名，表示“这段文字是程序准备给用户看的”。它本身没有自动脱敏功能，创建它时就不能放入密钥或原始响应。
 
-异常沿调用栈向上传播：SDK 抛错后，模型函数不会返回 `Reply`，`agentLoop()` 不会提交历史，终端或入口的 `catch` 最终负责显示。每一层只处理自己能够解释的职责。
+入口处理启动阶段的失败，终端处理连续会话中的单轮失败，两处都调用同一个解释函数。SDK 抛错后，模型模块不返回 `Reply`，核心也走不到保存历史的位置；异常一直传到入口或终端的 `catch`，才变成屏幕上的提示。
 
-### 第三步：把两种协议的用量归一化
+第 34 章会在这些分类上加入日志、重试退避和恢复。本节先把原因说清楚，不自动重复请求。
 
-在 [src/models/client.ts](src/models/client.ts) 的 `Reply` 上增加 `inputTokens`、`outputTokens` 和 `truncated`。OpenAI 读取 `prompt_tokens / completion_tokens`，Anthropic 读取 `input_tokens / output_tokens`。
+### 用量为什么不能拿文本长度代替
 
-有些兼容接口不返回用量，缺失或无效值转为 `null`，显示时写“未知”。Anthropic 本节展示原始输入/输出字段，暂不合并缓存字段；第 15 章会先把实际用量用于上下文预算和费用估算，第 23 章再统一缓存用量。
+token 是模型把文本切分后使用的计量单位，不固定等于一个字符或一个单词。并且，请求中还有系统说明与历史，不能只看这次问题或回答有多长，就得出实际用量。
 
-`finish_reason: length` 或 `stop_reason: max_tokens` 表示达到输出上限。把它转成 `truncated`，由终端显示提示。
+我们直接使用服务商响应中的统计。OpenAI 使用 `prompt_tokens` 和 `completion_tokens`，Anthropic 使用 `input_tokens` 和 `output_tokens`；模型模块分别读取，再统一为 `inputTokens` 与 `outputTokens`。
 
-token 是模型分词器处理的单位，不等于字符数或单词数。服务端可能加入或转换协议内容，因此本地不能通过 `text.length` 推算可靠用量。当前实现只展示响应明确报告的数值；字段缺失时使用 `null` 表示“未知”，而不是用 0 冒充没有消耗。
+有些兼容接口不返回这些字段，所以本地类型使用 `number | null`。程序只接受有限的非负数字，其余值写成 `null`，表示没有可显示的统计。这个检查只能确认数字格式，不能验证服务商是怎样计算的。
 
-停止原因也不是异常。模型达到输出上限时，请求仍然成功并产生可用文本，只是回答可能不完整。把它保存为 `truncated`，可以同时保留回答和提醒使用者。
+`null` 与 `0` 不能混用：前者是没有数据，后者是接口明确报告零。终端用 `?? "未知"` 处理缺失值，合法的零仍然显示为零。
 
-### 第四步：统一显示成功结果
+Anthropic 本节只展示原始输入与输出字段，没有把缓存字段相加。第 15 章会把用量用于上下文预算和费用估算，第 23 章再统一缓存统计；这里先不把显示的数字当成完整账单。
 
-在 [src/ui/terminal.ts](src/ui/terminal.ts) 的 `printReply()` 中追加：
+### 达到输出上限，为什么仍然保留回答
+
+服务可能已经返回了文本，只是因为达到输出上限停止。OpenAI 用 `finish_reason: length` 表示这种情况，Anthropic 使用 `stop_reason: max_tokens`。
+
+这和网络失败不同：请求已经有了可用文本，只是回答可能没说完。模型模块把这个信息转换成 `truncated: true`，核心仍然保存问答，终端先显示文本和用量，再追加“回答可能尚未完整”的提示。如果把它当成异常，反而会丢掉已经生成的内容。
+
+停止原因也不能证明回答一定正确、一定完成了用户任务；这里仅提示服务报告的输出上限。
+
+### 两种运行方式怎样显示同一份结果
+
+单次 `--prompt` 和连续会话已经共用 `printReply()`，所以只需在这个函数中增加用量与截断显示：
 
 ```ts
 console.log(`用量：输入 ${reply.inputTokens ?? "未知"}，输出 ${reply.outputTokens ?? "未知"} token。`);
 if (reply.truncated) console.log("提示：回答达到输出上限，可能尚未完整。");
 ```
 
-`??` 只在左侧是 `null` 或 `undefined` 时使用默认值，合法的 0 会正常显示。单次提问与连续对话都调用 `printReply()`，所以无需各写一套。
-
-`agentLoop()` 只接收统一的 `Reply` 并提交成功问答。错误码在模型边界解释，用量在终端边界显示，核心不需要知道某个服务商怎样命名这些字段。
-
-### 为什么选择在边界处翻译错误
-
-底层 SDK 错误包含传输细节，使用者需要的是下一步能做什么。`errors.ts` 负责识别 OpenAI、Anthropic 的 SDK 错误类型和 HTTP 状态码，并把它们翻译成有限的故障类别；模型模块只负责协议请求和成功响应转换，CLI 与终端负责调用 `explainError()` 后展示。固定文案还避免把远端响应体、请求地址中的参数或调试信息直接写到屏幕。
-
-用量也在协议边界归一化，因为 OpenAI 与 Anthropic 使用不同字段名。终端只处理 `number | null`，不会依赖某个 SDK 的响应对象。这个边界保证单次提问和连续会话可以复用同一个显示函数。
-
-### 还有哪些方案
-
-| 方案 | 优点 | 代价 |
-| --- | --- | --- |
-| 直接打印原始异常 | 调试信息最多 | 输出结构不稳定，还可能暴露响应体、地址或其他敏感上下文。 |
-| 所有失败只显示一句通用提示 | 实现最短 | 用户无法区分密钥、权限、限流和服务端故障。 |
-| 返回 `Result` 联合类型而不抛异常 | 成功和失败都体现在类型中 | 需要让每一层转发结果；当前 SDK 本身使用异常，额外包装没有减少分支。 |
-| 按字符数估算 token | 即使服务商不返回用量也能显示数字 | 不同模型分词规则不同，估算值不能代表计费或上下文占用。 |
-
-因此本节保留 SDK 的异常传播方式，只在最了解异常的边界做一次安全分类；用量只相信服务端明确返回的值，缺失时诚实显示“未知”。
+Agent Loop 仍然只接收 `Reply`，按原规则保存问题和回答，然后把结果返回调用方。服务商字段由模型模块转换，错误由 `errors.ts` 解释，显示由终端负责。核心不必为了新增两行输出再多一套分支。
 
 ## 本节改动文件
 
@@ -155,33 +124,64 @@ if (reply.truncated) console.log("提示：回答达到输出上限，可能尚�
 
 ## 动手构建
 
+从空目录跟写时，把已经完成的 `chapter-02-model-dialogue/05-anthropic/src/` 复制到 `chapter-02-model-dialogue/06-errors-and-usage/src/`，再在这份代码上继续。下面的 `src/` 均指本节目录；已有配套仓库时无需复制。
+
 ### 第一步：实现错误分类
 
 创建 `src/errors.ts`：
 
 ```ts
+/**
+ * 02.6 说明错误与显示用量 | [NEW] errors.ts
+ *
+ * 学习目标：让用户知道请求失败后先检查哪里，同时避免把原始请求与响应直接显示出来。
+ * 输入：配置错误、OpenAI / Anthropic SDK 错误或未知异常。
+ * 输出：程序自建的提示，或按错误类型选择的固定中文提示；不展开 SDK 原始异常。
+ *
+ * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
+ *   +-------+
+ *   | error |
+ *   +---+---+
+ *       v
+ *   UserFacingError？ -- 是 --> 返回安全文案
+ *       | 否
+ *       v
+ *   SDK error？ -------- 否 --> 返回通用提示
+ *       | 是
+ *       v
+ *   +-------------------------------+
+ *   | timeout / network / HTTP code |
+ *   +---------------+---------------+
+ *                   v
+ *   401 / 403 / 404 / 429 / 5xx / other --> 对应检查建议
+ *
+ * 关键点：只有程序自己创建的 UserFacingError 可以原样展示；外部错误只按类型和状态码分类。
+ * 运行观察：不同失败原因给出不同建议，任何提示都不包含测试密钥。
+ */
+
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 
+// [NEW 02.6] 本文件以下实现均为本节新增。
+// 这种错误的 message 会原样显示，创建时就要使用不含敏感内容的提示。
 export class UserFacingError extends Error {}
 
+/**
+ * 把捕获到的错误转成用户可以据此排查的提示。
+ *
+ * error 可能来自本地检查、两种 SDK，或其他未知位置。
+ * 程序自建的 UserFacingError 已使用可显示的文案，直接返回；SDK 错误按超时、网络和状态码选择固定提示。
+ * 无法识别时返回通用提示，不展开原始异常，也不打印响应体、请求头或堆栈。
+ * UserFacingError 本身不会脱敏，创建它时就必须避免放入凭据和原始响应。
+ */
 export function explainError(error: unknown): string {
   if (error instanceof UserFacingError) return error.message;
-
-  if (
-    error instanceof OpenAI.APIConnectionTimeoutError ||
-    error instanceof Anthropic.APIConnectionTimeoutError
-  ) {
+  if (error instanceof OpenAI.APIConnectionTimeoutError || error instanceof Anthropic.APIConnectionTimeoutError) {
     return "请求超过 60 秒，请稍后重试，或检查接口连接。";
   }
-
-  if (
-    error instanceof OpenAI.APIConnectionError ||
-    error instanceof Anthropic.APIConnectionError
-  ) {
+  if (error instanceof OpenAI.APIConnectionError || error instanceof Anthropic.APIConnectionError) {
     return "无法连接模型服务，请检查网络和接口地址。";
   }
-
   if (error instanceof OpenAI.APIError || error instanceof Anthropic.APIError) {
     if (error.status === 401) return "认证失败（401），请检查所选协议的 API Key 与接口是否匹配。";
     if (error.status === 403) return "没有访问权限（403），请检查账号与模型权限。";
@@ -190,14 +190,13 @@ export function explainError(error: unknown): string {
     if (error.status && error.status >= 500) return "模型服务暂时不可用，请稍后重试。";
     return "模型服务拒绝了请求，请检查协议、模型与配置。";
   }
-
   return "本次操作失败，请检查配置和服务状态后重试。";
 }
 ```
 
 只有 `UserFacingError` 的文字可以原样显示，因为这些文字由程序编写。SDK 异常只读取类型和状态码，不把远端 `message`、响应体或请求信息写到终端。[教学注释版源码](src/errors.ts)展示了完整分类流程。
 
-在 `src/config/load-config.ts` 中删除原来的 `UserFacingError` 类，改为：
+在 `src/config/load-config.ts` 中删除原来的 `UserFacingError` 类，把下面这条导入放到文件顶部：
 
 ```ts
 import { UserFacingError } from "../errors.js";
@@ -205,7 +204,14 @@ import { UserFacingError } from "../errors.js";
 
 ### 第二步：扩展统一结果
 
-在 `src/models/client.ts` 中改写 `Reply`：
+在 `src/models/client.ts` 中，保留配置导入中的 `systemPrompt` 和 `type Config`，把 `UserFacingError` 改从错误模块导入：
+
+```ts
+import { systemPrompt, type Config } from "../config/load-config.js";
+import { UserFacingError } from "../errors.js";
+```
+
+然后替换原来的 `Reply` 定义：
 
 ```ts
 export type Reply = {
@@ -216,13 +222,19 @@ export type Reply = {
 };
 ```
 
-加入统一数值检查：
+在 `createModel()` 后、`requestReply()` 前加入用量检查函数：
 
 ```ts
+// [NEW 02.6] 用量缺失或不是有限的非负数字时，统一记为未知。
+/**
+ * 检查服务商返回的用量能否作为一个数字显示。
+ *
+ * value 来自远端响应，可能缺失或不是数字；只保留有限的非负数字，其余返回 null。
+ * null 表示未知，不能换成 0，否则会把没有统计误写成没有消耗。
+ * 这里只检查数字格式，不验证服务商的统计方法；用量缺失也不会让已经返回的文本失败。
+ */
 function tokenCount(value: unknown): number | null {
-  return typeof value === "number" && Number.isFinite(value) && value >= 0
-    ? value
-    : null;
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
 }
 ```
 
@@ -248,17 +260,17 @@ return {
 };
 ```
 
-两套字段在模型边界变成同一种 `Reply`，所以上层不需要判断服务商。模型模块还要从 `../errors.js` 导入 `UserFacingError`；完整修改见[模型源码](src/models/client.ts)。
+两套字段在模型边界变成同一种 `Reply`，所以上层不需要判断服务商。前面已经完成错误类型的导入替换；其余请求和纯文本检查保持原样。
 
 ### 第三步：统一终端显示
 
-在 `src/ui/terminal.ts` 中导入：
+在 `src/ui/terminal.ts` 中，删除原先从配置模块导入 `UserFacingError` 的语句，换成：
 
 ```ts
 import { explainError } from "../errors.js";
 ```
 
-把请求失败提示改为：
+在单轮请求的 `catch` 中，保留取消判断和退出码处理，把原来的 `console.error()` 换成下面这一行：
 
 ```ts
 console.error(`错误：${explainError(error)} 本轮未加入历史，可重新输入。`);
@@ -267,14 +279,20 @@ console.error(`错误：${explainError(error)} 本轮未加入历史，可重新
 再把 `printReply()` 替换为：
 
 ```ts
+// [CHANGED 02.6] 同一处输出同时服务于连续对话与 --prompt 单次提问。
+/**
+ * 显示回答，并补上服务商报告的用量与输出上限提示。
+ *
+ * reply 来自模型模块，字段已经转换成统一名称。
+ * 先显示文本，再显示输入和输出用量；缺失值写“未知”，合法的 0 保持为 0。
+ * truncated 为真时提醒回答可能不完整，不根据文本长度猜测 token 或费用。
+ * 单次提问和连续会话共用这里；历史已经由核心保存，本函数只负责显示。
+ */
 export function printReply(reply: Reply): void {
   console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);
-  console.log(
-    `用量：输入 ${reply.inputTokens ?? "未知"}，输出 ${reply.outputTokens ?? "未知"} token。`,
-  );
-  if (reply.truncated) {
-    console.log("提示：回答达到输出上限，可能尚未完整。");
-  }
+  // 显示接口报告的本轮字段，不估算价格，也不把历史文本长度当成 token 数。
+  console.log(`用量：输入 ${reply.inputTokens ?? "未知"}，输出 ${reply.outputTokens ?? "未知"} token。`);
+  if (reply.truncated) console.log("提示：回答达到输出上限，可能尚未完整。");
 }
 ```
 
@@ -284,7 +302,11 @@ export function printReply(reply: Reply): void {
 
 ### 第四步：让单次提问使用相同边界
 
-在 `src/cli.ts` 中从 `errors.ts` 导入：
+在 `src/cli.ts` 中，配置导入改为只保留 `readConfig` 和 `type Options`，再从错误模块导入下面两个名字：
+
+```ts
+import { readConfig, type Options } from "./config/load-config.js";
+```
 
 ```ts
 import { UserFacingError, explainError } from "./errors.js";
@@ -305,7 +327,7 @@ try {
 
 ### 第五步：准备模型配置
 
-使用根目录 `.env` 中已经配置好的任一服务商。本节不需要增加环境变量；成功响应本身会提供可用的用量字段。
+使用根目录 `.env` 中已经配置好的任一服务商。本节不需要增加环境变量；成功响应中有可用统计时就显示数值，没有时显示“未知”。
 
 ### 第六步：构建并运行本节
 
@@ -341,11 +363,11 @@ hello-my-agent
 
 ```text
 终端输入
-   -> 配置选择模型协议
-   -> Agent Loop 组织消息并提交成功历史
-   -> OpenAI / Anthropic 模型返回回答与可选用量
+   -> Agent Loop 组织本轮消息
+   -> 已按配置创建的模型返回回答与可选用量
+   -> Agent Loop 确认未取消，保存本轮问答
    -> 终端显示回答、已知或未知用量，失败时显示脱敏错误
    -> 等待下一次输入
 ```
 
-它已经能稳定对话，却只能接受模型的最终文本；即使模型返回工具请求，程序也没有执行入口。第三章将在同一个 Agent Loop 中加入“识别工具请求、执行本地工具、回传结果、再次请求模型”的分支。
+我们现在可以连续提问、切换启动时使用的协议，也能看见请求失败的类别与服务报告的用量。程序仍只接收文本回答，模型不能因此知道本地文件里写了什么。完成 `/reset` 练习后，第三章会从读取 `package.json` 开始，先识别工具请求，再执行读取、把结果送回同一个 Agent Loop。

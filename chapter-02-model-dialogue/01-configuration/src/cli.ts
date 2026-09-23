@@ -33,14 +33,13 @@ import { readConfig, UserFacingError, type Options } from "./config/load-config.
 // [KEEP 第 01 章] 构建产物始终是 dist/cli.js，因此从它的上一级读取 package.json。
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 
-// [KEEP 来自第 01 章练习] 环境诊断不读取模型配置，也不会发送模型请求。
+// [CHANGED 02.1] 把第一章练习的诊断输出收进函数；仍在读取模型配置前执行。
 /**
- * 显示当前 Node.js 进程的最小诊断信息，不读取模型配置。
+ * 显示当前命令使用的 Node、平台和工作目录，方便比较运行环境。
  *
- * - 输入：无显式参数；版本、平台、架构和工作目录都来自 Node.js 的 `process`。
- * - 输出：向终端依次打印 Node、Platform 和 Working directory 三行文本。
- * - 关键原因：诊断发生在 `readConfig()` 之前，因此缺少 API Key 时也能运行。
- * - 职责边界：不读取 `.env`，不创建模型客户端，也不发送网络请求。
+ * 这些值来自当前进程的 process，函数依次打印三行诊断信息。
+ * 入口在读取模型配置之前调用它，所以缺少 API Key 时也能查看环境。
+ * 这里不测试网络或模型，也不判断显示出来的版本是否满足要求。
  */
 function printDoctor(): void {
   console.log(`Node: ${process.version}`);
@@ -74,6 +73,7 @@ program
     console.log(`配置已就绪，模型：${config.model}。本节不发送模型请求。`);
   });
 
+// [NEW 02.1] 配置检查失败时显示提示，并让命令以失败状态结束。
 try {
   program.parse();
 } catch (error) {

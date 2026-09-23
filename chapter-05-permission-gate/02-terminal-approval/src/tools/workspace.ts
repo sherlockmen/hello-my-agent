@@ -1,9 +1,9 @@
 /**
  * 05.2 在终端中完成一次审批 | [KEEP 来自 05.1] tools/workspace.ts
  *
- * 学习目标：让所有文件工具使用同一个项目根目录和同一组忽略规则。
- * 输入：启动目录，以及项目根目录中的 .gitignore。
- * 输出：项目根目录和一个可以判断相对路径是否应被忽略的匹配器。
+ * 学习目标：让文件工具从同一个项目目录开始，并跳过不应搜索的文件。
+ * 输入：启动目录和项目根目录中的 .gitignore。
+ * 输出：项目根目录，以及用于判断相对路径是否应跳过的 ignore 匹配器。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   +---------------+      向上查找 package.json      +--------------+
@@ -38,12 +38,10 @@ const BUILT_IN_IGNORES = [
 ];
 
 /**
- * 从启动目录向上寻找最近的 `package.json`，确定所有文件工具的项目边界。
+ * 向上找到最近的 package.json，确定文件工具从哪里开始。
  *
- * - 输入：可选起点；默认使用当前工作目录。
- * - 输出：找到时返回最近项目目录；找不到时返回规范化后的原起点。
- * - 关键步骤：逐级检查当前目录，再移动到父目录，直到找到标记或到达文件系统根。
- * - 职责边界：只确定逻辑项目根，不判断某个具体文件是否允许访问。
+ * 默认从当前工作目录出发。找到就返回所在目录，走到文件系统根仍没找到则返回整理后的起点。
+ * 这里只选定项目目录，还没有判断某个文件能不能访问。
  */
 export function findProjectRoot(start = process.cwd()): string {
   let directory = resolve(start);
@@ -56,13 +54,11 @@ export function findProjectRoot(start = process.cwd()): string {
 }
 
 /**
- * 合并内置保护规则和项目根目录的 `.gitignore`，建立路径过滤器。
+ * 把项目忽略规则和程序必须跳过的路径合在一起。
  *
- * - 输入：已经确定的项目根目录。
- * - 输出：返回 `ignore` 匹配器；调用 `ignores(relativePath)` 可判断路径是否应跳过。
- * - 关键步骤：读取项目规则后再次加入内置规则，防止 `!` 否定规则重新暴露受保护路径。
- * - 失败方式：`.gitignore` 存在但无法读取或解析时抛出 `ToolError`，避免搜索范围悄悄扩大。
- * - 职责边界：本章只读取项目根目录的一份 `.gitignore`，尚未合并子目录中的嵌套规则。
+ * - 传入项目根目录，返回 ignore 匹配器；调用 ignores(relativePath) 判断是否跳过。
+ * - 项目 .gitignore 读入后，再追加一次内置规则，避免 ! 把受保护目录重新包含进来。
+ * - .gitignore 无法读取或解析时抛出 ToolError；本节还不合并子目录中的 .gitignore。
  */
 export async function createIgnoreMatcher(projectRoot: string): Promise<Ignore> {
   const matcher = ignore().add(BUILT_IN_IGNORES);

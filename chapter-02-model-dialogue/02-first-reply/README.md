@@ -4,71 +4,54 @@
 
 **本节目标：让 `hello-my-agent --prompt "你好"` 向 OpenAI 兼容接口发送一次请求，输出回答后退出。**
 
-## 问题：读到配置，不等于已经取得模型回答
+## 问题：配置读到了，怎样让模型真正回答一次
 
-上一节只能证明程序读到了格式正确的密钥、模型 ID 和基础地址。它还没有把用户的问题发给模型，因此不能证明网络、认证、模型 ID 和接口协议真的可用。
+上一节的“配置已就绪”只表示本地字段齐全、地址格式符合要求。我们还没有把任何问题发出去，密钥能否使用、模型是否存在、网络能否连接，都还不知道。
 
-第一次发送问题时，需要处理三个独立问题：
+这次就从一句“用一句话解释什么是 CLI”开始。命令行收到的是字符串，远端服务需要的却是一份带模型名、消息角色和认证信息的请求。发送之后，程序还得等它回答，再从响应中取出可以显示的文本。
 
-1. **怎样把用户文字变成接口请求？** 命令行得到的是字符串，模型接口需要带有 `role` 和 `content` 的消息数组，以及服务商规定的请求字段。
-2. **怎样等待网络结果？** 网络请求不会立刻返回答案。程序先得到一个 Promise，也就是“将来才会完成的异步结果”；如果入口不等待它，进程可能在回答到达前结束。
-3. **怎样判断响应是否可用？** 响应可能缺少文本，也可能返回工具请求，也就是要求程序执行外部操作的结构化结果。直接读取 `choices[0].message.content`，会把不完整响应当成成功，或在字段缺失时抛出难懂的异常。
+我们先完成这一来一回：运行命令，得到一条回答，结束进程。等这个过程清楚了，再加入连续对话。
 
-因此，本节要解决的问题是：**怎样把一条命令行问题发送给 OpenAI 兼容接口，等待响应，并且只把有效的纯文本作为成功回答？** 本节每次只提问一次；连续会话在 02.4 实现，工具调用从第三章开始实现。
+## 解决方案：由模型模块发送请求，入口等待并显示回答
 
-## 解决方案
+我们使用 OpenAI SDK 处理网络请求，在它外面放一个很小的模型模块。入口把问题交给模块的 `generate()` 方法，等待它返回 `{ text }`，再显示给用户。
 
-新增模型模块，把 SDK 初始化、请求字段和响应检查封装在 `Model.generate()` 中。命令入口只负责验证问题、调用模型并显示结果。
+SDK 负责请求地址、认证和网络收发；模型模块负责把本书的消息转成接口要求的格式，并检查返回的内容能否作为本节的回答。
 
 ```text
 +------------------+
 | --prompt <text>  |
 +--------+---------+
          |
-   +-----v------+
+         v
+ readConfig --> createModel
+         | 失败 --> 显示提示 --> 结束
+         | 成功
+         v
+   +------------+
    | non-empty? |
    +--+------+--+
       | 否   | 是
       v      v
-   显示提示   readConfig --> createModel --> SDK 请求
-                                             |
-                              +--------------+--------------+
-                              | 失败                        | 响应
-                              v                             v
-                         安全提示                  有可用文本？
-                                                      | 否 --> 安全提示
-                                                      | 是
-                                                      v
-                                                显示回答 --> 结束
+   显示提示   SDK 请求
+               |
+       +-------+-------+
+       | 失败          | 响应
+       v               v
+    显示提示      有可用文本？
+                  | 否 --> 显示提示
+                  | 是
+                  v
+            显示回答 --> 结束
 ```
 
-这一节只有一次模型请求。无论成功还是失败，程序处理完本次结果后都会退出。
+配置和问题检查通过后才会发出请求。空白问题、网络失败或没有可用文本都会显示提示，不会被当成一次正常回答。
 
 ## 工作原理
 
-先把一次模型调用理解成一次**跨网络的请求与响应往返**。本地程序准备消息，SDK 把消息转换成 HTTP 请求，远端模型服务返回 JSON，模型模块再从 JSON 中挑出本项目认可的结果。SDK 是负责传输和协议转换的客户端，不是模型本身。
+### 模型收到的不只是一个字符串
 
-```text
-用户文字
-  -> 本地 Message[]
-  -> SDK 生成 JSON、认证头和请求地址
-  -> HTTP(S) 到达模型服务
-  -> 服务返回响应 JSON
-  -> 本地检查 choices、文本和工具调用
-  -> Reply 或错误
-```
-
-例如，用户输入“只回答 OK”后，本地会形成一条 `user` 消息，程序再把系统说明放到它前面。远端若返回第一项选择且内容为 `OK`，模型模块生成 `{ text: "OK" }`。若返回空文本或工具调用，本章无法处理，就明确失败，不能把它伪装成正常回答。
-
-最容易误解的是 TypeScript 类型能够保证远端响应正确。类型只帮助编译器检查我们怎样使用 SDK；网络另一端实际返回什么，仍必须在运行时判断。本节只处理一次非流式纯文本请求，不处理历史、流式分片或工具执行。
-
-### 第一步：给模型一段系统说明
-
-在 [src/config/load-config.ts](src/config/load-config.ts) 中增加 `systemPrompt`，把角色说明为“运行在命令行中的个人编程 Agent”，并写清当前只能文本对话。这里描述的是职责和真实能力，不把书名 `Hello, My Agent` 当作模型人格。系统说明是程序给模型的规则；本次用户提问是需要模型回答的内容，两者职责不同。
-
-### 第二步：定义模型模块的输入和输出
-
-在 [src/models/client.ts](src/models/client.ts) 中定义 `Message`、`Reply` 和 `Model`，本节只支持文本：
+聊天接口使用带角色的消息，让服务区分“程序给出的说明”和“用户提出的问题”。本节的一次请求包含两部分：系统提示词说明助手要做什么，`user` 消息保存本轮问题。
 
 ```ts
 export type Message = { role: "user" | "assistant"; content: string };
@@ -78,22 +61,13 @@ export interface Model {
 }
 ```
 
-`user` 是用户提问，`assistant` 是模型回答。`generate()` 是本地方法名，它把“发消息、拿回答”包起来；实际网络调用是 OpenAI SDK 的 `client.chat.completions.create()`。02.5 会在这个接口后接入 Anthropic 协议，调用它的代码仍不需要知道服务商字段。
+这里的 `Message` 表示本地问答消息，`user` 是用户输入，`assistant` 是模型回答。本节只有一条用户消息；`assistant` 会在后面的会话历史中用到。系统提示词单独保存在配置模块，发送时由模型模块放在最前面，成为 `role: "system"` 的消息。
 
-`createModel()` 根据配置创建 SDK 客户端。调用 `generate()` 时，把系统说明放在第一条 `system` 消息中，再放入用户消息；SDK 负责 JSON、HTTP 和认证。响应的文本从 `choices[0].message.content` 读取。
+系统说明把助手描述为“运行在命令行中的个人编程 Agent”，并说明当前只能文本对话。这样，模型得到的职责与实际程序相符：可以解释代码，却没有读取文件或执行命令的工具。提示词不能保证模型永远说对，但程序不能在尚未提供能力时，先告诉它这些事已经能做。
 
-模型模块还规定了四个运行边界：
+### SDK 怎样把消息送到模型，再把回答带回来
 
-- 空文本和工具调用不算本章的成功回答。
-- 单次请求最多等待 60 秒。
-- 请求失败后不自动重试，避免同一个问题被重复发送。
-- 不输出 SDK 调试日志，避免原始响应进入终端。
-
-`AbortSignal` 是取消请求的信号。本节先把它传给 SDK，02.4 接入终端 Ctrl+C 时会继续使用同一条取消链路。
-
-### 第三步：理解一次请求怎样穿过运行时
-
-先看数据怎样变化：
+`createModel()` 根据上一节的 `Config` 创建客户端。这一步只是准备好连接配置，还没有发送问题。真正调用 `generate()` 时，模块才把消息交给 `client.chat.completions.create()`。
 
 ```text
 JavaScript 消息对象
@@ -103,9 +77,13 @@ JavaScript 消息对象
   -> SDK 把响应 JSON 还原成 JavaScript 对象
 ```
 
-DNS 查询、建立连接和 TLS 加密都发生在“发送 HTTP(S) 请求”这一步。它们解释了为什么地址错误、网络不通和证书问题会在模型生成回答之前失败，但本节不需要手写这些网络过程。
+SDK 是本地的客户端库，模型仍在服务端运行。它省去了手写 HTTP 请求的重复工作，但本地程序仍然决定使用哪个模型、发送哪些消息，以及怎样处理结果。地址、连接或证书有问题时，请求可能还没到模型就已经失败。
 
-再看程序等待期间发生什么：
+本节使用非流式响应，也就是等待完整响应后再显示。这样先看清一次请求何时成功、何时失败；第 08 章再加入边生成边显示的流式输出。
+
+### 等待模型时，程序停在哪里
+
+网络回答不会在调用函数的瞬间出现，所以 `generate()` 返回 `Promise<Reply>`。Promise 表示这项操作还在进行，将来可能得到结果，也可能失败。
 
 ```text
 调用 generate()
@@ -116,45 +94,40 @@ DNS 查询、建立连接和 TLS 加密都发生在“发送 HTTP(S) 请求”�
   -> 当前函数从 await 后面继续执行
 ```
 
-`generate()` 返回 Promise，因为网络结果在未来某个时间才会到达。`await` 暂停的是当前 `async` 函数，不是整个操作系统，也不是用循环反复检查网络。Node 可以继续处理计时器、信号等事件；Promise 完成后，事件循环安排后续代码继续执行。
+`await` 让当前函数在这里等，并没有卡住整个 Node 进程。只有请求成功完成，程序才会继续读取 `reply.text`；请求抛错时，则转到外层的错误处理。
 
-SDK 成功返回只说明取得了一个符合 SDK 类型的响应，不代表它符合本章的业务要求。当前 Agent 只接受一个非空纯文本回答，所以还要检查第一项选择、文本字段和工具调用。远程响应属于不可信输入，运行时校验不能由 TypeScript 类型代替。
+命令入口也要等待这个过程。因此 `.action()` 改为 `async`，最外层使用 `await program.parseAsync()`。普通 `parse()` 不会等待异步 action 的 Promise；即使网络连接让进程暂时没有退出，外层的 `try/catch` 也不能靠同步调用接住之后才发生的拒绝。使用异步解析，等待和错误处理才能覆盖整个请求。
 
-### 第四步：理解 Model 接口的作用
+为了避免一次输入长时间没有结果，客户端把超时设为 60 秒，并关闭自动重试。`AbortSignal` 则把调用方的取消状态传给 SDK；02.4 接入 Ctrl+C 时会用到它。
 
-`Model` 描述调用方所依赖的最小形状：一个 `generate()` 方法。TypeScript 使用结构类型检查对象是否满足它，并在编译后删除接口。运行时没有名为 `Model` 的基类；真正被调用的是 `createModel()` 返回对象上的函数。
+### 网络请求成功，为什么还要检查文本
 
-这个边界让 Agent 核心依赖“能生成回答的对象”，而不是依赖 OpenAI SDK。02.5 接入 Anthropic、确定性检查接入内存模型时，只要提供相同方法，调用方都不必改写。
+SDK 返回对象以后，程序从 `choices[0].message.content` 读取第一项回答。但 HTTP 成功不等于本节一定得到了可显示的文本：第一项可能不存在，文本可能为空，响应也可能要求调用工具。
 
-### 第五步：把命令行问题交给模型模块
+当前程序只会显示纯文本，所以模型模块要检查文本存在、去掉空白后仍有内容，并且没有工具请求。满足这些条件才返回 `{ text }`；不满足就给出明确提示。工具请求需要本地程序执行并回传结果，第三章才会加入，当前不能把它当成空回答悄悄略过。
 
-在 [src/cli.ts](src/cli.ts) 中登记 `--prompt <text>`，无参启动时提示填写提问。在 `.action()` 中创建模型，然后发送一条用户消息：
+TypeScript 能帮助我们按正确方式访问 SDK，但不会在运行时自动检查网络返回的每个字段。这些判断仍要由程序完成。
+
+### 为什么让入口只接收 Reply
+
+CLI 需要的是“发出问题后得到一段回答”，并不需要理解 `choices` 的嵌套结构。我们用 `Model` 约定这一点：接收消息和取消信号，返回 `Reply`。`generate()` 是本书的本地方法名，不是服务商规定的接口名称。
+
+运行时，`createModel()` 返回的是一个普通对象，它带有 `generate()` 函数。TypeScript 的接口在编译后会被删除，不会生成额外的基类。到了 02.5，Anthropic 虽然使用另一种请求和响应格式，只要模型模块仍返回相同的 `Reply`，入口就能继续显示。
+
+命令入口当前这样使用它，下面只展示调用和显示两行：
 
 ```ts
 const reply = await model.generate([{ role: "user", content: options.prompt }], signal);
 console.log(`${colorLabel("Agent", 35)} > ${reply.text}`);
 ```
 
-这里的 `options.prompt` 已在前面检查非空；`signal` 来自 `new AbortController().signal`。完整上下文见源码。
+这里的问题已经检查过非空，`signal` 来自 `AbortController`。本节每次启动都只有这个问题，还没有保存历史。
 
-网络请求不会立即结束，所以 `.action()` 改为 `async`，底部的 `parse()` 改为 `await program.parseAsync()`。如果仍用同步 `parse()`，Commander 不会替顶层等待异步操作完整结束。此时仍没有会话历史，每次启动都是一个新问题。
+### 这次为什么选择 Chat Completions 和官方 SDK
 
-### 为什么选择官方 SDK 和一次性响应
+本章要学习的是消息怎样进出模型服务，还要在后面与 Anthropic Messages 对照，所以先使用 OpenAI 兼容的 Chat Completions 消息格式。SDK 已经处理认证、JSON、超时和取消，我们只补上当前程序需要的消息转换与文本检查。
 
-OpenAI SDK 已经负责认证头、请求路径、JSON 序列化、响应解析、超时和取消信号。模型模块只需要处理本项目真正关心的边界：怎样把本地消息转换成协议字段，以及怎样把远端响应收敛为非空文本。这样既能看到协议数据，也不会把通用 HTTP 细节混进入口。
-
-本节先使用一次性响应，而不是流式输出。一次性响应只有“等待 → 成功或失败”两种结果，适合先看清异步请求和响应校验。第 08 章会把这个边界升级为流式响应，处理事件分片、工具参数组装、增量文本和中途断流。
-
-### 还有哪些方案
-
-| 方案 | 优点 | 代价 |
-| --- | --- | --- |
-| 直接使用 `fetch()` | 可以完整观察 URL、请求头和 JSON，也不依赖 SDK | 需要自己维护认证、状态码、超时和不同响应结构。 |
-| 使用 OpenAI Responses API | 适合新的 OpenAI 原生能力和统一响应项 | 许多兼容网关仍以 Chat Completions 为共同协议，本章还要与 Anthropic Messages 对照。 |
-| 一开始就使用流式响应 | 首个字符更快出现在终端 | 会同时引入流事件和界面状态，掩盖本节的一次请求主线。 |
-| 让 `cli.ts` 直接调用 SDK | 文件更少 | 命令解析和协议转换会耦合在一起，02.5 增加 Anthropic 协议时还要改入口。 |
-
-本节选择“小型模型模块 + 官方 SDK + 非流式请求”，因为它用最少的新概念打通真实网络，同时为 02.5 的双协议适配留下清楚边界。
+直接使用 `fetch()` 也能完成请求，但需要自己处理这些通用细节。直接让 `cli.ts` 调 SDK 会少一个文件，却会让命令参数和协议字段混在一起；增加第二种协议时，入口也得跟着改。本节的模型模块把这部分转换放在一个明确的位置。
 
 ## 本节改动文件
 
@@ -165,6 +138,8 @@ OpenAI SDK 已经负责认证头、请求路径、JSON 序列化、响应解析�
 | 新增 | [src/models/client.ts](src/models/client.ts) | 使用 OpenAI SDK 发送纯文本消息并返回 `Reply`。 |
 
 ## 动手构建
+
+先按[下一小节的跟写方法](../../docs/SETUP.md#进入下一小节时怎样继续跟写)，把已经完成的 `chapter-02-model-dialogue/01-configuration/src/` 复制到 `chapter-02-model-dialogue/02-first-reply/src/`。下面只修改本节这份代码，文中的 `src/` 也都指向本节；已有配套仓库时无需复制。
 
 ### 第一步：增加系统提示词
 
@@ -181,42 +156,74 @@ export const systemPrompt =
 
 ### 第二步：实现模型模块
 
-创建 `src/models/client.ts`。下面是本节的完整模型模块；[教学注释版源码](src/models/client.ts)同时标出了协议转换和失败分支。
+创建 `src/models/client.ts`，完整文件如下。先看请求怎样变成 `Reply`，再把它接进入口：
 
 ```ts
+/**
+ * 02.2 向模型提问一次 | [NEW] models/client.ts
+ *
+ * 学习目标：把普通消息转换成 OpenAI Chat Completions 请求，并取出可用的文本回答。
+ * 输入：模型配置、user/assistant 消息数组和 AbortSignal。
+ * 输出：{ text }；空文本或工具调用会抛出 UserFacingError。
+ *
+ * 本文件局部流程（当前启动主流程见 cli.ts）：
+ *   +----------+   +---------------+   +-------------+   +----------+
+ *   | messages |-->| add system    |-->| SDK request |-->| response |
+ *   +----------+   +---------------+   +-------------+   +----+-----+
+ *                                                             v
+ *                                                        可用文本？
+ *                                                         | 否 --> UserFacingError
+ *                                                         | 是 --> Reply
+ *
+ * 关键点：超时设为 60 秒，关闭自动重试和调试日志，避免一次输入被重复发送或敏感响应进入日志。
+ * 运行观察：得到可用文本时返回 Reply；空回答会抛错，由调用方显示原因。
+ */
+
 import OpenAI from "openai";
 import { systemPrompt, UserFacingError, type Config } from "../config/load-config.js";
 
+// [NEW 02.2] 本文件以下实现均为本节新增。
+// user 是提问，assistant 是模型回答；暂时只处理纯文本。
 export type Message = { role: "user" | "assistant"; content: string };
 export type Reply = { text: string };
-
+// generate 是本地 TypeScript 方法，真正的服务商请求由下方 SDK 方法完成。
 export interface Model {
   generate(messages: Message[], signal: AbortSignal): Promise<Reply>;
 }
 
+/**
+ * 准备一个能接收消息、返回回答的 OpenAI 兼容模型对象。
+ *
+ * config 来自 readConfig()，已经检查过必填值和地址格式。
+ * 创建 SDK 客户端时不发送请求；调用返回对象的 generate() 才会请求服务。
+ * 客户端设置 60 秒超时，并关闭自动重试和日志，避免一次输入被重复发送或输出原始请求信息。
+ * 请求异常继续交给调用方处理，历史也由调用方管理。
+ */
 export function createModel(config: Config): Model {
   const client = new OpenAI({
-    apiKey: config.apiKey,
-    baseURL: config.baseURL,
-    timeout: 60_000,
-    maxRetries: 0,
-    logLevel: "off",
-    organization: null,
-    project: null,
+    apiKey: config.apiKey, baseURL: config.baseURL,
+    timeout: 60_000, maxRetries: 0, logLevel: "off",
+    organization: null, project: null,
   });
-
   return {
+    /**
+     * 发送这次消息，并从 OpenAI 兼容响应中取出可用的文本。
+     *
+     * messages 是调用方准备的问答，signal 用来传递取消状态。
+     * 程序先在消息前加入系统说明，再等待 SDK 请求；响应有非空文本且没有工具请求时返回 { text }。
+     * 不满足本节要求时抛出 UserFacingError，网络或取消等 SDK 异常继续向外传递。
+     * 这个方法只负责消息收发和结果检查，不会修改传入的历史数组。
+     */
     async generate(messages, signal) {
-      const response = await client.chat.completions.create(
-        {
-          model: config.model,
-          messages: [{ role: "system", content: systemPrompt }, ...messages],
-          stream: false,
-        },
-        { signal },
-      );
+      // system 说明规则，user/assistant 保存问答；每次请求都重新传入上下文。
+      const response = await client.chat.completions.create({
+        model: config.model,
+        messages: [{ role: "system", content: systemPrompt }, ...messages],
+        stream: false,
+      }, { signal });
       const choice = response.choices?.[0];
       const text = choice?.message?.content;
+      // 尚无工具能力；拒绝工具调用或空文本，避免把无效响应当作成功回答。
       if (typeof text !== "string" || !text.trim() || choice?.message?.tool_calls?.length) {
         throw new UserFacingError("接口没有返回可用的纯文本回答，请检查模型是否支持本章的聊天接口。");
       }
@@ -241,10 +248,10 @@ const colorLabel = (text: string, color: number) =>
   process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;
 ```
 
-登记提问选项，并把默认操作替换为异步版本。环境诊断仍然在读取配置和创建模型之前结束。
+保留已有的 `--doctor`、`--model` 和 `--base-url`，在这些选项后新增 `--prompt`，然后替换 `.action()`。下面从新增选项开始展示；环境诊断继续在读取配置和创建模型之前结束。
 
 ```ts
-.option("--doctor", "显示当前运行环境")
+// [CHANGED 02.2] 保留原有选项，在其后增加提问与异步处理。
 .option("--prompt <text>", "提问一次后退出")
 .action(async () => {
   const options = program.opts<CliOptions>();
@@ -281,7 +288,7 @@ try {
 
 ### 第四步：准备真实模型配置
 
-在根目录 `.env` 中填写 [02.1 介绍的三项配置](../01-configuration/README.md#填写第一组配置)。本节开始真正请求服务，需要使用有效的 Key、模型 ID 和基础地址，不能继续用练习假值。
+在根目录 `.env` 中填写 [02.1 介绍的三项配置](../01-configuration/README.md#第三步填写第一组配置)。本节开始真正请求服务，需要使用有效的 Key、模型 ID 和基础地址，不能继续用练习假值。
 
 OpenAI 分支使用 [Chat Completions](https://developers.openai.com/api/reference/typescript/resources/chat/subresources/completions/methods/create)：程序提交模型 ID 和带角色的消息数组，接口返回 `choices`，本节从第一项选择中提取回答文本。只提供 Responses 接口、没有实现 Chat Completions 请求格式的网关不适用。
 
@@ -295,7 +302,7 @@ OpenAI 官方目前建议新项目优先评估 Responses API；本教程选择 C
 npm run lesson:02.2
 ```
 
-这条 npm 命令只完成依赖安装、编译和命令注册，不调用模型。完成后会提示你在准备好真实请求时运行：
+这条 npm 命令只完成依赖安装、编译和命令注册，不调用模型。准备好真实请求后，再运行：
 
 ```bash
 hello-my-agent --prompt "用一句话解释什么是 CLI。"
@@ -325,4 +332,4 @@ hello-my-agent --prompt "用一句话解释什么是 CLI。"
 用户问题 -> CLI -> Config -> Model.generate() -> 模型服务 -> 最终回答 -> 终端
 ```
 
-它能够完成一次真实问答，但消息组织、成功提交和取消处理仍写在命令入口附近。下一节将这段执行过程收进 `agentLoop()`，建立后续工具调用也要经过的稳定核心。
+我们已经能通过命令完成一次真实问答，不过问题还由入口临时组成消息，也没有保存问答的规则。下一节会把一轮处理交给 `agentLoop()`，让程序明确知道什么时候可以把这次问答留给下一轮使用。

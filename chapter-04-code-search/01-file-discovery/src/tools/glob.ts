@@ -3,7 +3,7 @@
  *
  * 学习目标：让模型用 glob 模式查找项目中的真实文件，而不是猜测文件名。
  * 输入：包含 pattern 的 JSON 参数，例如匹配 src 下所有 TypeScript 文件的模式。
- * 输出：给模型的有界路径文本，以及供界面使用的路径数量、截断状态和路径元数据。
+ * 输出：给模型的最多 200 条路径组成的文本，以及供界面使用的路径数量、截断状态和路径元数据。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   +------------------+
@@ -22,7 +22,7 @@
  *   仅保留普通文件 --> 排序 --> 前 200 项 + 截断说明
  *
  * 关键点：glob 负责按路径找文件，不读取文件内容。模型输出仍是不可信输入，
- * 所以本地会拒绝绝对模式和包含 .. 的模式。忽略规则和结果上限让搜索范围保持可控。
+ * 所以本地会拒绝绝对模式和包含 .. 的模式。忽略规则减少目录访问，数量上限减少返回路径；二者都不是执行超时。
  * 运行观察：匹配所有 TypeScript 文件时能找到源码，但不会返回 node_modules、dist、.env 或 .gitignore 忽略的文件。
  */
 
@@ -54,12 +54,10 @@ const MAX_RESULTS = 200;
 type GlobResult = { paths: string[]; truncated: boolean };
 
 /**
- * 校验一个准备交给文件匹配器的 glob 模式。
+ * 检查模型给出的路径模式能否用于本项目的搜索。
  *
- * - 输入：来自工具参数的未知值。
- * - 输出：值是非空字符串且通过边界检查时，返回去除首尾空格的模式。
- * - 失败方式：类型不符、模式过长、使用绝对路径或包含 `..` 时抛出 `ToolError`。
- * - 职责边界：不解析完整工具对象，也不访问文件系统。
+ * 只接受非空字符串，去掉首尾空格后返回；超过 500 字符、绝对路径或包含 .. 路径段时抛出 ToolError。
+ * 这里只检查模式文本，不访问磁盘，也不检查完整工具参数对象。
  */
 export function validateGlobPattern(value: unknown): string {
   if (typeof value !== "string") throw new ToolError("glob pattern 必须是字符串。");
@@ -73,11 +71,10 @@ export function validateGlobPattern(value: unknown): string {
 }
 
 /**
- * 从工具参数对象中取出唯一的 `pattern` 字段。
+ * 从工具请求中取出唯一的 pattern，再检查它的值。
  *
- * - 输入：未经信任的 JSON 字符串。
- * - 输出：返回经过 `validateGlobPattern()` 边界检查的模式。
- * - 失败方式：JSON 无效、不是对象或包含多余字段时抛出 `ToolError`。
+ * 输入是模型生成的 JSON 字符串；无效 JSON、非对象或多余字段都会抛出 ToolError。
+ * 返回值已经通过 validateGlobPattern()，接下来才用于真实文件匹配。
  */
 function parsePattern(argumentsJson: string): string {
   let value: unknown;
@@ -97,13 +94,13 @@ function parsePattern(argumentsJson: string): string {
 }
 
 /**
- * 在项目根目录中匹配普通文件，并应用忽略规则和数量上限。
+ * 找出一批符合模式的普通文件，供 glob 返回或 grep 继续读取。
  *
- * - 输入：已校验的 glob 模式、项目根目录、最大文件数和可选取消信号。
- * - 输出：排序后的相对路径和截断标记；没有匹配时返回空数组。
- * - 关键步骤：Node.js 负责 glob 匹配，`ignore` 在遍历阶段剪枝目录，再只保留普通文件。
- * - 关键原因：额外读取一项用于判断是否截断，避免扫描完整个大型仓库后才停止。
- * - 失败方式：glob 遍历失败时转换成 `ToolError`；取消时抛出 `AbortError`，不会伪装成工具错误。
+ * 输入是已校验的模式、项目根、返回数量上限和可选取消信号。
+ * 遍历时就跳过忽略目录；收集到 maxResults + 1 项便停止，这时才知道确实需要截断。
+ * 随后只对这批已收集路径排序，再返回前 maxResults 项，不是全项目排序后的前若干项。
+ * 没有匹配时返回空数组；遍历失败抛出 ToolError，取消则向外抛出取消异常。
+ * 数量上限不限制遍历耗时，程序只能在遍历交出下一项时检查取消。
  */
 export async function findMatchingFiles(
   pattern: string,
@@ -140,12 +137,12 @@ export async function findMatchingFiles(
 }
 
 /**
- * 执行 glob 工具，并把有界路径列表转换成模型可读的文本。
+ * 把路径匹配结果整理成模型结果和终端所需的数量信息。
  *
- * - 输入：模型生成的参数字符串、项目根目录和可选取消信号。
- * - 输出：`content` 是给模型的路径文本，`metadata` 是给界面的路径数量、截断状态和路径数组。
- * - 失败方式：参数或模式无效时抛出 `ToolError`；取消时立即停止，未匹配时返回明确说明。
- * - 职责边界：只返回路径，不读取匹配文件的内容。
+ * 输入是模型参数、项目根和可选取消信号。参数通过检查后，最多返回 200 条路径。
+ * content 保存完整的本次路径列表与截断说明，metadata 保存数量、路径和截断状态供终端使用。
+ * 没有匹配时返回明确说明；参数或遍历失败抛出 ToolError，取消继续向外传播。
+ * 这里只找路径，不读取匹配文件的正文。
  */
 export async function globTool(
   argumentsJson: string,

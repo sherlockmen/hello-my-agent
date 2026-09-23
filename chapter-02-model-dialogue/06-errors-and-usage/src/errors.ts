@@ -1,9 +1,9 @@
 /**
  * 02.6 说明错误与显示用量 | [NEW] errors.ts
  *
- * 学习目标：把内部异常转换成读者可以采取行动的固定提示，同时避免泄露请求细节。
+ * 学习目标：让用户知道请求失败后先检查哪里，同时避免把原始请求与响应直接显示出来。
  * 输入：配置错误、OpenAI / Anthropic SDK 错误或未知异常。
- * 输出：一段安全的中文提示，不返回原始响应体、请求头、密钥或堆栈。
+ * 输出：程序自建的提示，或按错误类型选择的固定中文提示；不展开 SDK 原始异常。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   +-------+
@@ -29,16 +29,17 @@
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 
-// [NEW 02.6] 只有这种错误的 message 可以原样显示；创建时必须使用安全文案。
+// [NEW 02.6] 本文件以下实现均为本节新增。
+// 这种错误的 message 会原样显示，创建时就要使用不含敏感内容的提示。
 export class UserFacingError extends Error {}
 
 /**
- * 把任意运行时错误转换成可以安全显示、便于排查的中文提示。
+ * 把捕获到的错误转成用户可以据此排查的提示。
  *
- * - 输入：捕获到的未知错误，可能来自本地校验、OpenAI SDK、Anthropic SDK 或程序内部。
- * - 输出：返回不包含密钥、响应体、请求头和堆栈的固定提示文字。
- * - 关键步骤：先保留程序自建的安全文案，再按超时、连接和 HTTP 状态分类，最后使用兜底提示。
- * - 失败方式：本函数不抛错；无法识别的错误也会返回通用安全文案。
+ * error 可能来自本地检查、两种 SDK，或其他未知位置。
+ * 程序自建的 UserFacingError 已使用可显示的文案，直接返回；SDK 错误按超时、网络和状态码选择固定提示。
+ * 无法识别时返回通用提示，不展开原始异常，也不打印响应体、请求头或堆栈。
+ * UserFacingError 本身不会脱敏，创建它时就必须避免放入凭据和原始响应。
  */
 export function explainError(error: unknown): string {
   if (error instanceof UserFacingError) return error.message;

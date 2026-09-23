@@ -15,13 +15,14 @@
  *                                                         | 是 --> Reply
  *
  * 关键点：超时设为 60 秒，关闭自动重试和调试日志，避免一次输入被重复发送或敏感响应进入日志。
- * 运行观察：有效配置得到一条文本回答；空回答不会写入会话历史。
+ * 运行观察：得到可用文本时返回 Reply；空回答会抛错，由调用方显示原因。
  */
 
 import OpenAI from "openai";
 import { systemPrompt, UserFacingError, type Config } from "../config/load-config.js";
 
-// [NEW 02.2] user 是提问，assistant 是模型回答；暂时只处理纯文本。
+// [NEW 02.2] 本文件以下实现均为本节新增。
+// user 是提问，assistant 是模型回答；暂时只处理纯文本。
 export type Message = { role: "user" | "assistant"; content: string };
 export type Reply = { text: string };
 // generate 是本地 TypeScript 方法，真正的服务商请求由下方 SDK 方法完成。
@@ -30,13 +31,12 @@ export interface Model {
 }
 
 /**
- * 根据已经校验的配置创建 OpenAI 兼容模型对象。
+ * 准备一个能接收消息、返回回答的 OpenAI 兼容模型对象。
  *
- * - 输入：`config` 来自 `readConfig()`，包含密钥、模型 ID 和基础地址。
- * - 输出：返回实现 `generate()` 的 `Model`，供命令入口或 Agent Loop 调用。
- * - 关键设置：请求最多等待 60 秒、关闭自动重试和 SDK 日志，避免一次输入被悄悄重复发送或输出敏感上下文。
- * - 失败方式：SDK 请求异常继续向上传递；空文本或工具请求在本节会转换成 `UserFacingError`。
- * - 职责边界：创建客户端时不会发送请求，也不会修改会话历史。
+ * config 来自 readConfig()，已经检查过必填值和地址格式。
+ * 创建 SDK 客户端时不发送请求；调用返回对象的 generate() 才会请求服务。
+ * 客户端设置 60 秒超时，并关闭自动重试和日志，避免一次输入被重复发送或输出原始请求信息。
+ * 请求异常继续交给调用方处理，历史也由调用方管理。
  */
 export function createModel(config: Config): Model {
   const client = new OpenAI({
@@ -46,13 +46,12 @@ export function createModel(config: Config): Model {
   });
   return {
     /**
-     * 把当前消息发送给 OpenAI 兼容接口，并提取一条纯文本回答。
+     * 发送这次消息，并从 OpenAI 兼容响应中取出可用的文本。
      *
-     * - 输入：完整消息数组和用于取消请求的 `AbortSignal`。
-     * - 输出：响应包含非空纯文本时返回 `{ text }`。
-     * - 关键步骤：在历史前加入系统提示词，等待 SDK 请求完成，再检查第一条候选结果。
-     * - 失败方式：网络和取消等 SDK 异常向上传递；空文本或工具请求抛出 `UserFacingError`。
-     * - 职责边界：只转换模型响应，不修改外部历史数组。
+     * messages 是调用方准备的问答，signal 用来传递取消状态。
+     * 程序先在消息前加入系统说明，再等待 SDK 请求；响应有非空文本且没有工具请求时返回 { text }。
+     * 不满足本节要求时抛出 UserFacingError，网络或取消等 SDK 异常继续向外传递。
+     * 这个方法只负责消息收发和结果检查，不会修改传入的历史数组。
      */
     async generate(messages, signal) {
       // system 说明规则，user/assistant 保存问答；每次请求都重新传入上下文。

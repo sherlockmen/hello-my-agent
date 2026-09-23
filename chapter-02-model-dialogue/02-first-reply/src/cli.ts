@@ -14,14 +14,18 @@
  *   | --prompt <text>  |
  *   +--------+---------+
  *            v
- *        非空文本？ -- 否 --> 显示提示 --> exit 1
- *            | 是
- *            v
- *   +------------+   +-------------+   +----------+
- *   | readConfig |-->| createModel |-->| generate |
- *   +------------+   +-------------+   +----+-----+
- *                                          | 失败 --> 显示错误 --> exit 1
- *                                          | 成功 --> 打印回答 --> exit 0
+ *   +------------+   +-------------+
+ *   | readConfig |-->| createModel | -- 失败 --> 显示错误 --> exit 1
+ *   +------------+   +------+------+
+ *                          v
+ *                     非空文本？ -- 否 --> 显示提示 --> exit 1
+ *                          | 是
+ *                          v
+ *                     +----------+
+ *                     | generate |
+ *                     +----+-----+
+ *                          | 失败 --> 显示错误 --> exit 1
+ *                          | 成功 --> 打印回答 --> exit 0
  *
  * 关键点：网络调用是异步操作，所以 action 使用 async，入口使用 parseAsync() 等待它完成。
  * 交互终端中的 Agent 标签使用紫色；管道和文件输出保持纯文本。
@@ -38,28 +42,27 @@ const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.me
 
 // [KEEP 来自第 01 章练习] 环境诊断不读取模型配置，也不会发送模型请求。
 /**
- * 显示当前 Node.js 进程的最小诊断信息，不读取模型配置。
+ * 显示当前命令使用的 Node、平台和工作目录，方便比较运行环境。
  *
- * - 输入：无显式参数；版本、平台、架构和工作目录都来自 Node.js 的 `process`。
- * - 输出：向终端依次打印 Node、Platform 和 Working directory 三行文本。
- * - 关键原因：诊断发生在 `readConfig()` 之前，因此缺少 API Key 时也能运行。
- * - 职责边界：不读取 `.env`，不创建模型客户端，也不发送网络请求。
+ * 这些值来自当前进程的 process，函数依次打印三行诊断信息。
+ * 入口在读取模型配置之前调用它，所以缺少 API Key 时也能查看环境。
+ * 这里不测试网络或模型，也不判断显示出来的版本是否满足要求。
  */
 function printDoctor(): void {
   console.log(`Node: ${process.version}`);
   console.log(`Platform: ${process.platform} ${process.arch}`);
   console.log(`Working directory: ${process.cwd()}`);
 }
-// 命令入口选项在模型配置之外增加 --prompt 和 --doctor。
+// [CHANGED 02.2] 在原有选项上增加 prompt，doctor 继续保留。
 type CliOptions = Options & { prompt?: string; doctor?: boolean };
 const program = new Command();
-// 只在交互终端中加入 ANSI 颜色；重定向到文件或管道时保留纯文本。
+// [NEW 02.2] 给 Agent 标签加颜色；重定向到文件或管道时保留纯文本。
 /**
- * 根据输出目标决定是否给终端标签添加 ANSI 颜色。
+ * 只在交互终端中给标签加上颜色。
  *
- * - 输入：要显示的文字和 ANSI 颜色编号。
- * - 输出：交互终端得到带颜色的字符串；管道或文件得到原始纯文本。
- * - 关键原因：转义字符适合人眼终端，不应混入日志、重定向文件或测试结果。
+ * text 是要显示的标签，color 是 ANSI 颜色编号。
+ * stdout 连接终端时返回带颜色的字符串；输出到文件或管道时返回原文，
+ * 这样日志和后续程序读到的内容就不会混入颜色控制字符。
  */
 const colorLabel = (text: string, color: number) =>
   process.stdout.isTTY ? `\u001b[${color}m${text}\u001b[0m` : text;

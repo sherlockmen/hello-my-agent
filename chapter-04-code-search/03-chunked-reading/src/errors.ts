@@ -3,7 +3,7 @@
  *
  * 学习目标：把可以安全公开的业务错误和未知内部异常分开。
  * 输入：配置、模型、搜索工具或文件系统抛出的未知异常。
- * 输出：终端可执行的排查提示；ToolError 还可以作为工具结果反馈给模型。
+ * 输出：终端中显示的排查提示；ToolError 还可以作为工具结果反馈给模型。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   error --> ToolError？ ------ 是 --> Agent Loop 生成错误工具结果
@@ -25,12 +25,11 @@ export class UserFacingError extends Error {}
 export class ToolError extends UserFacingError {}
 
 /**
- * 把任意运行时错误转换成可以安全显示、便于排查的中文提示。
+ * 把捕获到的错误写成终端能显示的排查提示。
  *
- * - 输入：捕获到的未知错误，可能来自本地校验、OpenAI SDK、Anthropic SDK 或程序内部。
- * - 输出：返回不包含密钥、响应体、请求头和堆栈的固定提示文字。
- * - 关键步骤：先保留程序自建的安全文案，再按超时、连接和 HTTP 状态分类，最后使用兜底提示。
- * - 失败方式：本函数不抛错；无法识别的错误也会返回通用安全文案。
+ * 程序自己创建的 UserFacingError 使用已经准备好的文案；外部 SDK 错误只按类型和状态码分类。
+ * 无法识别时返回通用提示，不把原始响应、请求头或堆栈原样打印出来。
+ * 这个函数只返回文字，不重试操作，也不修改会话历史。
  */
 export function explainError(error: unknown): string {
   if (error instanceof UserFacingError) return error.message;

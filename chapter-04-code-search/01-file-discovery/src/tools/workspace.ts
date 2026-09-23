@@ -37,12 +37,11 @@ const BUILT_IN_IGNORES = [
 ];
 
 /**
- * 从启动目录向上寻找最近的 `package.json`，确定所有文件工具的项目边界。
+ * 找到最近的 package.json，让文件工具共用同一个相对路径起点。
  *
- * - 输入：可选起点；默认使用当前工作目录。
- * - 输出：找到时返回最近项目目录；找不到时返回规范化后的原起点。
- * - 关键步骤：逐级检查当前目录，再移动到父目录，直到找到标记或到达文件系统根。
- * - 职责边界：只确定逻辑项目根，不判断某个具体文件是否允许访问。
+ * 从 start 开始逐级向上查找；默认起点是 process.cwd()。
+ * 找到时返回该目录，找不到时返回规范化后的原起点。
+ * 这里只确定项目根，不检查某个文件是否允许读取，也不提供文件系统隔离。
  */
 export function findProjectRoot(start = process.cwd()): string {
   let directory = resolve(start);
@@ -55,13 +54,12 @@ export function findProjectRoot(start = process.cwd()): string {
 }
 
 /**
- * 合并内置保护规则和项目根目录的 `.gitignore`，建立路径过滤器。
+ * 让搜索同时遵守项目忽略规则和程序内置保护。
  *
- * - 输入：已经确定的项目根目录。
- * - 输出：返回 `ignore` 匹配器；调用 `ignores(relativePath)` 可判断路径是否应跳过。
- * - 关键步骤：读取项目规则后再次加入内置规则，防止 `!` 否定规则重新暴露受保护路径。
- * - 失败方式：`.gitignore` 存在但无法读取或解析时抛出 `ToolError`，避免搜索范围悄悄扩大。
- * - 职责边界：本章只读取项目根目录的一份 `.gitignore`，尚未合并子目录中的嵌套规则。
+ * 读取项目根目录的一份 .gitignore，返回可用 ignores() 判断相对路径的匹配器。
+ * 项目规则中的 ! 可以重新包含普通文件，因此最后再加入内置规则，防止恢复 .env 或依赖目录。
+ * 没有 .gitignore 时只用内置规则；存在但读取或解析失败时抛出 ToolError，不悄悄扩大搜索范围。
+ * 本章还不读取子目录的 .gitignore 或全局 Git 忽略规则。
  */
 export async function createIgnoreMatcher(projectRoot: string): Promise<Ignore> {
   const matcher = ignore().add(BUILT_IN_IGNORES);

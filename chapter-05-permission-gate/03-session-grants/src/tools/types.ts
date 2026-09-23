@@ -1,8 +1,10 @@
 /**
- * 05.3 让批准只在明确范围内复用 | [KEEP 来自 04.3] tools/types.ts
+ * 05.3 让 Agent 记住本次运行的批准 | [KEEP 来自 04.3] tools/types.ts
  *
- * 04.3 已给 read_file 元数据加入实际行号范围和 `hasMore`。第五章沿用这份契约：
- * 模型接收带行号正文，界面只读取结构化范围，不需要反向解析正文字符串。
+ * 学习目标：把发给模型的工具正文和供界面显示的摘要数据分开。
+ * 输入：文件工具执行后获得的路径、位置、行号和截断信息。
+ * 输出：ToolExecutionResult 用 content 保存正文，用 metadata 保存对应摘要数据。
+ * 只定义数据形状，不执行工具或修改历史。界面读取 metadata，不用从正文里反向解析数量。
  */
 
 export type ToolResultMetadata =

@@ -1,9 +1,9 @@
 /**
- * 05.3 保存本次运行中的批准记录 | [CHANGED] ui/terminal.ts
+ * 05.3 让 Agent 记住本次运行的批准 | [CHANGED] ui/terminal.ts
  *
- * 学习目标：让终端在整个运行期间持有同一个批准记录 Set，避免每轮对话都重新询问。
- * 输入：逐行用户文本、/permissions、/reset、/exit、EOF 或 Ctrl+C。
- * 输出：普通文本交给 agentLoop；y 允许一次、s 写入会话范围、n 拒绝；/permissions 显示范围。
+ * 学习目标：在当前运行中保存批准记录，让后续读取能够复用。
+ * 输入：聊天文字、y/s/n、/permissions、/reset、/exit、EOF 和 Ctrl+C。
+ * 输出：聊天交给 agentLoop，审批返回用户选择，/permissions 显示记录。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   read line
@@ -59,13 +59,13 @@ export function printProgress(event: AgentEvent): void {
 
 // [CHANGED 05.3] 审批输入新增 s，表示把当前批准记录保存到进程结束。
 /**
- * 建立使用当前终端输入流的一次性审批回调。
+ * 创建一个等待当前审批回答的函数。
  *
- * - 输入：与聊天循环共用的行迭代器，以及当前是否为交互终端。
- * - 输出：ask 请求出现时读取 `y`、`s` 或 `n`，分别表示允许一次、允许本次会话或拒绝。
- * - 关键原因：审批必须复用聊天循环的行迭代器，不能创建第二个 readline 争抢 stdin。
- * - 失败方式：非交互运行或 EOF 会拒绝；Ctrl+C 由外层同时 abort 并关闭 readline，解除这里的输入等待。
- * - 职责边界：终端只收集决定，权限规则和是否执行工具仍由 Agent 核心控制。
+ * - 接收与聊天共用的行迭代器，以及是否为交互终端。
+ * - 显示请求与原因后读取一行，y 允许一次，s 允许本次会话，其他输入拒绝。
+ * - 非交互运行或 EOF 返回拒绝。连续会话中的 Ctrl+C 会由外层关闭 readline，解除等待。
+ *
+ * 这里只取得选择，不执行工具，也不把聊天输入另开一个读取者。
  */
 export function createApprovalHandler(
   lines: AsyncIterator<string> | undefined,
@@ -90,11 +90,10 @@ export function createApprovalHandler(
 }
 
 /**
- * 显示当前进程已经批准的会话范围。
+ * 显示本次运行已经保存的批准记录。
  *
- * - 输入：Agent Loop 与终端共享的 sessionGrants Set。
- * - 输出：没有记录时给出明确提示；否则逐项显示本地策略生成的批准记录。
- * - 职责边界：只读取并显示状态，不新增、扩大或删除任何权限。
+ * 读取终端与 Agent Loop 共用的 Set；为空时显示提示，否则逐项打印。
+ * 这里只查看，不新增或删除记录。
  */
 function printSessionGrants(sessionGrants: ReadonlySet<string>): void {
   if (sessionGrants.size === 0) {
@@ -108,10 +107,11 @@ function printSessionGrants(sessionGrants: ReadonlySet<string>): void {
 /**
  * 处理只属于本地终端的权限命令。
  *
- * - 输入：一行用户文字和当前进程共享的 sessionGrants。
- * - 输出：识别并处理 `/permissions` 时返回 `true`；普通文字返回 `false`。
- * - 关键原因：调用方根据布尔值 `continue`，本地命令不会进入模型消息。
- * - 职责边界：本节只支持查看范围；主动撤销由章末练习加入。
+ * - 接收一行用户文字和当前运行共用的 sessionGrants。
+ * - /permissions 显示记录后返回 true，其他文字返回 false。
+ * - 终端据此 continue，已处理的命令不会再进入模型消息。
+ *
+ * 本节只支持查看；章末练习再增加主动清空。
  */
 // [NEW 05.3] 本地命令只查看会话授权，不进入模型消息。
 export function handlePermissionCommand(
@@ -196,12 +196,11 @@ export async function startTerminal(model: Model): Promise<void> {
 }
 
 /**
- * 执行 `--prompt` 单次提问，并在交互终端中复用同一套审批输入。
+ * 执行一次 --prompt 提问，并为可能出现的审批准备输入。
  *
- * - 输入：统一 Model 和已经校验为非空的用户问题。
- * - 输出：显示过程与最终回答；结束前关闭为审批创建的 readline。
- * - 关键原因：单次模式也可能收到 ask，不能绕过连续会话使用的权限入口。
- * - 失败方式：stdin 或 stdout 不是 TTY 时，审批回调默认拒绝需要确认的工具。
+ * - 接收模型和非空问题；交互终端中创建 readline，并把审批函数传给 Agent Loop。
+ * - 没有交互终端时，审批函数会拒绝需要确认的请求，普通 allow 工具仍能运行。
+ * - 显示回答后结束；无论成功还是抛错，finally 都会关闭本函数创建的输入。
  */
 export async function runSinglePrompt(model: Model, prompt: string): Promise<void> {
   const interactive = Boolean(process.stdin.isTTY && process.stdout.isTTY);

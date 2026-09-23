@@ -1,7 +1,7 @@
 /**
  * 03.1 识别模型的工具请求 | [KEEP 来自 02.6] errors.ts
  *
- * 学习目标：把内部异常转换成读者可以采取行动的固定提示，同时避免泄露请求细节。
+ * 学习目标：把内部异常转换成用户能据此排查的提示，同时避免泄露请求细节。
  * 输入：配置错误、OpenAI / Anthropic SDK 错误或未知异常。
  * 输出：一段安全的中文提示，不返回原始响应体、请求头、密钥或堆栈。
  *
@@ -33,12 +33,11 @@ import Anthropic from "@anthropic-ai/sdk";
 export class UserFacingError extends Error {}
 
 /**
- * 把任意运行时错误转换成可以安全显示、便于排查的中文提示。
+ * 把捕获到的错误写成终端能显示的排查提示。
  *
- * - 输入：捕获到的未知错误，可能来自本地校验、OpenAI SDK、Anthropic SDK 或程序内部。
- * - 输出：返回不包含密钥、响应体、请求头和堆栈的固定提示文字。
- * - 关键步骤：先保留程序自建的安全文案，再按超时、连接和 HTTP 状态分类，最后使用兜底提示。
- * - 失败方式：本函数不抛错；无法识别的错误也会返回通用安全文案。
+ * 程序自己创建的 UserFacingError 使用已经准备好的文案；外部 SDK 错误只按类型和状态码分类。
+ * 无法识别时返回通用提示，不把原始响应、请求头或堆栈原样打印出来。
+ * 这个函数只返回文字，不重试操作，也不修改会话历史。
  */
 export function explainError(error: unknown): string {
   if (error instanceof UserFacingError) return error.message;

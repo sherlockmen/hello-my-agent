@@ -27,7 +27,7 @@ import { parseEnv } from "node:util";
 // [KEEP 来自 02.1] Options 是外部可选输入，Config 是检查完成后可以直接使用的配置。
 export type Options = { model?: string; baseUrl?: string };
 export type Config = { apiKey: string; model: string; baseURL: string };
-// 只允许这种由我们自己编写的安全提示直接显示；后续 SDK 错误不能原样打印。
+// 这个错误使用程序预先编写的提示；创建时不放密钥，显示时也不展开外部异常。
 export class UserFacingError extends Error {}
 
 // [KEEP 来自 02.2] 系统提示词描述助手身份与当前能力，独立于问答历史。
@@ -35,13 +35,13 @@ export const systemPrompt = "你是一个运行在命令行中的个人编程 Ag
 
 // [KEEP 来自 02.1] 从当前目录向上寻找最近项目的 .env；遇到 package.json 后不再越过项目边界。
 /**
- * 从启动目录向上查找当前项目的 `.env`，并把文件内容解析成普通对象。
+ * 找到当前项目使用的 .env，把文件中的键和值读成普通对象。
  *
- * - 输入：无显式参数；查找起点是 `process.cwd()` 返回的当前工作目录。
- * - 输出：找到时返回解析后的键值对象；到达最近的 `package.json` 或文件系统根目录仍未找到时返回空对象。
- * - 关键步骤：每层先检查 `.env`，再检查项目边界，然后继续进入父目录。
- * - 失败方式：文件无法读取或语法无法解析时抛出只含安全文案的 `UserFacingError`。
- * - 职责边界：只返回对象，不把文件中的字段批量写入全局 `process.env`。
+ * 从用户启动命令的目录开始，每一层先找 .env，再看是否已到 package.json。
+ * 找到文件就返回解析结果；到达项目边界或根目录仍未找到时，返回空对象，
+ * 让调用方继续使用命令行和环境变量提供的配置。
+ * 读取或解析抛出异常时，改用固定的 UserFacingError，避免回显配置正文。
+ * 返回的对象与 process.env 分开，文件内容不会自动覆盖进程环境。
  */
 function readProjectEnv(): Record<string, string | undefined> {
   let directory = process.cwd();
@@ -62,13 +62,12 @@ function readProjectEnv(): Record<string, string | undefined> {
 }
 
 /**
- * 合并并校验 OpenAI 兼容接口所需的运行时配置。
+ * 为这次启动选出完整的模型配置，并在发送请求前检查它。
  *
- * - 输入：命令行中的 `model`、`baseUrl`，以及进程环境变量和项目 `.env`。
- * - 输出：返回字段完整的 `Config`，下游可以直接用它创建模型客户端。
- * - 覆盖顺序：命令行选项高于进程环境变量，进程环境变量高于 `.env`，最后才使用内置地址。
- * - 失败方式：缺少密钥或模型、地址无效或地址携带凭据等危险字段时抛出 `UserFacingError`。
- * - 职责边界：这里只读取和校验配置，不打印密钥，也不发送模型请求。
+ * options 来自命令行；其余值从进程环境和项目 .env 取得。
+ * 每个字段先用命令行选项，再用环境变量和文件值，最后才考虑默认地址。
+ * 去除空白后仍为空的值视为未填写；缺少密钥或模型、地址格式不符合要求时抛出提示。
+ * 成功返回 apiKey、model 和 baseURL，但不验证远端是否接受它们，也不发送请求。
  */
 export function readConfig(options: Options): Config {
   const fileEnv = readProjectEnv();

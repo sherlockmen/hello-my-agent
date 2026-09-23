@@ -24,12 +24,13 @@
  *                                +-----------------+
  *
  * 关键点：调用 ID 由模型接口生成，用来把将来的工具结果配回原请求。
- * 参数暂存为 JSON 字符串；执行前才能在受信任的本地边界解析和校验。
+ * 参数先保存成 JSON 字符串，等本地准备执行时再解析并检查。
  * 运行观察：两种模型协议返回不同字段，上层最终都收到相同的 ToolCall。
  */
 
 import { readFileDefinition } from "./read-file.js";
 
+// [NEW 03.1] 以下请求类型与工具列表均为本节新增。
 export type ToolCall = {
   id: string;
   name: string;

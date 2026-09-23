@@ -4,22 +4,21 @@
 
 **本节目标：让命令从 `.env`、环境变量或命令行读取模型配置。运行后只显示配置已就绪，暂不发送模型请求。**
 
-## 问题：命令已经能启动，却不知道应该连接哪个模型
+## 问题：命令已经能启动，接下来要连接哪个模型
 
-第一章已经建立了可运行的命令入口，但它打印的是固定文本，还不知道应该连接哪个模型服务。模型客户端至少需要三个运行时数据：用于认证的 API Key、指定能力的模型 ID，以及决定请求发往哪里的基础地址。
+第一章的命令已经可以安装和运行，但它每次只打印同样的欢迎语。接下来，我们要把问题交给真正的模型，让它根据输入生成回答。
 
-这些数据可以来自命令行、系统环境变量或 `.env`。`.env` 是保存在本机项目中的普通文本配置文件。如果没有明确的读取规则，会出现四个问题：
+发送请求前，程序得先知道三件事：向哪个地址发送、使用哪个模型，以及用哪份 API Key 证明调用者的身份。模型 ID 用来选择服务提供的具体模型；API Key 是服务商签发的访问凭据；基础地址则决定请求发到哪里。这三项要配套使用，不能只从别处复制一个模型名就开始请求。
 
-1. **怎样避免泄露密钥？** 密钥一旦写进源码，就可能跟随 Git 提交进入远程仓库。
-2. **怎样在不改代码的情况下切换服务？** 模型 ID 和接口地址写死后，每次切换都要修改源码并重新构建。
-3. **怎样找到当前项目的配置文件？** 程序可能从项目子目录启动。只检查当前目录，会错过项目根目录中的 `.env`；无限向上查找，又可能误读其他项目的配置。
-4. **多个来源同时提供同一字段时使用哪个值？** 命令行、系统环境变量和 `.env` 可能同时设置模型或地址。没有固定的覆盖顺序，程序的最终配置就无法预测。
+直接把它们写进源码当然能用，但换模型就得改代码、重新构建，密钥也容易跟着代码提交到仓库。我们希望日常配置保存在本机，需要临时换模型时，再用命令行覆盖一次。
 
-因此，本节要解决的问题是：**怎样安全地找到模型配置、确定多个来源的覆盖顺序，并在发送请求前确认所有必填值都有效？** 本节只读取和检查配置，不创建模型客户端，也不发送网络请求。
+所以，这一节先让程序读懂配置。等它能明确告诉用户“本次准备连接哪个模型”，下一节再真正发送问题。
 
-## 解决方案
+## 解决方案：启动时读配置，检查好再交给模型模块
 
-把“配置从哪里来、谁的优先级更高、怎样判断配置有效”集中放进 `readConfig()`。命令入口只接收选项并使用检查后的 `Config`，不直接读取 `.env`。
+我们把日常配置放在项目的 `.env` 文件中，也允许环境变量和命令行选项提供配置。程序启动时找到这些值，按约定的顺序选择，再检查密钥、模型名有没有填写，地址格式是否符合要求。
+
+这几件事集中放在配置模块中。入口调用 `readConfig()`，成功后得到一份 `Config`，里面就是本次要使用的值；缺少必要信息时，程序显示原因并结束。
 
 ```text
 +----------------+
@@ -44,43 +43,35 @@ process.env ->| readConfig     |
              安全提示   Config --> 就绪提示
 ```
 
-配置读取只发生在真正启动 Agent 时。帮助和版本由 Commander 在此之前处理，因此查看说明不需要模型配置。
+帮助和版本查询不需要连接模型，所以仍由 Commander 提前处理。第一章练习中的 `--doctor` 也会在读取模型配置之前结束。
 
 ## 工作原理
 
-先把配置读取理解成一条**从外部字符串到完整配置对象的加工流水线**。`.env`、环境变量和命令行选项提供的都只是原始字符串；程序先找到它们，再按优先级选择，最后检查必填项和地址格式。只有走完整条流水线的结果，才能成为下游使用的 `Config`。
+### 日常配置与临时选择为什么分开
+
+假设 `.env` 中保存的是 `OPENAI_MODEL=model-a`，但我们这次想试试 `model-c`。如果每次都修改文件，试完还得记得改回来；临时选项更合适：本次启动传入 `--model model-c`，程序只在内存中使用它，文件仍保留原来的值。
+
+环境变量又适合另一种场景。比如 shell、容器或部署系统已经提供了配置，程序应该能直接使用，而不强制要求磁盘上有 `.env`。这就是保留三个来源的原因。它们同时提供同一个字段时，本节按下面的顺序选择第一个非空值：
 
 ```text
-三个外部来源
-  -> 找到候选值
-  -> 按命令行选项 > process.env > .env > 默认值选择
-  -> 去除空白并检查缺失值
-  -> 解析并限制 URL
-  -> 生成 Config
+命令行选项 > process.env > 最近项目的 .env > 默认值
 ```
 
-例如，`.env` 写着 `OPENAI_MODEL=model-a`，当前 shell 设置了 `OPENAI_MODEL=model-b`，命令又传入 `--model model-c`，最终应使用 `model-c`。命令结束后，另外两个来源都不会被改写；优先级只决定本次进程读取哪个值。
+如果文件写着 `model-a`、环境变量写着 `model-b`、命令行指定 `model-c`，最终选择的就是 `model-c`。优先级只决定本次读取什么，不会改写文件，也不会反过来修改启动 Agent 的 shell。
 
-最容易误解的是把 `.env` 当成 Node 会自动加载的特殊文件。它本质上仍是磁盘上的普通文本；只有程序明确读取并解析后，里面的内容才进入内存。本节只完成配置转换，不创建模型客户端，也不发送网络请求。
+这里的“非空”包括去掉首尾空白后仍有内容。只填了几个空格不算模型名，程序会继续找下一个来源。密钥和模型没有默认值；只有基础地址在未填写时使用 OpenAI 的公开地址。
 
-### 第一步：先规定配置模块的输入和输出
+API Key 不提供命令行选项，因为启动参数可能进入 shell 历史或进程列表。密钥放在 `.env` 或环境变量中，可以减少这种暴露机会；包含密钥的整个 `Config` 也不能直接打印。
 
-在 [src/config/load-config.ts](src/config/load-config.ts) 中定义两个类型：
+### 从子目录启动，怎样找到同一份配置
 
-```ts
-export type Options = { model?: string; baseUrl?: string };
-export type Config = { apiKey: string; model: string; baseURL: string };
-```
+第一章读取版本时，程序沿着自己的安装位置找 `package.json`。模型配置不同：它属于当前正在使用 Agent 的项目，因此这次要从 `process.cwd()`，也就是用户启动命令的目录开始找。
 
-`Options` 是尚未检查的外部输入，所以字段可以缺失。`Config` 是 `readConfig()` 成功后的输出，所以三个字段都是必填项。这个区别建立了一条边界：配置模块之外的代码不必反复判断 `apiKey` 是否存在。
+例如，配置保存在仓库根目录，用户在 `chapter-02-model-dialogue/01-configuration` 中运行命令。程序先检查这个目录，没找到 `.env` 就向上一层继续。找到一份后立即使用，不会把沿途的多份文件混在一起。
 
-`baseUrl` 对应命令行选项 `--base-url`，遵循本项目普通变量的驼峰命名；`baseURL` 是 OpenAI SDK 构造参数使用的字段名。`readConfig()` 在返回 `Config` 时完成这次名称转换。
+程序也不能一直找上去。遇到最近的 `package.json`，就把这里作为当前项目的边界：先检查同目录的 `.env`，没有就停止。这样，在另一个 Node 项目里启动时，就不会继续找到其上级目录中无关项目的配置。没有遇到包清单时，查找到文件系统根目录也会停止。
 
-密钥没有命令行选项。命令行通常会被 shell 历史记录，某些系统还允许其他进程查看启动参数；把密钥限制在 `.env` 或环境变量中，可以减少意外暴露。
-
-### 第二步：找到当前项目的 `.env`
-
-`.env` 是普通文本文件，Node 不会因为文件名特殊就自动读取它。`readProjectEnv()` 从 `process.cwd()` 开始，逐级向父目录查找：
+下面是查找部分的主线，省略了读取失败的处理；“动手构建”会给出完整文件：
 
 ```ts
 let directory = process.cwd();
@@ -96,103 +87,45 @@ while (true) {
 }
 ```
 
-循环每次先检查当前目录，再把 `directory` 改成父目录。它有三个结束条件：
+`parent === directory` 表示已经到了根目录。返回 `{}` 则表示没找到文件配置；程序仍可以使用命令行和环境变量，不会因为没有 `.env` 就立即失败。
 
-- 找到 `.env`：读取文件并立即返回。
-- 遇到最近的 `package.json`：说明已经到达当前项目边界，没有 `.env` 就停止。
-- 到达文件系统根目录：已经没有父目录，停止查找。
+### `.env` 是文本，要读出来才会成为配置
 
-因此，在 `chapter-02-model-dialogue/01-configuration` 中启动命令时，程序可以找到仓库根目录的配置。在另一个 Node 项目中启动时，程序会停在那个项目的边界，不会继续向上误读无关项目的密钥。
-
-`readFileSync()` 在这里是有意选择。配置只在启动阶段读取一次，而且在配置完成前不能发模型请求。同步读取让“读取 → 解析 → 校验”按固定顺序结束，代码也更直接。若应用需要在运行期间频繁刷新很多配置文件，再改用异步文件 API；当前场景没有这种需要。
-
-### 第三步：把 `.env` 文本解析成对象
-
-`readFileSync()` 得到的是一整段字符串，例如 `OPENAI_MODEL=gpt-5`。Node 内置的 `parseEnv()` 负责处理引号、空白、注释等 `.env` 语法，并返回普通对象：
+Node 不会因为一个文件叫 `.env`，就自动使用其中的内容。程序要先读取文本，再解析其中的键和值：
 
 ```ts
 const fileEnv = parseEnv(readFileSync(envPath, "utf8"));
 // 例如：{ OPENAI_MODEL: "gpt-5" }
 ```
 
-本项目要求 Node 22，因此直接使用标准库，不再安装只为解析一个文件而存在的依赖。更关键的是，[Node.js 的 `parseEnv()`](https://nodejs.org/api/environment_variables.html#programmatic-apis)接收 `.env` 原始文本并返回普通对象，不会把文件内容写入全局的 `process.env`。`readConfig()` 因而可以明确决定每个来源的优先级，测试时也更容易看清数据来自哪里。
+本书要求 Node 22，可以直接使用内置的 [parseEnv()](https://nodejs.org/api/environment_variables.html#programmatic-apis)。它处理引号、空白和注释，返回一个普通对象，不把文件内容自动写进 `process.env`。三个来源因此仍然分开，程序可以自己决定每一项用哪个值。
 
-解析可能因为文件格式或读取权限失败。源码用 `try/catch` 把底层异常转换成固定提示，不回显文件内容，避免配置值跟着错误日志泄露。
+配置只在启动时读取一次，而且读完之前还不能请求模型，所以这里使用同步文件读取。它让读取、解析、检查按顺序完成；当前不需要为这一步再引入异步调度或配置库。读取或解析发生异常时，程序只提示检查文件和权限，不把配置正文带进错误信息。
 
-### 第四步：按明确顺序合并三个来源
+### 检查的是本地输入，还不是账号能否使用
 
-命令行参数来自 `process.argv`。shell 启动 Node 进程时，已经把输入按参数拆开；Commander 再把字符串转换成 `model`、`baseUrl` 等有名字的选项。这些值只属于当前进程，程序结束后就消失。
-
-环境变量来自 `process.env`。它们由父进程复制给子进程，因此 Agent 可以读取，但修改 `process.env` 不会反向修改已经运行的 shell。`.env` 则只是磁盘文件；Node 不会自动读取它，本节通过 `readFileSync()` 取得文本，再用 `parseEnv()` 解析成普通对象。
-
-`readConfig()` 使用下面的优先级：
-
-```text
-命令行选项 > process.env > 最近项目的 .env > 默认值
-```
-
-越靠左的来源，越能表达“这一次运行明确要用什么”：
-
-- `--model`：临时覆盖一次运行使用的模型。
-- `process.env`：由当前 shell、容器或部署系统注入配置。
-- `.env`：保存本机项目的日常开发配置。
-- 默认值：只用于公开且稳定的 OpenAI 基础地址。
-
-密钥和模型没有安全可靠的默认值，因此缺失时必须报错。
-
-源码中的 `trim() || ...` 还把空字符串视为“没有填写”。如果较高优先级传入空白，就继续查找下一来源，而不会把空白当作有效模型名。
-
-### 第五步：把外部字符串校验成 Config
-
-配置值都来自进程外部，TypeScript 不能证明它们在运行时有效。`Config` 类型只能约束通过检查后的代码，无法让缺失的环境变量凭空出现。因此 `readConfig()` 必须先检查非空值，再用 `new URL()` 解析地址，并限制协议、用户名、密码、查询参数和片段。
-
-校验通过后，下游拿到的是完整 `Config`；校验失败时，程序尚未创建 SDK 客户端，也没有发送网络请求。这样可以把本地配置错误与远程服务错误清楚地区分开。
-
-`new URL()` 负责语法解析，后面的条件继续限制协议、用户名、密码、查询参数和片段。这里只允许 HTTP(S) 基础地址，是因为 SDK 会在它后面拼接具体接口路径。禁止地址内嵌凭据还能避免错误信息或日志意外携带认证材料。
-
-### 第六步：在需要模型时调用 readConfig()
-
-在 [src/cli.ts](src/cli.ts) 中导入 `readConfig()`，登记 `--model` 和 `--base-url`。`--doctor` 必须在 `readConfig()` 之前结束：它只诊断本机环境，不应因为缺少模型密钥而失败。
+配置模块的输入和输出有一个区别：输入可以缺项，成功返回的结果必须完整。
 
 ```ts
-type CliOptions = Options & { doctor?: boolean };
-
-.option("--doctor", "显示当前运行环境")
-.option("--model <id>", "本次使用的模型 ID")
-.option("--base-url <url>", "本次使用的接口基础地址")
-.action(() => {
-  const options = program.opts<CliOptions>();
-  if (options.doctor) {
-    printDoctor();
-    return;
-  }
-  const config = readConfig(options);
-  console.log("Hello，My Agent！");
-  console.log(`配置已就绪，模型：${config.model}。本节不发送模型请求。`);
-});
+export type Options = { model?: string; baseUrl?: string };
+export type Config = { apiKey: string; model: string; baseURL: string };
 ```
 
-这段短代码省略了源码中的注释。不要打印整个 `config`，因为它包含密钥；只显示确认运行所需的非敏感字段。
+`Options` 里的问号表示这些选项可以不传，因为程序还可以从别处找到值。`Config` 的三个字段都是必填的；模型模块拿到它后，就不用再到处找环境变量。
 
-### 为什么选择这种方案
+但 TypeScript 类型不能替程序检查真实输入。`readConfig()` 仍要判断密钥和模型名是否非空，并用 `new URL()` 解析基础地址。解析成功后，还要检查它使用 HTTP(S)，且没有夹带用户名、密码、查询参数或片段。SDK 会在基础地址后面补上接口路径，因此这里保存的应是基础地址，不是完整的请求 URL。
 
-这个方案把四件事放在一个入口完成：查找文件、解析文本、合并来源、校验结果。调用方只接收 `Config`，不会在模型模块和终端模块里重复读取环境变量。它还保留了三个实用性质：命令行覆盖不会改写文件，父进程环境变量不会被 `.env` 覆盖，解析 `.env` 不会修改全局进程状态。
+`baseUrl` 是命令行选项 `--base-url` 对应的名字，`baseURL` 是 SDK 使用的字段名。配置模块返回时也顺便完成这次名称转换。
 
-配置量目前只有三项，普通 TypeScript 和 Node 标准库已经足够。增加配置框架或模式库只会让初学者同时学习更多 API；当字段数量增长、出现嵌套结构或复杂联合校验时，再引入 Zod 等运行时模式库更合适。
+这些检查只能回答“本地信息是否填写完整、地址结构是否合适”。随便写一个非空密钥也可能通过，模型 ID 也可能根本不存在。它们能否被服务接受，要到下一节发出请求才知道。
 
-当前配置只处理进程参数、环境变量和单个项目 `.env`；第 17 章会加入项目配置的作用范围与信任，第 23 章再补运行中的模型切换和凭据归属。
+### 为什么把读取和检查放在同一个模块
 
-### 还有哪些方案
+模型模块只需要一份能使用的配置，不需要知道它来自文件还是 shell。把选择顺序和检查集中起来，临时覆盖、子目录启动以及缺少字段都会走同一套规则，入口也只负责调用和显示。
 
-| 方案 | 适合场景 | 本节没有选择的原因 |
-| --- | --- | --- |
-| Node 的 `process.loadEnvFile()` | 希望一次把文件字段全部写入 `process.env` | 它会修改进程级全局状态，配置来源和覆盖顺序不如当前实现直观。 |
-| `dotenv.config()` | 需要兼容旧版 Node，或项目已经使用 dotenv | 本项目最低版本为 Node 22，标准库已经覆盖当前需求；再加依赖没有获得新能力。 |
-| `node --env-file=.env` | 启动脚本始终掌握 `.env` 的固定位置 | 全局安装的 CLI 可能从不同项目和子目录启动，固定相对路径不够灵活。 |
-| 把值写进 JSON/TS 配置文件 | 配置不含秘密，并且需要提交共享 | API Key 不应进入仓库；临时覆盖也会变成写文件操作。 |
-| 使用 Zod 等模式库 | 配置字段很多，存在复杂格式和条件关系 | 当前只有三个字段，手写边界校验更短，也更便于学习数据流。 |
+Node 的 `process.loadEnvFile()` 或 `dotenv.config()` 也能读取配置，但会把读取结果放进进程环境；本节保留独立对象，方便看清每个值从哪里来。固定使用 `node --env-file=.env` 则要求启动命令知道文件位置，不如从当前项目查找适合这个 CLI。
 
-选择方案的标准不是“哪一个最流行”，而是它是否满足本节的真实约束：从项目目录启动、来源优先级可见、不污染全局状态、密钥不进入命令历史，以及在网络请求之前失败。
+目前只有三项配置，Node 标准库和普通条件判断已经够用。第 17 章会继续讨论项目配置的作用范围与信任，第 23 章再加入运行中的模型切换和凭据管理。
 
 ## 本节改动文件
 
@@ -203,25 +136,63 @@ type CliOptions = Options & { doctor?: boolean };
 
 ## 动手构建
 
+从空目录跟写时，先创建 `chapter-02-model-dialogue/01-configuration/`。下面的 `src/` 都位于这个目录中；入口从第一章完成 `--doctor` 练习后的代码继续，第二步会说明怎样放入本节。已有配套仓库时，直接对照本节的 `src/` 即可。
+
 ### 第一步：实现配置模块
 
-创建 `src/config/load-config.ts`。下面是本节可以直接运行的完整实现；源码中的[教学注释版](src/config/load-config.ts)还标出了输入、输出和失败分支。
+本节开始按职责分文件。先在本小节新建 `src/config/`，创建 `src/config/load-config.ts`。下面的完整文件与[本节源码](src/config/load-config.ts)一致：
 
 ```ts
+/**
+ * 02.1 读取模型配置 | [NEW] config/load-config.ts
+ *
+ * 学习目标：从三个来源读取配置，按固定优先级合并，并在返回前完成校验。
+ * 输入：--model / --base-url、process.env，以及当前项目最近的 .env。
+ * 输出：包含 apiKey、model、baseURL 的 Config；无效输入抛出 UserFacingError。
+ *
+ * 本文件局部流程（当前启动主流程见 cli.ts）：
+ *   +-----------+   +-------------+   +--------------+   +--------+
+ *   | CLI options |-->|             |   | required     |   |        |
+ *   | process.env|->| first value |-->| fields + URL |-->| Config |
+ *   | .env      |-->|             |   | validation   |   |        |
+ *   | defaults  |-->|             |   +------+-------+   +--------+
+ *   +-----------+   +-------------+          |
+ *                                           +-- 失败 --> UserFacingError
+ *   优先级：CLI options > process.env > .env > defaults
+ *
+ * 关键点：优先级是 CLI options > process.env > .env > defaults；查找 .env 时不越过最近的 package.json。
+ * 本节只读取配置，不发送请求。 配置对象含有 API Key，不能整体写入日志。
+ * 运行观察：命令行模型名可以临时覆盖 .env，但不会修改文件。
+ */
+
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { parseEnv } from "node:util";
 
+// [NEW 02.1] 本文件以下实现均为本节新增。
+// Options 允许输入缺项，Config 则表示检查完成后可以使用的配置。
 export type Options = { model?: string; baseUrl?: string };
 export type Config = { apiKey: string; model: string; baseURL: string };
+// 这个错误使用程序预先编写的提示；创建时不放密钥，显示时也不展开外部异常。
 export class UserFacingError extends Error {}
 
+// [NEW 02.1] 从当前目录向上寻找最近项目的 .env；遇到 package.json 后不再越过项目边界。
+/**
+ * 找到当前项目使用的 .env，把文件中的键和值读成普通对象。
+ *
+ * 从用户启动命令的目录开始，每一层先找 .env，再看是否已到 package.json。
+ * 找到文件就返回解析结果；到达项目边界或根目录仍未找到时，返回空对象，
+ * 让调用方继续使用命令行和环境变量提供的配置。
+ * 读取或解析抛出异常时，改用固定的 UserFacingError，避免回显配置正文。
+ * 返回的对象与 process.env 分开，文件内容不会自动覆盖进程环境。
+ */
 function readProjectEnv(): Record<string, string | undefined> {
   let directory = process.cwd();
   while (true) {
     const envPath = join(directory, ".env");
     if (existsSync(envPath)) {
       try {
+        // parseEnv 只解析选中的文件，不把其他字段写入 process.env。
         return parseEnv(readFileSync(envPath, "utf8"));
       } catch {
         throw new UserFacingError("无法读取项目的 .env，请检查文件格式和读取权限。");
@@ -234,24 +205,28 @@ function readProjectEnv(): Record<string, string | undefined> {
   }
 }
 
+/**
+ * 为这次启动选出完整的模型配置，并在发送请求前检查它。
+ *
+ * options 来自命令行；其余值从进程环境和项目 .env 取得。
+ * 每个字段先用命令行选项，再用环境变量和文件值，最后才考虑默认地址。
+ * 去除空白后仍为空的值视为未填写；缺少密钥或模型、地址格式不符合要求时抛出提示。
+ * 成功返回 apiKey、model 和 baseURL，但不验证远端是否接受它们，也不发送请求。
+ */
 export function readConfig(options: Options): Config {
   const fileEnv = readProjectEnv();
+  // 空值视为没填。优先级：命令行 > 环境变量 > .env > 默认值。
   const env = (name: string) => process.env[name]?.trim() || fileEnv[name]?.trim();
   const apiKey = env("OPENAI_API_KEY");
   const model = options.model?.trim() || env("OPENAI_MODEL");
-  if (!apiKey) {
-    throw new UserFacingError("缺少 OPENAI_API_KEY。请在当前目录、项目根目录的 .env 或环境变量中配置。");
-  }
-  if (!model) {
-    throw new UserFacingError("缺少 OPENAI_MODEL。请填写服务商提供的模型 ID，或使用 --model。");
-  }
+  if (!apiKey) throw new UserFacingError("缺少 OPENAI_API_KEY。请在当前目录、项目根目录的 .env 或环境变量中配置。");
+  if (!model) throw new UserFacingError("缺少 OPENAI_MODEL。请填写服务商提供的模型 ID，或使用 --model。");
   const baseURL = options.baseUrl?.trim() || env("OPENAI_BASE_URL") || "https://api.openai.com/v1";
   let url: URL;
-  try {
-    url = new URL(baseURL);
-  } catch {
+  try { url = new URL(baseURL); } catch {
     throw new UserFacingError("接口地址无效，请检查 OPENAI_BASE_URL 或 --base-url。");
   }
+  // 地址可能误带凭据，报错时只说明规则，不回显原值。
   if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || url.search || url.hash) {
     throw new UserFacingError("接口地址须为 HTTP(S) 基础地址，不能含用户名、密码、查询参数或片段。");
   }
@@ -259,17 +234,35 @@ export function readConfig(options: Options): Config {
 }
 ```
 
-这个文件先查找 `.env`，再为每个字段选择优先级最高的非空值。函数只有两种结果：返回完整 `Config`，或在创建模型客户端之前抛出安全错误。
+这个文件先查找 `.env`，再为每个字段选择优先级最高的非空值。检查通过后返回完整 `Config`；检查不通过则抛出提示，让入口结束启动。
 
 ### 第二步：让命令入口读取配置
 
-在 `src/cli.ts` 中导入配置模块：
+把第一章完成练习后的命令入口放到本小节的 `src/cli.ts`，保留文件首行、版本读取和原来的命令规则。构建后入口仍是 `dist/cli.js`，所以读取版本时的相对路径不变。先加入配置模块导入：
 
 ```ts
 import { readConfig, UserFacingError, type Options } from "./config/load-config.js";
 ```
 
-在 `.helpOption()` 后面登记三个命令行选项，并把默认操作改成下面这样。`printDoctor()` 是第一章练习中已经完成的环境诊断函数。
+把第一章练习中的三行诊断输出移进 `printDoctor()`，放在读取 `packageJson` 之后、创建 `program` 之前。输出内容没有改变，只是给这段操作起了名字：
+
+```ts
+// [CHANGED 02.1] 把第一章练习的诊断输出收进函数；仍在读取模型配置前执行。
+/**
+ * 显示当前命令使用的 Node、平台和工作目录，方便比较运行环境。
+ *
+ * 这些值来自当前进程的 process，函数依次打印三行诊断信息。
+ * 入口在读取模型配置之前调用它，所以缺少 API Key 时也能查看环境。
+ * 这里不测试网络或模型，也不判断显示出来的版本是否满足要求。
+ */
+function printDoctor(): void {
+  console.log(`Node: ${process.version}`);
+  console.log(`Platform: ${process.platform} ${process.arch}`);
+  console.log(`Working directory: ${process.cwd()}`);
+}
+```
+
+保留已经登记的 `--doctor`，在它后面加入 `--model` 与 `--base-url`，再替换原来的 `.action()`。下面从 `--doctor` 开始展示连续的这一段，不要重复添加已有选项：
 
 ```ts
 .option("--doctor", "显示当前运行环境")
@@ -308,9 +301,9 @@ OPENAI_MODEL=此处填写服务商模型ID
 OPENAI_BASE_URL=https://api.openai.com/v1
 ```
 
-本节不请求模型，可以先用非空的练习值观察配置是否读取成功。下一节发送真实请求前，必须换成服务商给你的值。兼容服务的密钥、模型、地址要来自同一服务；基础地址不要追加 `/chat/completions`。
+本节不请求模型，可以先用非空的练习值观察配置是否读取成功。下一节发送真实请求前，必须换成服务商提供的真实值。兼容服务的密钥、模型、地址要来自同一服务；基础地址不要追加 `/chat/completions`。
 
-根目录 `.env` 已被 Git 忽略。你可以在仓库根目录或第二章的小节目录运行已经构建的 `hello-my-agent`：程序都会向上找到这份配置。如果小节目录中另有 `.env`，程序优先使用离启动目录最近的一份。根目录 `.env.example` 还列出 02.5 才会使用的 Anthropic 字段，本节先不用填写。
+根目录 `.env` 已被 Git 忽略。可以在仓库根目录或第二章的小节目录运行已经构建的 `hello-my-agent`：程序都会向上找到这份配置。如果小节目录中另有 `.env`，程序优先使用离启动目录最近的一份。根目录 `.env.example` 还列出 02.5 才会使用的 Anthropic 字段，本节先不用填写。
 
 ### 第四步：构建并运行本节
 

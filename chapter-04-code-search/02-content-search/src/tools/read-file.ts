@@ -3,7 +3,7 @@
  *
  * 学习目标：继续在项目边界内安全读取一个小型普通文件。
  * 输入：包含相对 path 的 JSON 参数，以及统一确定的项目根目录。
- * 输出：不超过 64 KiB 的 UTF-8 模型内容和实际行数元数据；参数无效时抛出 ToolError。
+ * 输出：按 UTF-8 解码的正文和实际行数；先拒绝检查时超过 64 KiB 的文件，参数无效时抛出 ToolError。
  *
  * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
  *   arguments --> 校验 path --> realpath 边界 --> .env / 类型 / 大小检查 --> 文件内容
@@ -41,11 +41,11 @@ export const readFileDefinition = {
 const MAX_FILE_BYTES = 64 * 1024;
 
 /**
- * 判断一个路径的最终文件名是否属于禁止读取的环境配置文件。
+ * 识别不允许工具读取的 .env 系列文件名。
  *
- * - 输入：相对路径或已经解析后的真实路径。
- * - 输出：`.env`、`.env.*` 或 `.envrc` 返回 `true`，其他名称返回 `false`。
- * - 关键原因：只比较不区分大小写的文件名，路径层级不会影响凭据保护。
+ * 输入可以是模型路径，也可以是 realpath 得到的真实路径。
+ * 只取最后一段名称并忽略大小写，命中 .env、.env.* 或 .envrc 时返回 true。
+ * 这样同一类文件放在不同目录里，仍会被名称规则识别。
  */
 function isEnvironmentFile(path: string): boolean {
   const name = basename(path).toLowerCase();
@@ -53,12 +53,11 @@ function isEnvironmentFile(path: string): boolean {
 }
 
 /**
- * 把模型提供的 JSON 参数解析成唯一、非空的相对文件路径。
+ * 先确认读取请求只包含一个可用的相对路径。
  *
- * - 输入：未经信任的 `argumentsJson` 字符串。
- * - 输出：参数恰好包含一个非空字符串 `path` 时返回去除首尾空格的路径。
- * - 失败方式：JSON 无效、不是对象、字段多余、路径为空或使用绝对路径时抛出 `ToolError`。
- * - 职责边界：这里只校验参数结构，不检查文件是否存在，也不读取磁盘内容。
+ * 参数来自模型，先解析 JSON，再检查对象是否只有非空字符串 path，并去掉首尾空格。
+ * JSON、字段或相对路径要求不满足时抛出 ToolError；通过后返回路径字符串。
+ * 这里只检查参数，文件是否存在、真实位置在哪里，要在读取前继续确认。
  */
 function parsePath(argumentsJson: string): string {
   let value: unknown;
@@ -81,17 +80,14 @@ function parsePath(argumentsJson: string): string {
 }
 
 /**
- * 在项目根目录边界内校验并读取一个不超过 64 KiB 的普通文件，再按 UTF-8 解码。
+ * 检查模型要读的文件，再把完整正文返回给主循环。
  *
- * - 输入：模型生成的参数字符串、项目根目录和可选取消信号。
- * - 输出：`content` 保存完整 UTF-8 文本，`metadata` 保存实际行数供界面观察。
- * - 关键步骤：解析参数、拒绝环境文件、解析真实路径、检查越界与文件类型、限制大小，最后读取。
- * - 失败方式：参数、越界、目标不存在、文件类型或大小不符合规则时抛出 `ToolError`。
- * - 系统异常：检查后的 `stat()` 或 `readFile()` 仍可能因竞态抛出文件系统异常；取消则抛出 `AbortError`，都由外层处理。
- * - 关键原因：`realpath()` 会解析符号链接，因此能拒绝检查时已经指向项目外的目标。
- * - 竞态边界：检查和 `readFile()` 不是同一个原子操作；当前实现假设本地工作区及其他进程可信，
- *   不能抵抗恶意进程在检查后替换路径，也不能作为文件系统沙箱。
- * - 内容边界：本章不识别二进制格式；任何普通文件都会尝试按 UTF-8 解码。
+ * 输入是模型的 JSON 参数和项目根。先检查相对路径与 .env 名称，再解析符号链接，
+ * 确认检查时的真实目标位于项目内、是普通文件且不超过 64 KiB，最后才读取正文。
+ * content 保存 UTF-8 正文，metadata 保存实际行数，给模型和终端分别使用。
+ * 参数和预期文件检查失败时抛出 ToolError；取消信号会传给 readFile()；后续 stat() 或读取异常交给外层处理。
+ * 检查与打开是两个操作，不能阻止其他进程在中间替换或增大文件；这里不是文件系统沙箱。
+ * 内容按 UTF-8 解码，但没有验证具体编码或二进制格式。
  */
 export async function readFileTool(
   argumentsJson: string,

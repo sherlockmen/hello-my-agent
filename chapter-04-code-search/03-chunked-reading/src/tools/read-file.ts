@@ -66,18 +66,20 @@ export const readFileDefinition = {
   },
 };
 
+// [CHANGED 04.3] 新增行数与单行长度限制，并允许检查时不超过 10 MiB 的文件。
 const MAX_LIMIT = 400;
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const MAX_LINE_CHARS = 1000;
 
+// [CHANGED 04.3] 校验后的读取参数同时保存路径与行范围。
 type ReadArguments = { path: string; offset: number; limit: number };
 
 /**
- * 判断一个路径的最终文件名是否属于禁止读取的环境配置文件。
+ * 识别不允许工具读取的 .env 系列文件名。
  *
- * - 输入：相对路径或已经解析后的真实路径。
- * - 输出：`.env`、`.env.*` 或 `.envrc` 返回 `true`，其他名称返回 `false`。
- * - 关键原因：只比较不区分大小写的文件名，路径层级不会影响凭据保护。
+ * 输入可以是模型路径，也可以是 realpath 得到的真实路径。
+ * 只取最后一段名称并忽略大小写，命中 .env、.env.* 或 .envrc 时返回 true。
+ * 这样同一类文件放在不同目录里，仍会被名称规则识别。
  */
 function isEnvironmentFile(path: string): boolean {
   const name = basename(path).toLowerCase();
@@ -85,13 +87,13 @@ function isEnvironmentFile(path: string): boolean {
 }
 
 /**
- * 把模型提供的 JSON 参数解析成受限的文件路径和行范围。
+ * 确认模型同时给出了相对路径、起始行和读取行数。
  *
- * - 输入：未经信任的 `argumentsJson` 字符串。
- * - 输出：参数恰好包含合法的 `path`、`offset` 和 `limit` 时返回结构化结果。
- * - 失败方式：JSON、字段、路径或整数范围无效时抛出 `ToolError`。
- * - 职责边界：这里只校验参数结构，不检查文件是否存在，也不读取磁盘内容。
+ * JSON 对象必须恰好包含 path、offset、limit；path 非空且不能是绝对路径，
+ * offset 是至少为 1 的整数，limit 是 1 到 400 的整数。任何一项不满足就抛出 ToolError。
+ * 成功只返回整理后的参数，不读取文件；文件位置和大小接下来才检查。
  */
+// [CHANGED 04.3] 从只接收 path 改为同时检查 offset 和 limit。
 function parseArguments(argumentsJson: string): ReadArguments {
   let value: unknown;
   try {
@@ -122,25 +124,25 @@ function parseArguments(argumentsJson: string): ReadArguments {
 }
 
 /**
- * 缩短单个超长文本行，避免少数压缩内容绕过行数上限。
+ * 缩短单个超长行，补上只限制行数还不够的地方。
  *
- * - 输入：一整行文本。
- * - 输出：最多保留前 1000 个原字符；发生截断时另行追加可见标记。
- * - 关键原因：行数限制控制不了一行数万字符的文件，因此还需要单行字符上限。
+ * 超过 1000 个原字符时，保留开头 1000 个，再追加省略号和“本行已截断”提示。
+ * 输入已经是读取出来的一整行，所以这个限制只减少返回正文，不限制读入整行时的内存。
  */
+// [NEW 04.3] 行数少也可能包含超长行，因此再限制返回的行正文。
 function shortenLine(line: string): string {
   return line.length <= MAX_LINE_CHARS ? line : `${line.slice(0, MAX_LINE_CHARS)}… [本行已截断]`;
 }
 
 /**
- * 在项目根目录边界内验证文件，并返回规范化后的真实路径。
+ * 在打开文件前检查相对路径，并取得此刻解析到的真实位置。
  *
- * - 输入：模型给出的相对路径和项目根目录。
- * - 输出：文件存在、位于项目内且通过保护规则时返回真实路径。
- * - 失败方式：环境文件、已在真实路径阶段确认的不可访问目标、越界路径、目录或超过 10 MiB 时抛出 `ToolError`。
- * - 关键原因：`realpath()` 会解析符号链接，因此能拒绝检查时已经指向项目外的目标。
- * - 竞态边界：这里返回的是路径字符串；后续打开文件前，其他进程仍可能替换该路径。
+ * 输入是模型路径和项目根。先拒绝 .env 系列名称，再用 realpath 解析符号链接，
+ * 检查真实目标仍在项目内、不是环境文件、是普通文件且此刻不超过 10 MiB。
+ * 这些检查失败时抛出 ToolError；realpath 之后的 stat() 系统异常继续向外传播。
+ * 返回的是路径字符串，不是已经锁定的文件；其他进程仍可能在检查后替换它。
  */
+// [NEW 04.3] 先完成路径和文件检查，再建立按行读取的文件流。
 async function resolveReadableFile(path: string, projectRoot: string): Promise<string> {
   if (isEnvironmentFile(path)) throw new ToolError("为防止泄露凭据，read_file 不读取 .env 系列文件。");
   let rootPath: string;
@@ -165,15 +167,16 @@ async function resolveReadableFile(path: string, projectRoot: string): Promise<s
 }
 
 /**
- * 按行流式读取文件片段，并为每行添加可引用的真实行号。
+ * 返回模型指定的一段源码，并说明下一段该从哪行开始。
  *
- * - 输入：模型生成的路径与行范围、项目根目录和可选取消信号。
- * - 输出：`content` 是给模型的带行号片段，`metadata` 是给界面的范围与续读状态。
- * - 关键步骤：通过真实路径检查后逐行跳过前文，只保留目标片段和一个额外行用于判断是否还有内容。
- * - 失败方式：起始行超过文件范围时抛出 `ToolError`；`stat()`、流读取竞态和取消异常由外层统一处理。
- * - 职责边界：分段限制模型上下文；文件仍需小于 10 MiB，本章不检测具体文本编码。
- *   当前实现假设本地工作区及其他进程可信，不能抵抗恶意并发替换，也不能作为文件系统沙箱。
+ * 参数和真实路径检查通过后，从文件开头逐行经过，跳过 offset 之前的行，再收集最多 limit 行。
+ * 多看到一行才设置 hasMore；content 带源码与续读提示，metadata 带真实行号范围供终端显示。
+ * 空文件且 offset=1 时正常返回空文件说明；其他越过文件末尾的起点抛出 ToolError。
+ * 流读取、stat() 或取消异常继续向外传播；finally 无论成功失败都关闭行读取器并销毁文件流。
+ * 这里只减少返回内容，读取靠后行仍要经过前文；多次调用也没有固定文件快照。
+ * 检查与打开之间仍可发生路径变化，当前实现适用于可信本地工作区，不是文件系统沙箱。
  */
+// [CHANGED 04.3] 逐行选出片段，多看一行后返回续读提示。
 export async function readFileTool(
   argumentsJson: string,
   projectRoot = findProjectRoot(),

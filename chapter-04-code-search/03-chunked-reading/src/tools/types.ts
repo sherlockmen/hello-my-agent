@@ -1,8 +1,15 @@
 /**
  * 04.3 把代码位置变成上下文 | [CHANGED] tools/types.ts
  *
- * 本节给 read_file 元数据加入实际行号范围和 `hasMore`。模型继续接收带行号正文，
- * 界面则可以只显示本次读取了哪一段，不需要反向解析正文字符串。
+ * 学习目标：让模型得到完整工具结果，让终端直接知道结果规模。
+ * 输入：具体工具已经取得的路径或正文。
+ * 输出：content 给模型，metadata 给终端；本文件只声明类型，不改变运行状态。
+ *
+ * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
+ *   工具结果 -> content / metadata -> 模型消息 / 观察事件
+ *
+ * 本节给 read_file 增加起止行和 hasMore，空文件单独用 lineCount=0 表示。
+ * 运行观察：模型能据正文继续回答，终端无需解析正文就能显示数量或范围。
  */
 
 export type ToolResultMetadata =

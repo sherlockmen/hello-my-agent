@@ -14,6 +14,7 @@ const chapter = "chapter-02-model-dialogue";
 const toolChapter = "chapter-03-first-tool";
 const searchChapter = "chapter-04-code-search";
 const permissionChapter = "chapter-05-permission-gate";
+const editChapter = "chapter-06-precise-edit";
 const targets = {
   "01": "chapter-01-first-command",
   "02.1": `${chapter}/01-configuration/src`,
@@ -31,9 +32,12 @@ const targets = {
   "05.1": `${permissionChapter}/01-policy-decision/src`,
   "05.2": `${permissionChapter}/02-terminal-approval/src`,
   "05.3": `${permissionChapter}/03-session-grants/src`,
+  "06.1": `${editChapter}/01-create-with-preview/src`,
+  "06.2": `${editChapter}/02-exact-replacement/src`,
+  "06.3": `${editChapter}/03-change-guard/src`,
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "05.3";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "06.3";
 const source = targets[target];
 
 if (!source) {
