@@ -32,6 +32,7 @@ const currentPackageModules = [
   "tools/change-preview", "tools/edit-file", "tools/glob", "tools/grep", "tools/read-file",
   "tools/registry", "tools/types", "tools/workspace", "tools/write-file",
   "ui/tui/app", "ui/tui/state", "ui/tui/approval",
+  "ui/tui/editor", "ui/tui/input-assist", "ui/tui/transcript", "ui/tui/system-actions", "ui/tui/layout",
   "ui/teaching-trace", "ui/terminal", "ui/input", "ui/jsonl", "agent/run", "agent/run-stream",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);

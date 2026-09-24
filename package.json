@@ -15,7 +15,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node scripts/compile.mjs 10.4 --prepare",
+    "build": "node scripts/compile.mjs 11.5 --prepare",
     "lesson:01": "node scripts/compile.mjs 01 --prepare",
     "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare",
     "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare",
@@ -48,6 +48,11 @@
     "lesson:10.2": "node scripts/compile.mjs 10.2 --prepare",
     "lesson:10.3": "node scripts/compile.mjs 10.3 --prepare",
     "lesson:10.4": "node scripts/compile.mjs 10.4 --prepare",
+    "lesson:11.1": "node scripts/compile.mjs 11.1 --prepare",
+    "lesson:11.2": "node scripts/compile.mjs 11.2 --prepare",
+    "lesson:11.3": "node scripts/compile.mjs 11.3 --prepare",
+    "lesson:11.4": "node scripts/compile.mjs 11.4 --prepare",
+    "lesson:11.5": "node scripts/compile.mjs 11.5 --prepare",
     "exercise:02": "node tests/verify-exercise-02.mjs",
     "exercise:04": "node tests/verify-exercise-04.mjs",
     "exercise:05": "node tests/verify-exercise-05.mjs",
@@ -68,8 +73,10 @@
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/compile.mjs 10.4",
-    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 10.4 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && node scripts/compile.mjs 10.4 && node -e \"if (!require('node:fs').existsSync('dist/ui/tui/approval.js')) throw new Error('默认构建未恢复到 10.4')\""
+    "prepack": "node scripts/compile.mjs 11.5",
+    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 11.5 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && node scripts/compile.mjs 11.5 && node -e \"if (!require('node:fs').existsSync('dist/ui/tui/layout.js')) throw new Error('默认构建未恢复到 11.5')\"",
+    "check:11": "node tests/verify-chapter-11.mjs && python3 tests/verify-terminal-11.py",
+    "exercise:11": "node tests/verify-exercise-11.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.126.0",
@@ -79,6 +86,7 @@
     "ink-text-input": "6.0.0",
     "openai": "7.15.0",
     "react": "19.3.0",
+    "string-width": "8.2.2",
     "wrap-ansi": "9.0.2"
   },
   "devDependencies": {

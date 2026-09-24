@@ -12,7 +12,7 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 ## 开始学习
 
-[从第一章开始](chapter-01-first-command/README.md) · [当前章节：第十章](chapter-10-terminal-ui/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
+[从第一章开始](chapter-01-first-command/README.md) · [当前章节：第十一章](chapter-11-terminal-workbench/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
 
 第一次学习，先阅读[第一章的问题与原理](chapter-01-first-command/README.md)，到“动手构建”时再运行：
 
@@ -49,7 +49,8 @@ Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS 
 | [第 07 章：执行测试并读取结果](chapter-07-command-feedback/README.md) | 怎样运行命令、根据测试结果继续修改，并停止卡住的命令或搜索？ | [三个递进小节](chapter-07-command-feedback/README.md)，已确认完成 |
 | [第 08 章：流式输出与任务中断](chapter-08-streaming-turns/README.md) | 怎样逐段显示回答、收齐工具参数，并在中断后继续对话？ | [三个递进小节](chapter-08-streaming-turns/README.md)，已确认完成 |
 | [第 09 章：让执行过程可以被界面观察](chapter-09-observable-runs/README.md) | 怎样把同一轮执行交给终端、脚本和后续 TUI？ | [三个递进小节](chapter-09-observable-runs/README.md)，已确认完成 |
-| [第 10 章：第一个真正可用的 TUI](chapter-10-terminal-ui/README.md) | 怎样把输入、执行进展、审批和取消接到终端界面？ | [四个递进小节](chapter-10-terminal-ui/README.md)，待确认 |
+| [第 10 章：第一个真正可用的 TUI](chapter-10-terminal-ui/README.md) | 怎样把输入、执行进展、审批和取消接到终端界面？ | [四个递进小节](chapter-10-terminal-ui/README.md)，已确认完成 |
+| [第 11 章：做好输入、显示与终端兼容](chapter-11-terminal-workbench/README.md) | 怎样编辑长请求、找回旧输入、浏览结果，并适应终端变化？ | [五个递进小节](chapter-11-terminal-workbench/README.md) |
 
 完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。
 
@@ -176,6 +177,14 @@ hello-my-agent/
         state.ts            把执行事件转成显示状态
         approval.ts         完整预览分页与等待用户决定
   .env.example              模型配置模板，不含真实密钥
+  chapter-11-terminal-workbench/ 第 11 章：做好输入、显示与终端兼容
+    README.md                本章主线与五节路线
+    EXERCISES.md              草稿、历史与浏览位置练习
+    01-editable-draft/  11.1 编辑一份多行草稿
+    02-recall-and-complete/  11.2 找回输入，补全路径
+    03-browse-results/  11.3 停下来查看执行结果
+    04-external-editor/  11.4 用熟悉的编辑器整理草稿
+    05-terminal-layout/  11.5 让界面适应终端
   docs/
     SETUP.md                环境与从空目录搭建
     EDITORIAL-WORKFLOW.md   主 Agent、作者子 Agent 与学习者读者的编审流程
@@ -197,15 +206,15 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](chapter-07-command-feedback/03-ripgrep-search/README.md#先准备系统-rg)。第十章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包入口当前选择第十章完成版 `10.4`；学习时用各节自己的 `lesson` 命令选择版本。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](chapter-07-command-feedback/03-ripgrep-search/README.md#先准备系统-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十、十一章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包入口当前选择第十一章完成版 `11.5`；学习时用各节自己的 `lesson` 命令选择版本。
 
 第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
 完成第二章 `/reset` 练习后，运行 `npm run exercise:02`。这条命令编译读者实际修改的终端文件，并用本地模拟接口检查两种协议中的历史是否真正清空。
 
-[第十章练习](chapter-10-terminal-ui/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第十章验证记录](docs/verification/10-terminal-ui.md)
+[第十一章练习](chapter-11-terminal-workbench/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第十一章验证记录](docs/verification/11-terminal-workbench.md)
 
-第一章到第九章已确认完成。第十章正文、代码与练习已具备，待确认。npm 包尚未发布。
+第一章到第十章已确认完成。第十一章已提供正文、配套代码与练习，待学习确认。npm 包尚未发布。
 
 ## 许可证
 
