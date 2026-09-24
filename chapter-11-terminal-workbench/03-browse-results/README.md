@@ -344,7 +344,7 @@ export function Transcript({ entries, active, width, height }: { entries: Entry[
     <Box flexDirection="column" height={height} overflow="hidden">
       {lines.slice(start, start + height).map((line, index) => <Text key={index} wrap="truncate" color={!process.env.NO_COLOR ? entries.find((entry) => entry.id === line.id)?.label === "你" ? "cyan" : entries.find((entry) => entry.id === line.id)?.label === "Agent" ? "magenta" : undefined : undefined}>{line.id === chosen ? "> " : "  "}{line.text}</Text>)}
     </Box>
-    <Text wrap="truncate">{notice || "↑↓/PgUp/PgDn 滚动 · j/k 选消息 · Enter 展开 · Ctrl+Y 复制"}</Text>
+    <Text wrap="truncate">{!active ? "Ctrl+O 进入历史区后，↑↓/PgUp/PgDn 才用于滚动" : notice || "↑↓/PgUp/PgDn 滚动 · j/k 选消息 · Enter 展开 · Ctrl+Y 复制"}</Text>
   </Box>;
 }
 ```
