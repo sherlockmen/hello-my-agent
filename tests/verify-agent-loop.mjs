@@ -6,11 +6,11 @@
 import assert from "node:assert/strict";
 import { pathToFileURL } from "node:url";
 
-export async function verifyAgentLoop(modulePath) {
+export async function verifyAgentLoop(modulePath, { interruptedHistory = false } = {}) {
   const { agentLoop } = await import(pathToFileURL(modulePath).href);
   const history = [];
   const reply = { text: "已记住青柠", inputTokens: 9, outputTokens: 4, truncated: false };
-  const modelReply = { ...reply, toolCalls: [] };
+  const modelReply = { ...reply, toolCalls: [], finishReason: "stop" };
   const controller = new AbortController();
   const calls = [];
   const model = { async generate(messages, signal) {
@@ -35,12 +35,17 @@ export async function verifyAgentLoop(modulePath) {
   ]);
   assert.equal(calls.length, 2);
   assert.equal(history.length, 4);
-  const completed = structuredClone(history);
+  let completed = structuredClone(history);
 
   // 请求失败不能污染已完成的历史，也不能吞掉错误、返回一个假的成功结果。
   const failure = new Error("模拟请求失败");
   await assert.rejects(agentLoop({ async generate() { throw failure; } }, history, "失败轮", controller.signal),
     (error) => error === failure);
+  if (interruptedHistory) {
+    assert.equal(history.at(-2).content, "失败轮");
+    assert.match(history.at(-1).content, /因错误中断/);
+    completed = structuredClone(history);
+  }
   assert.deepEqual(history, completed);
 
   // 处理“取消与返回同时发生”的情况：即使模型返回了文本，也不能保存已取消的轮次。
@@ -48,6 +53,11 @@ export async function verifyAgentLoop(modulePath) {
     controller.abort();
     return modelReply;
   } }, history, "取消轮", controller.signal), { name: "AbortError" });
+  if (interruptedHistory) {
+    assert.equal(history.at(-2).content, "取消轮");
+    assert.match(history.at(-1).content, /取消/);
+    completed = structuredClone(history);
+  }
   assert.deepEqual(history, completed);
 
   // 请求开始前已经取消时，不应再调用模型。

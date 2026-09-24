@@ -39,9 +39,12 @@ const targets = {
   "07.1": `${commandChapter}/01-run-command/src`,
   "07.2": `${commandChapter}/02-process-lifecycle/src`,
   "07.3": `${commandChapter}/03-ripgrep-search/src`,
+  "08.1": "chapter-08-streaming-turns/01-text-stream/src",
+  "08.2": "chapter-08-streaming-turns/02-complete-tool-calls/src",
+  "08.3": "chapter-08-streaming-turns/03-cancel-and-continue/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "07.3";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "08.3";
 const source = targets[target];
 
 if (!source) {

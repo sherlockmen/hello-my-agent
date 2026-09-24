@@ -31,7 +31,7 @@ const currentPackageModules = [
   "processes/run-process", "tools/run-command", "tools/ripgrep",
   "tools/change-preview", "tools/edit-file", "tools/glob", "tools/grep", "tools/read-file",
   "tools/registry", "tools/types", "tools/workspace", "tools/write-file",
-  "ui/teaching-trace", "ui/terminal",
+  "ui/teaching-trace", "ui/terminal", "ui/input",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {
@@ -109,8 +109,8 @@ async function verifyPackage(project, step, label, moduleOverride) {
   assert.match(run(cli, ["unexpected-argument"], cwd, 1).stderr, /too many arguments/);
   if (step === 0) assert.match(run(cli, [], cwd).stdout, /Hello，My Agent！/);
   else if (step === 6) {
-    await verifyAgentLoop(join(installed, "dist/agent/agent-loop.js"));
-    await verifyChat(cli, cwd);
+    await verifyAgentLoop(join(installed, "dist/agent/agent-loop.js"), { interruptedHistory: Boolean(moduleOverride) });
+    await verifyChat(cli, cwd, { streaming: Boolean(moduleOverride), reset: Boolean(moduleOverride) });
   } else await verifyLesson(cli, cwd, step);
   console.log(`✓ ${label}：包内容、临时安装、源码之外运行与退出状态通过`);
 }

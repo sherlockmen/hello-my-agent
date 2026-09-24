@@ -92,6 +92,8 @@ try {
     rmSync(join(workspace, "race-old"), { recursive: true });
 
     cpSync(join(root, "chapter-07-command-feedback/demo"), join(workspace, "demo"), { recursive: true });
+    // 练习源码可能已经被读者修好；只在测试创建的临时副本中恢复故障起点。
+    writeFileSync(join(workspace, "demo/add.mjs"), "export function add(a, b) { return a - b; }\n");
     const messagesSeen = [];
     const events = [];
     const script = [response([call("test-fails", "run_command", { command: "node --test add.test.mjs", cwd: "demo" })]),

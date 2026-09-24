@@ -106,6 +106,11 @@ for (const lessonDirectory of lessonDirectories) {
       previousSource = previousSource.slice(0, start) + answer.slice(answer.indexOf("function findUniqueMatch("))
         + "\n" + previousSource.slice(end);
     }
+    if (lessonId === "08.1" && sourcePathFromRoot === "tools/run-command.ts") {
+      const commandExercise = readFileSync(join(root, "chapter-07-command-feedback/EXERCISES.md"), "utf8");
+      previousSource = commandExercise.match(/<!-- solution: src\/tools\/run-command\.ts -->\s*```ts\n([\s\S]*?)\n```/)?.[1];
+      assert.ok(previousSource, "第七章练习必须保留可配置期限的完整答案");
+    }
     const actualStatus = previousSource === null
       ? "NEW"
       : sourceTokens(previousSource, previousPath) === sourceTokens(source, sourcePath)

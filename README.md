@@ -12,7 +12,7 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 ## 开始学习
 
-[从第一章开始](chapter-01-first-command/README.md) · [已完成：第六章](chapter-06-precise-edit/README.md) · [待确认：第五章](chapter-05-permission-gate/README.md) · [当前：第七章](chapter-07-command-feedback/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
+[从第一章开始](chapter-01-first-command/README.md) · [已完成：第七章](chapter-07-command-feedback/README.md) · [当前：第八章](chapter-08-streaming-turns/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
 
 第一次学习，先阅读[第一章的问题与原理](chapter-01-first-command/README.md)，到“动手构建”时再运行：
 
@@ -44,9 +44,10 @@ Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS 
 | [第 02 章：接通模型并持续对话](chapter-02-model-dialogue/README.md) | 怎样接通模型并建立 Agent Loop 的无工具路径？ | [六个递进小节](chapter-02-model-dialogue/README.md)，已确认完成 |
 | [第 03 章：第一个工具与 Agent Loop](chapter-03-first-tool/README.md) | 怎样执行模型请求的工具，再回传结果？ | [三个递进小节](chapter-03-first-tool/README.md)，已确认完成 |
 | [第 04 章：让 Agent 找到代码](chapter-04-code-search/README.md) | 怎样发现文件、定位代码并分段读取？ | [三个递进小节](chapter-04-code-search/README.md)，已确认完成 |
-| [第 05 章：工具执行之前，先检查权限](chapter-05-permission-gate/README.md) | 怎样在执行工具前强制区分允许、询问和拒绝？ | [三个递进小节](chapter-05-permission-gate/README.md)，待确认 |
+| [第 05 章：工具执行之前，先检查权限](chapter-05-permission-gate/README.md) | 怎样在执行工具前强制区分允许、询问和拒绝？ | [三个递进小节](chapter-05-permission-gate/README.md)，已确认完成 |
 | [第 06 章：让 Agent 先预览，再修改文件](chapter-06-precise-edit/README.md) | 怎样让用户先看清改动，并在文件变化后取消旧修改？ | [三个递进小节](chapter-06-precise-edit/README.md)，已确认完成 |
-| [第 07 章：执行测试并读取结果](chapter-07-command-feedback/README.md) | 怎样运行命令、根据测试结果继续修改，并停止卡住的命令或搜索？ | [三个递进小节](chapter-07-command-feedback/README.md)，待确认 |
+| [第 07 章：执行测试并读取结果](chapter-07-command-feedback/README.md) | 怎样运行命令、根据测试结果继续修改，并停止卡住的命令或搜索？ | [三个递进小节](chapter-07-command-feedback/README.md)，已确认完成 |
+| [第 08 章：流式输出与任务中断](chapter-08-streaming-turns/README.md) | 怎样逐段显示回答、收齐工具参数，并在中断后继续对话？ | [三个递进小节](chapter-08-streaming-turns/README.md)，待确认 |
 
 完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。
 
@@ -142,6 +143,14 @@ hello-my-agent/
       src/processes/
         run-process.ts      输出、时间上限、取消与进程组清理
     demo/                   故意失败的加法函数与测试
+  chapter-08-streaming-turns/ 第 08 章：流式输出与任务中断
+    README.md                文字增量、完整工具请求与中断后续聊
+    EXERCISES.md              用本地实验观察取消后的文件与历史
+    01-text-stream/          08.1 让回答逐段显示
+    02-complete-tool-calls/  08.2 收齐工具参数，再执行
+    03-cancel-and-continue/  08.3 中断当前任务，继续对话
+      src/ui/
+        input.ts            聊天与审批共用的可取消输入
   .env.example              模型配置模板，不含真实密钥
   docs/
     SETUP.md                环境与从空目录搭建
@@ -164,15 +173,15 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](chapter-07-command-feedback/03-ripgrep-search/README.md#先准备系统-rg)。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包入口当前选择第七章完成版 `07.3`；学习时用各节自己的 `lesson` 命令选择版本。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](chapter-07-command-feedback/03-ripgrep-search/README.md#先准备系统-rg)。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包入口当前选择第八章完成版 `08.3`；学习时用各节自己的 `lesson` 命令选择版本。
 
 第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
 完成第二章 `/reset` 练习后，运行 `npm run exercise:02`。这条命令编译读者实际修改的终端文件，并用本地模拟接口检查两种协议中的历史是否真正清空。
 
-[第七章练习](chapter-07-command-feedback/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第七章验证记录](docs/verification/07-command-feedback.md)
+[第八章练习](chapter-08-streaming-turns/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第八章验证记录](docs/verification/08-streaming-turns.md)
 
-第一章到第四章及第六章已确认完成；第五章与第七章成果已具备，等待分别确认。npm 包尚未发布。
+第一章到第七章已确认完成。第八章成果已具备，等待完成确认。npm 包尚未发布。
 
 ## 许可证
 

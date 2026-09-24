@@ -39,7 +39,7 @@ export function runCli(cli, args, cwd, env = {}, input = "", onStart = () => {})
   });
 }
 
-export async function verifyChat(cli, cwd, { reset = false, progress = false } = {}) {
+export async function verifyChat(cli, cwd, { reset = false, progress = false, streaming = false } = {}) {
   const secret = "fixture-api-secret-MUST-NOT-LOG";
   const requests = [];
   let pendingChild;
@@ -69,6 +69,26 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false } =
     const usage = body.model === "no-usage" ? undefined : anthropic
       ? { input_tokens: 21, output_tokens: 8, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 }
       : { prompt_tokens: 21, completion_tokens: 8, total_tokens: 29 };
+    if (body.stream) {
+      response.setHeader("content-type", "text/event-stream");
+      const send = (event) => response.write(`${anthropic ? `event: ${event.type}\n` : ""}data: ${JSON.stringify(event)}\n\n`);
+      if (anthropic) {
+        send({ type: "message_start", message: { id: "fixture", type: "message", role: "assistant", model: body.model,
+          content: [], stop_reason: null, stop_sequence: null, usage: usage ?? {} } });
+        send({ type: "content_block_start", index: 0, content_block: { type: "text", text: "" } });
+        send({ type: "content_block_delta", index: 0, delta: { type: "text_delta", text } });
+        send({ type: "content_block_stop", index: 0 });
+        send({ type: "message_delta", delta: { stop_reason: truncated ? "max_tokens" : "end_turn", stop_sequence: null }, usage: usage ?? {} });
+        send({ type: "message_stop" });
+      } else {
+        const base = { id: "fixture", object: "chat.completion.chunk", created: 1, model: body.model };
+        send({ ...base, choices: [{ index: 0, delta: { role: "assistant", content: text }, finish_reason: null }] });
+        send({ ...base, choices: [{ index: 0, delta: {}, finish_reason: truncated ? "length" : "stop" }], usage });
+        response.write("data: [DONE]\n\n");
+      }
+      response.end();
+      return;
+    }
     response.end(JSON.stringify(anthropic ? {
       id: "msg_fixture", type: "message", role: "assistant", model: body.model,
       content: [{ type: "text", text }], stop_reason: truncated ? "max_tokens" : "end_turn",
@@ -146,7 +166,13 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false } =
       assert.equal(retry.status, 0);
       assert.match(retry.stderr, /认证失败/);
       assert.equal(requests.length, 2);
-      assert.deepEqual(requests[1].body.messages.filter((m) => m.role !== "system"), [{ role: "user", content: "恢复了" }]);
+      const recovered = requests[1].body.messages.filter((m) => m.role !== "system");
+      if (streaming) {
+        assert.equal(recovered[0].content, "[401]");
+        const status = recovered[1].content;
+        assert.match(typeof status === "string" ? status : status[0].text, /本地状态/);
+        assert.equal(recovered.at(-1).content, "恢复了");
+      } else assert.deepEqual(recovered, [{ role: "user", content: "恢复了" }]);
       assert.ok(!(retry.stdout + retry.stderr).includes(secret));
       for (const status of [403, 404, 429, 500]) {
         requests.length = 0;
@@ -156,7 +182,8 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false } =
         assert.ok(!(error.stdout + error.stderr).includes(secret));
       }
       assert.match((await invoke(["--provider", provider, "--model", "no-usage"], "你好\n")).stdout, /输入 未知，输出 未知/);
-      assert.match((await invoke(["--provider", provider], "[limit]\n")).stdout, /达到输出上限/);
+      const limited = await invoke(["--provider", provider], "[limit]\n");
+      assert.match(streaming ? limited.stderr : limited.stdout, /达到输出上限/);
       assert.equal((await invoke(["--provider", provider], "[empty]\n")).status, 1);
       if (reset) {
         requests.length = 0;
@@ -197,7 +224,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false } =
     assert.equal((await invoke([], "\n/exit\n")).status, 0);
     assert.equal(requests.length, 0);
     const cancelled = await runCli(cli, [], cwd, env, "[wait]\n", (child) => { pendingChild = child; });
-    assert.equal(cancelled.status, 130, cancelled.stderr);
+    assert.equal(cancelled.status, streaming ? 0 : 130, cancelled.stderr);
     console.log(`✓ ${reset ? "第二章练习" : "第二章"}：双接口、多轮历史、配置优先级、错误脱敏、用量与退出均通过`);
   } finally {
     rmSync(join(cwd, ".env"), { force: true });
