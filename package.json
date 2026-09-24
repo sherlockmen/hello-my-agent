@@ -15,7 +15,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node scripts/compile.mjs 08.3 --prepare",
+    "build": "node scripts/compile.mjs 10.4 --prepare",
     "lesson:01": "node scripts/compile.mjs 01 --prepare",
     "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare",
     "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare",
@@ -41,33 +41,49 @@
     "lesson:08.1": "node scripts/compile.mjs 08.1 --prepare",
     "lesson:08.2": "node scripts/compile.mjs 08.2 --prepare",
     "lesson:08.3": "node scripts/compile.mjs 08.3 --prepare",
+    "lesson:09.1": "node scripts/compile.mjs 09.1 --prepare",
+    "lesson:09.2": "node scripts/compile.mjs 09.2 --prepare",
+    "lesson:09.3": "node scripts/compile.mjs 09.3 --prepare",
+    "lesson:10.1": "node scripts/compile.mjs 10.1 --prepare",
+    "lesson:10.2": "node scripts/compile.mjs 10.2 --prepare",
+    "lesson:10.3": "node scripts/compile.mjs 10.3 --prepare",
+    "lesson:10.4": "node scripts/compile.mjs 10.4 --prepare",
     "exercise:02": "node tests/verify-exercise-02.mjs",
     "exercise:04": "node tests/verify-exercise-04.mjs",
     "exercise:05": "node tests/verify-exercise-05.mjs",
     "exercise:06": "node tests/verify-exercise-06.mjs",
     "exercise:07": "node tests/verify-exercise-07.mjs",
     "exercise:08": "node tests/verify-exercise-08.mjs",
+    "exercise:09": "node tests/verify-exercise-09.mjs",
+    "exercise:10": "node tests/verify-exercise-10.mjs",
     "check:03": "node tests/verify-chapter-03.mjs",
     "check:04": "node tests/verify-chapter-04.mjs",
     "check:05": "node tests/verify-chapter-05.mjs",
     "check:06": "node tests/verify-chapter-06.mjs",
     "check:07": "node tests/verify-chapter-07.mjs",
     "check:08": "node tests/verify-chapter-08.mjs",
+    "check:09": "node tests/verify-chapter-09.mjs",
+    "check:10": "node tests/verify-chapter-10.mjs && python3 tests/verify-terminal-10.py",
     "check:tutorial": "node tests/verify-tutorial-markers.mjs",
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/compile.mjs 08.3",
-    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 08.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node scripts/compile.mjs 08.3 && node -e \"if (!require('node:fs').existsSync('dist/ui/input.js')) throw new Error('默认构建未恢复到 08.3')\""
+    "prepack": "node scripts/compile.mjs 10.4",
+    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 10.4 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && node scripts/compile.mjs 10.4 && node -e \"if (!require('node:fs').existsSync('dist/ui/tui/approval.js')) throw new Error('默认构建未恢复到 10.4')\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.126.0",
     "commander": "14.0.3",
     "ignore": "7.0.9",
-    "openai": "7.15.0"
+    "ink": "7.1.1",
+    "ink-text-input": "6.0.0",
+    "openai": "7.15.0",
+    "react": "19.3.0",
+    "wrap-ansi": "9.0.2"
   },
   "devDependencies": {
     "@types/node": "22.20.3",
+    "@types/react": "19.3.0",
     "typescript": "5.9.3"
   },
   "repository": {

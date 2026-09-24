@@ -16,7 +16,7 @@ function findTypeScriptFiles(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) return findTypeScriptFiles(path);
-    return entry.isFile() && entry.name.endsWith(".ts") ? [path] : [];
+    return entry.isFile() && /\.tsx?$/.test(entry.name) ? [path] : [];
   });
 }
 
@@ -32,7 +32,7 @@ function sourceTokens(source, filename) {
     source,
     ts.ScriptTarget.Latest,
     true,
-    ts.ScriptKind.TS,
+    filename.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
   );
   const tokens = [];
   const visit = (node) => {
@@ -138,7 +138,7 @@ for (const lessonDirectory of lessonDirectories) {
     `${relative(root, readmePath)} 必须先列本节改动文件，再进入动手构建`);
   const section = readme.slice(changeHeading, buildHeading);
   const listedFiles = new Map();
-  for (const match of section.matchAll(/^\| (新增|修改|NEW|CHANGED) \| \[([^\]]+\.ts)\]\([^\)]+\) \|/gm)) {
+  for (const match of section.matchAll(/^\| (新增|修改|NEW|CHANGED) \| \[([^\]]+\.tsx?)\]\([^\)]+\) \|/gm)) {
     listedFiles.set(match[2], ["新增", "NEW"].includes(match[1]) ? "NEW" : "CHANGED");
   }
   assert.deepEqual([...listedFiles].sort(), [...expectedFiles].sort(),

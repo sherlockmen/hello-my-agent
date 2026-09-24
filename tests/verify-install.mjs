@@ -31,7 +31,8 @@ const currentPackageModules = [
   "processes/run-process", "tools/run-command", "tools/ripgrep",
   "tools/change-preview", "tools/edit-file", "tools/glob", "tools/grep", "tools/read-file",
   "tools/registry", "tools/types", "tools/workspace", "tools/write-file",
-  "ui/teaching-trace", "ui/terminal", "ui/input",
+  "ui/tui/app", "ui/tui/state", "ui/tui/approval",
+  "ui/teaching-trace", "ui/terminal", "ui/input", "ui/jsonl", "agent/run", "agent/run-stream",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {
@@ -100,6 +101,9 @@ async function verifyPackage(project, step, label, moduleOverride) {
   const installed = join(installedModules, ...pkg.name.split("/"));
   for (const name of ["chapter-01-first-command", chapter]) assert.ok(!existsSync(join(installed, name)));
   for (const dep of ["typescript", "@types/node"]) assert.ok(!existsSync(join(installed, "node_modules", dep)));
+  // 动态加载的 TUI 也必须只靠安装包的运行依赖载入；文本模式不会触发这条 import。
+  if (moduleOverride) run(process.execPath, ["--input-type=module", "-e",
+    `await import(${JSON.stringify(join(installed, "dist/ui/tui/app.js"))})`], cwd);
   const cli = resolve(prefix, process.platform === "win32" ? "hello-my-agent.cmd" : "bin/hello-my-agent");
   assert.match(run(cli, ["--help"], cwd).stdout, /--help/);
   assert.equal(run(cli, ["--version"], cwd).stdout.trim(), pkg.version);
@@ -110,7 +114,7 @@ async function verifyPackage(project, step, label, moduleOverride) {
   if (step === 0) assert.match(run(cli, [], cwd).stdout, /Hello，My Agent！/);
   else if (step === 6) {
     await verifyAgentLoop(join(installed, "dist/agent/agent-loop.js"), { interruptedHistory: Boolean(moduleOverride) });
-    await verifyChat(cli, cwd, { streaming: Boolean(moduleOverride), reset: Boolean(moduleOverride) });
+    await verifyChat(cli, cwd, { streaming: Boolean(moduleOverride), reset: Boolean(moduleOverride), splitOutput: Boolean(moduleOverride) });
   } else await verifyLesson(cli, cwd, step);
   console.log(`✓ ${label}：包内容、临时安装、源码之外运行与退出状态通过`);
 }

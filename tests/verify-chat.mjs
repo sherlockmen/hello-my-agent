@@ -39,7 +39,7 @@ export function runCli(cli, args, cwd, env = {}, input = "", onStart = () => {})
   });
 }
 
-export async function verifyChat(cli, cwd, { reset = false, progress = false, streaming = false } = {}) {
+export async function verifyChat(cli, cwd, { reset = false, progress = false, streaming = false, splitOutput = false } = {}) {
   const secret = "fixture-api-secret-MUST-NOT-LOG";
   const requests = [];
   let pendingChild;
@@ -125,7 +125,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
       const result = await invoke(["--provider", provider], "\n记住青柠\n记得吗\n/exit\n");
       assert.equal(result.status, 0, result.stderr);
       assert.match(result.stdout, /记得：记住青柠/);
-      assert.match(result.stdout, /输入 21，输出 8/);
+      assert.match(splitOutput ? result.stderr : result.stdout, /输入 21，输出 8/);
       assert.equal(requests.length, 2);
       const first = requests[0], second = requests[1];
       assert.equal(first.headers[provider === "openai" ? "authorization" : "x-api-key"], provider === "openai" ? `Bearer ${secret}` : secret);
@@ -151,11 +151,11 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
       const once = await invoke(["--provider", provider, "--prompt", "只问一次"]);
       assert.equal(once.status, 0, once.stderr);
       assert.match(once.stdout, /收到：只问一次/);
-      assert.match(once.stdout, /输入 21，输出 8/);
+      assert.match(splitOutput ? once.stderr : once.stdout, /输入 21，输出 8/);
       if (progress) {
-        assert.match(once.stdout, /模型 > 第 1 次决策/);
-        assert.match(once.stdout, /收到：新增用户问题「只问一次」/);
-        assert.match(once.stdout, /返回：最终回答，交给终端显示/);
+        assert.match(splitOutput ? once.stderr : once.stdout, /模型 > 第 1 次决策/);
+        assert.match(splitOutput ? once.stderr : once.stdout, /收到：新增用户问题「只问一次」/);
+        assert.match(splitOutput ? once.stderr : once.stdout, /返回：最终回答，交给终端显示/);
       }
       assert.equal(requests.length, 1);
       assert.equal((await invoke(["--provider", provider, "--prompt", "   "])).status, 1);
@@ -181,7 +181,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
         assert.equal(requests.length, 1);
         assert.ok(!(error.stdout + error.stderr).includes(secret));
       }
-      assert.match((await invoke(["--provider", provider, "--model", "no-usage"], "你好\n")).stdout, /输入 未知，输出 未知/);
+      assert.match((await invoke(["--provider", provider, "--model", "no-usage"], "你好\n"))[splitOutput ? "stderr" : "stdout"], /输入 未知，输出 未知/);
       const limited = await invoke(["--provider", provider], "[limit]\n");
       assert.match(streaming ? limited.stderr : limited.stdout, /达到输出上限/);
       assert.equal((await invoke(["--provider", provider], "[empty]\n")).status, 1);
@@ -189,7 +189,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
         requests.length = 0;
         const cleared = await invoke(["--provider", provider], "旧内容\n/reset\n新内容\n/exit\n");
         assert.equal(cleared.status, 0);
-        assert.match(cleared.stdout, /已清空当前对话/);
+        assert.match(splitOutput ? cleared.stderr : cleared.stdout, /已清空当前对话/);
         assert.equal(requests.length, 2);
         assert.deepEqual(requests[1].body.messages.filter((m) => m.role !== "system"), [{ role: "user", content: "新内容" }]);
       }

@@ -12,7 +12,7 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 ## 开始学习
 
-[从第一章开始](chapter-01-first-command/README.md) · [已完成：第七章](chapter-07-command-feedback/README.md) · [当前：第八章](chapter-08-streaming-turns/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
+[从第一章开始](chapter-01-first-command/README.md) · [当前章节：第十章](chapter-10-terminal-ui/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
 
 第一次学习，先阅读[第一章的问题与原理](chapter-01-first-command/README.md)，到“动手构建”时再运行：
 
@@ -47,7 +47,9 @@ Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS 
 | [第 05 章：工具执行之前，先检查权限](chapter-05-permission-gate/README.md) | 怎样在执行工具前强制区分允许、询问和拒绝？ | [三个递进小节](chapter-05-permission-gate/README.md)，已确认完成 |
 | [第 06 章：让 Agent 先预览，再修改文件](chapter-06-precise-edit/README.md) | 怎样让用户先看清改动，并在文件变化后取消旧修改？ | [三个递进小节](chapter-06-precise-edit/README.md)，已确认完成 |
 | [第 07 章：执行测试并读取结果](chapter-07-command-feedback/README.md) | 怎样运行命令、根据测试结果继续修改，并停止卡住的命令或搜索？ | [三个递进小节](chapter-07-command-feedback/README.md)，已确认完成 |
-| [第 08 章：流式输出与任务中断](chapter-08-streaming-turns/README.md) | 怎样逐段显示回答、收齐工具参数，并在中断后继续对话？ | [三个递进小节](chapter-08-streaming-turns/README.md)，待确认 |
+| [第 08 章：流式输出与任务中断](chapter-08-streaming-turns/README.md) | 怎样逐段显示回答、收齐工具参数，并在中断后继续对话？ | [三个递进小节](chapter-08-streaming-turns/README.md)，已确认完成 |
+| [第 09 章：让执行过程可以被界面观察](chapter-09-observable-runs/README.md) | 怎样把同一轮执行交给终端、脚本和后续 TUI？ | [三个递进小节](chapter-09-observable-runs/README.md)，已确认完成 |
+| [第 10 章：第一个真正可用的 TUI](chapter-10-terminal-ui/README.md) | 怎样把输入、执行进展、审批和取消接到终端界面？ | [四个递进小节](chapter-10-terminal-ui/README.md)，待确认 |
 
 完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。
 
@@ -151,6 +153,28 @@ hello-my-agent/
     03-cancel-and-continue/  08.3 中断当前任务，继续对话
       src/ui/
         input.ts            聊天与审批共用的可取消输入
+  chapter-09-observable-runs/ 第 09 章：让执行过程可以被界面观察
+    README.md                任务状态、事件送达与 JSONL 输出
+    EXERCISES.md              通过事件记录真实工具调用的耗时
+    01-run-lifecycle/        09.1 让界面知道任务何时结束
+    02-event-stream/         09.2 按顺序接收执行事件
+    03-jsonl-output/         09.3 让脚本读懂执行过程
+      src/agent/
+        run.ts              一轮任务的开始与结束状态
+        run-stream.ts       按顺序交付带编号的事件
+      src/ui/
+        jsonl.ts            每行输出一条 JSON 记录
+  chapter-10-terminal-ui/    第 10 章：第一个真正可用的 TUI
+    README.md               本章教学与四节路线
+    EXERCISES.md             用真实事件验证界面状态
+    01-first-screen/        10.1 把对话放进一个界面
+    02-live-progress/       10.2 让界面跟着执行变化
+    03-tool-approval/       10.3 在界面中批准工具调用
+    04-cancel-and-restore/  10.4 取消以后，继续留在对话里
+      src/ui/tui/
+        app.tsx             输入、消息、进展与界面生命周期
+        state.ts            把执行事件转成显示状态
+        approval.ts         完整预览分页与等待用户决定
   .env.example              模型配置模板，不含真实密钥
   docs/
     SETUP.md                环境与从空目录搭建
@@ -173,15 +197,15 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](chapter-07-command-feedback/03-ripgrep-search/README.md#先准备系统-rg)。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包入口当前选择第八章完成版 `08.3`；学习时用各节自己的 `lesson` 命令选择版本。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](chapter-07-command-feedback/03-ripgrep-search/README.md#先准备系统-rg)。第十章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包入口当前选择第十章完成版 `10.4`；学习时用各节自己的 `lesson` 命令选择版本。
 
 第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
 完成第二章 `/reset` 练习后，运行 `npm run exercise:02`。这条命令编译读者实际修改的终端文件，并用本地模拟接口检查两种协议中的历史是否真正清空。
 
-[第八章练习](chapter-08-streaming-turns/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第八章验证记录](docs/verification/08-streaming-turns.md)
+[第十章练习](chapter-10-terminal-ui/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第十章验证记录](docs/verification/10-terminal-ui.md)
 
-第一章到第七章已确认完成。第八章成果已具备，等待完成确认。npm 包尚未发布。
+第一章到第九章已确认完成。第十章正文、代码与练习已具备，待确认。npm 包尚未发布。
 
 ## 许可证
 

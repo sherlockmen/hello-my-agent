@@ -42,9 +42,16 @@ const targets = {
   "08.1": "chapter-08-streaming-turns/01-text-stream/src",
   "08.2": "chapter-08-streaming-turns/02-complete-tool-calls/src",
   "08.3": "chapter-08-streaming-turns/03-cancel-and-continue/src",
+  "09.1": "chapter-09-observable-runs/01-run-lifecycle/src",
+  "09.2": "chapter-09-observable-runs/02-event-stream/src",
+  "09.3": "chapter-09-observable-runs/03-jsonl-output/src",
+  "10.1": "chapter-10-terminal-ui/01-first-screen/src",
+  "10.2": "chapter-10-terminal-ui/02-live-progress/src",
+  "10.3": "chapter-10-terminal-ui/03-tool-approval/src",
+  "10.4": "chapter-10-terminal-ui/04-cancel-and-restore/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "08.3";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "10.4";
 const source = targets[target];
 
 if (!source) {
