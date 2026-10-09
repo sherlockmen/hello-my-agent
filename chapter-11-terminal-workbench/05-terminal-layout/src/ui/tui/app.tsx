@@ -67,6 +67,7 @@ type Session = {
  * - 输出：当前页、提示和一个审批输入框；next / prev 只翻页，y / n / s 还要按 Enter 才提交。
  * - 状态：page、answer、hint 属于这次面板；请求 key 或窗口尺寸改变时由父组件重新挂载并清空。
  * - 批准条件：窗口至少 40 列、16 行且已经到最后一页；窗口足够大时任意页都可输入 n 拒绝。
+ * - 小窗口：工作区暂停输入；放大后继续审批，或用 Ctrl+C 取消本轮任务、Ctrl+D 退出。
  * - 粘贴处理：审批输入不接收粘贴，复制来的正文不能变成审批按键。
  * - 关键原因：不能在只显示了部分修改时批准全部内容；尺寸变化后需按新分页重新查看。
  * - 职责边界：本函数只检查显示条件，s 是否属于可记住的只读范围仍由 pending.respond 检查。
@@ -79,7 +80,7 @@ function ApprovalPanel({ pending, columns, rows }: { pending: PendingApproval; c
   const [hint, setHint] = useState("");
   const tooSmall = columns < 40 || rows < 16;
   usePaste(() => setHint("审批不接受粘贴，请手动输入 y、n 或 s 后回车。"));
-  // 翻页只更新画面；批准还要满足末页和窗口尺寸条件，拒绝则随时可提交。
+  // 翻页只更新画面；窗口足够大时任意页可拒绝，批准还要到最后一页。
   const submit = (value: string) => {
     const choice = value.trim().toLowerCase();
     setAnswer("");
@@ -91,7 +92,7 @@ function ApprovalPanel({ pending, columns, rows }: { pending: PendingApproval; c
   // [CHANGED 11.5] 审批的颜色和光标装饰尊重 NO_COLOR，判断规则不靠颜色表达。
   return <Box borderStyle="round" borderColor={useColor ? "yellow" : undefined} paddingX={1} flexDirection="column">
     <Text bold={useColor} color={useColor ? "yellow" : undefined}>等待批准 · 第 {page + 1}/{pages.length} 页</Text>
-    {tooSmall ? <Text>窗口过小，请放大至至少 40 列、16 行，或输入 n 拒绝。</Text> : <Text>{pages[page]}</Text>}
+    {tooSmall ? <Text>窗口过小，请放大至至少 40 列、16 行后继续审批；Ctrl+C 取消本轮任务，Ctrl+D 退出。</Text> : <Text>{pages[page]}</Text>}
     <Text dimColor={useColor}>next 下一页 · prev 上一页 · n 拒绝</Text>
     <Text>{!tooSmall && page === pages.length - 1 ? `y 批准本次${pending.request.allowSession && !pending.request.preview ? " · s 本次会话允许" : ""}；输入后按 Enter` : "查看到最后一页后才能批准"}</Text>
     {hint && <Text color={useColor ? "yellow" : undefined}>{hint}</Text>}
@@ -212,7 +213,7 @@ function TuiApp({ model, session, quit, interrupt }: { model: Model; session: Se
   // [CHANGED 11.5] 尺寸不足时隐藏工作区并停用输入；放大后沿用原草稿与浏览状态。
   return <Box flexDirection="column">
     <Text bold={useColor} wrap="truncate">Hello, My Agent · Ctrl+O 切换草稿 / 历史</Text>
-    {tooSmall && <Text wrap="truncate">请放大到 40 列、16 行；Ctrl+C 取消 / 退出。</Text>}
+    {tooSmall && <Text wrap="truncate">请放大到 40 列、16 行；Ctrl+C 取消任务 · Ctrl+D 退出。</Text>}
     <Box display={tooSmall ? "none" : "flex"} flexDirection="column">
     {approval && <ApprovalPanel key={`${approval.key}:${columns}:${rows}`} pending={approval} columns={columns} rows={rows} />}
     <Box display={approval ? "none" : "flex"} flexDirection="column">

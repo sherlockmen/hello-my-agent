@@ -32,8 +32,19 @@ try {
   assert.equal((await a.completeInput('/res',4)).text,'/reset');
   const work=join(temp,'project');mkdirSync(work);writeFileSync(join(work,'package.json'),'{}');mkdirSync(join(work,'src'));
   writeFileSync(join(work,'src/中文.ts'),'正文不需要被读取');writeFileSync(join(work,'.env'),'PRIVATE');
+  writeFileSync(join(work,'README.md'),'root readme');
+  for(let i=0;i<25;i++){const dir=join(work,`lesson-${i}`);mkdirSync(dir);writeFileSync(join(dir,'README.md'),'nested readme');}
+  process.chdir(work);
+  for(const text of ['@README','请读取 @README','请读取@README'])assert.equal((await a.completeInput(text,text.length)).text,text+'.md');
+  const withTail='请读取@README，只说明启动方法。';
+  assert.equal((await a.completeInput(withTail,'请读取@README'.length)).text,'请读取@README.md，只说明启动方法。');
+  process.chdir(join(work,'lesson-0'));
+  assert.equal((await a.completeInput('请读取@README',10)).text,'请读取@README.md');
   process.chdir(work);
   assert.equal((await a.completeInput('查看 @src/中',9)).text,'查看 @src/中文.ts');
+  for(let i=0;i<21;i++)writeFileSync(join(work,`example-${i}.md`),'candidate');
+  const limited=await a.completeInput('@example-',9);
+  assert.equal(limited.text,'@example-');assert.match(limited.hint,/超过 20 项/);
   assert.equal((await a.completeInput('@.en',4)).text,'@.en');
   const aborted=new AbortController();aborted.abort();await assert.rejects(a.completeInput('/res',4,aborted.signal));
   const entries=[{id:'one',label:'Agent',text:'中文🙂'.repeat(40)},{id:'tool',label:'工具',text:'read_file',details:'FULL_RESULT'}];
@@ -45,7 +56,19 @@ try {
   assert.ok(!lines.some(line=>line.text.includes('FULL_RESULT')));
   assert.ok(v.transcriptLines(entries,40,new Set(['tool'])).some(line=>line.text==='FULL_RESULT'));
   for(const line of l.wrapLines('中🙂é👨‍👩‍👧‍👦'.repeat(20),7))assert.ok(stringWidth(line.text)<=7);
-  for(const line of e.draftLines(e.newDraft('中文🙂'.repeat(80)),12,4))assert.ok(stringWidth(line)<=12);
+  // 光标是显示样式，不能挤开正文或改变折行；移动也不能修改草稿。
+  for(const [text,cursor,width] of [['abcd',1,4],['abcdZ',2,4],['中🙂Z',1,4],['a👨‍👩‍👧‍👦é\n尾',1,4],['A🙂B',1,4],['AéB',1,3],['abc中文',3,4],['ab\ncd',3,4]]) {
+    const draft={...e.newDraft(text),cursor};
+    const lines=e.draftLines(draft,width,10);
+    assert.deepEqual(lines.map(line=>line.text),l.wrapLines(text,width).map(line=>line.text));
+    const marked=lines.find(line=>line.cursor!==undefined);
+    assert.ok(marked,'可见行必须能定位光标');
+    assert.equal(e.graphemes(marked.text.slice(marked.cursor))[0],e.graphemes(text.slice(cursor))[0]);
+    assert.equal(e.editKey(draft,'',{leftArrow:true}).text,text);
+    assert.equal(draft.past.length,0);
+  }
+  for(const line of e.draftLines(e.newDraft('中文🙂'.repeat(80)),12,4))assert.ok(stringWidth(line.text)<=12);
+  const end=e.newDraft('abcd');e.draftLines(end,4,2);assert.equal(end.text,'abcd');
   const commands=join(temp,'commands');mkdirSync(commands);
   for(const name of ['pbcopy','clip.exe','wl-copy','xclip'])writeFileSync(join(commands,name),'#!/bin/sh\ncat > "$COPY_TARGET"\n',{mode:0o755});
   process.env.PATH=commands+':'+previous.PATH;process.env.COPY_TARGET=join(temp,'clipboard');

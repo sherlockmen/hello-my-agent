@@ -50,7 +50,7 @@ Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS 
 | [第 08 章：流式输出与任务中断](chapter-08-streaming-turns/README.md) | 怎样逐段显示回答、收齐工具参数，并在中断后继续对话？ | [三个递进小节](chapter-08-streaming-turns/README.md)，已确认完成 |
 | [第 09 章：让执行过程可以被界面观察](chapter-09-observable-runs/README.md) | 怎样把同一轮执行交给终端、脚本和后续 TUI？ | [三个递进小节](chapter-09-observable-runs/README.md)，已确认完成 |
 | [第 10 章：第一个真正可用的 TUI](chapter-10-terminal-ui/README.md) | 怎样把输入、执行进展、审批和取消接到终端界面？ | [四个递进小节](chapter-10-terminal-ui/README.md)，已确认完成 |
-| [第 11 章：做好输入、显示与终端兼容](chapter-11-terminal-workbench/README.md) | 怎样编辑长请求、找回旧输入、浏览结果，并适应终端变化？ | [五个递进小节](chapter-11-terminal-workbench/README.md) |
+| [第 11 章：把终端变成可以编辑和浏览的工作区](chapter-11-terminal-workbench/README.md) | 怎样编辑长请求、找回旧输入、浏览结果，并适应终端变化？ | [五个递进小节](chapter-11-terminal-workbench/README.md) |
 
 完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。
 
@@ -177,14 +177,14 @@ hello-my-agent/
         state.ts            把执行事件转成显示状态
         approval.ts         完整预览分页与等待用户决定
   .env.example              模型配置模板，不含真实密钥
-  chapter-11-terminal-workbench/ 第 11 章：做好输入、显示与终端兼容
+  chapter-11-terminal-workbench/ 第 11 章：把终端变成可以编辑和浏览的工作区
     README.md                本章主线与五节路线
     EXERCISES.md              草稿、历史与浏览位置练习
-    01-editable-draft/  11.1 编辑一份多行草稿
-    02-recall-and-complete/  11.2 找回输入，补全路径
-    03-browse-results/  11.3 停下来查看执行结果
-    04-external-editor/  11.4 用熟悉的编辑器整理草稿
-    05-terminal-layout/  11.5 让界面适应终端
+    01-editable-draft/  11.1 让多行输入成为可编辑的草稿
+    02-recall-and-complete/  11.2 取回旧问题，补全当前文字
+    03-browse-results/  11.3 在输出继续时，停下来浏览结果
+    04-external-editor/  11.4 把长草稿交给外部编辑器
+    05-terminal-layout/  11.5 按终端列宽排版，保留阅读位置
   docs/
     SETUP.md                环境与从空目录搭建
     EDITORIAL-WORKFLOW.md   主 Agent、作者子 Agent 与学习者读者的编审流程

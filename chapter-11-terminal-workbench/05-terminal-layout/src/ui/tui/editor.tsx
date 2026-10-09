@@ -133,22 +133,41 @@ export function editKey(draft: Draft, input: string, key: Partial<Key>): Draft {
   if (key.ctrl || key.meta || key.escape || key.tab || key.return) return draft;
   return input ? insertText(draft, input) : draft;
 }
+type DisplayLine = { text: string; cursor?: number };
 /**
- * 按可用列宽折行，并只显示包含光标的一段草稿。
+ * 显示一行草稿，在光标处反色显示整个字符，而不把后面的文字挤开。
+ *
+ * - 输入：纯文字显示行、行内光标下标，以及草稿区是否有焦点。
+ * - 输出：一行 Ink 文字；失焦时只显示正文，不显示光标。
+ * - 原理：只改变当前位置字符的显示样式，不插入字符，也不修改 Draft。
+ * - 边界：NO_COLOR 用同样列宽的方块代替反色；行尾的占位仅用于显示，不进入草稿。
+ */
+// [KEEP 来自 11.1] 块状光标是显示样式，不是草稿里的字符。
+function DraftLine({ line, active }: { line: DisplayLine; active: boolean }) {
+  if (!active || line.cursor === undefined) return <Text>{line.text}</Text>;
+  const at = line.cursor, char = graphemes(line.text.slice(at))[0] ?? " ";
+  return <Text>{line.text.slice(0, at)}<Text inverse={!process.env.NO_COLOR}>
+    {process.env.NO_COLOR ? "█".repeat(Math.max(1, stringWidth(char))) : char}
+  </Text>{line.text.slice(at + char.length)}</Text>;
+}
+/**
+ * 按终端宽度折行，并截取包含光标的草稿片段。
  *
  * - 输入：当前草稿、可用列数与显示行数；列数至少按 2 计算。
- * - 输出：包含可见光标标记的行数组，不修改原文字或光标下标。
- * - 关键步骤：先对显示副本清理控制字符，再插入光标标记；用 wrapLines 的正文偏移找到光标所在行。
- * - 边界：视口随光标向下移动，保留末尾最多 height 行；折行以完整字素和终端列宽计算。
+ * - 输出：每行纯文字和该行的光标位置，不修改原草稿。
+ * - 原理：先折行，再用正文偏移定位光标；样式由 DraftLine 添加，不能参与列宽计算。
+ * - 边界：行尾或空草稿需要一个显示占位；它不写入正文。视口随光标移动，只保留附近行。
  */
-// [CHANGED 11.5] 通过折行返回的正文偏移定位光标，避免宽字符造成显示行误判。
-export function draftLines(draft: Draft, width: number, height: number): string[] {
+// [CHANGED 11.5] 复用 wrapLines 的正文偏移定位光标，宽字符按完整字素折行。
+export function draftLines(draft: Draft, width: number, height: number): DisplayLine[] {
   const columns = Math.max(2, width);
   const before = screenText(draft.text.slice(0, draft.cursor));
-  const shown = `${before}▏${screenText(draft.text.slice(draft.cursor))}`;
+  const after = screenText(draft.text.slice(draft.cursor));
+  const shown = before + (!after || after.startsWith("\n") ? " " : "") + after;
   const lines = wrapLines(shown, columns);
   const cursorRow = lines.reduce((found, line, index) => line.offset <= before.length ? index : found, 0);
-  return lines.slice(Math.max(0, cursorRow - height + 1), Math.max(height, cursorRow + 1)).map((line) => line.text);
+  return lines.map((line, index) => ({ text: line.text, cursor: index === cursorRow ? before.length - line.offset : undefined }))
+    .slice(Math.max(0, cursorRow - height + 1), Math.max(height, cursorRow + 1));
 }
 /**
  * 接管当前草稿区的输入，让编辑与提交走各自的回调。
@@ -206,11 +225,11 @@ export function DraftEditor({ value, onChange, onSubmit, active, width, height =
   }, { isActive: active });
   // [CHANGED 11.5] 为提示预留一行，并限制本组件的总显示高度。
   const contentHeight = Math.max(1, height - (error ? 1 : 0));
-  const lines = search
-    ? wrapLines(`搜索历史：${screenText(search.query)}\n${screenText(candidates[search.index] ?? "没有匹配")}`, width).slice(0, contentHeight).map((line) => line.text)
+  const lines: DisplayLine[] = search
+    ? wrapLines(`搜索历史：${screenText(search.query)}\n${screenText(candidates[search.index] ?? "没有匹配")}`, width).slice(0, contentHeight)
     : draftLines(value, width, contentHeight);
   return <Box flexDirection="column" height={height} overflow="hidden">
-    {lines.map((line, index) => <Text key={index} wrap="truncate">{line}</Text>)}
+    {lines.map((line, index) => <DraftLine key={index} line={line} active={active} />)}
     {error && <Text wrap="truncate">{fitLine(screenText(error), width)}</Text>}
   </Box>;
 }

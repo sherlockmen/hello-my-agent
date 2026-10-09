@@ -49,7 +49,7 @@ export function commonPrefix(values: string[]): string {
  *
  * - 输入：草稿、UTF-16 光标下标及可选取消信号；光标由编辑器维护。
  * - 输出：新文字、新光标和提示；无候选、无补全位置或候选过多时保留原草稿。
- * - 关键步骤：本地命令查固定表；路径把输入中的 glob 特殊符号转义，再复用项目根、忽略规则与最多 20 项的路径结果。
+ * - 关键步骤：本地命令查固定表；路径识别不要求 @ 前有空格；转义 glob 特殊符号后复用项目根和忽略规则，先筛选完整路径前缀，再检查 20 项上限。
  * - 候选处理：唯一候选补全整项，多个候选只延长共同前缀；唯一且含空白的路径用 JSON 引号保留边界。
  * - 失败方式：路径检查、搜索或取消错误交给编辑器显示；返回前检查取消，但是否仍是原草稿由组件另行确认。
  * - 职责边界：读取的是路径名，不是文件正文；函数返回文字，不执行工具或提交模型请求。
@@ -61,13 +61,14 @@ export async function completeInput(text: string, cursor: number, signal?: Abort
     prefix = left; start = 0;
     candidates = ["/exit", "/reset", "/permissions", "/permissions reset"].filter((command) => command.startsWith(prefix));
   } else {
-    const match = /(?:^|\s)@([^\s]*)$/.exec(left);
+    const match = /@([^\s]*)$/.exec(left);
     if (!match) return { text, cursor, hint: "输入 / 补全本地命令，或 @ 后面的项目路径，再按 Tab。" };
     prefix = match[1]; start = left.length - prefix.length;
     const pattern = validateGlobPattern(prefix.replace(/[?*\[\]{}\\]/g, "\\$&") + "*");
-    const result = await findMatchingFiles(pattern, findProjectRoot(), 20, signal);
+    // [KEEP 来自 11.2] 名称匹配可能包含各目录同名文件，先筛选真正的路径候选，再限制数量。
+    const result = await findMatchingFiles(pattern, findProjectRoot(), Infinity, signal);
     candidates = result.paths.filter((path) => path.startsWith(prefix));
-    if (result.truncated) return { text, cursor, hint: "候选超过 20 项，请继续输入更完整的路径。" };
+    if (candidates.length > 20) return { text, cursor, hint: "候选超过 20 项，请继续输入更完整的路径。" };
   }
   signal?.throwIfAborted();
   if (!candidates.length) return { text, cursor, hint: "没有匹配的候选。" };

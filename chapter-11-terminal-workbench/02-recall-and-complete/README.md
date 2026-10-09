@@ -1,83 +1,68 @@
-# 11.2 找回输入，补全路径
+# 11.2 取回旧问题，补全当前文字
 
-[第 11 章首页](../README.md) · [上一节：11.1 编辑一份多行草稿](../01-editable-draft/README.md) · [下一节：11.3 停下来查看执行结果](../03-browse-results/README.md)
+[第 11 章首页](../README.md) · [上一节：11.1 让多行输入成为可编辑的草稿](../01-editable-draft/README.md) · [下一节：11.3 在输出继续时，停下来浏览结果](../03-browse-results/README.md)
 
-## 问题：已经写过的请求，为什么还要再输一遍
+## 问题：草稿能编辑，还需要历史搜索、文件与命令补全
 
-上一节，我们把读取 `README.md` 的请求写成了两行。看完回答以后，想沿用同样的要求，只把文件换成项目中的另一份说明。重新输入整段文字容易漏掉条件，从结果区手动寻找旧问题也不方便。
+上一节已经能把请求写成多行草稿。接下来检查 `package.json` 时，我们想沿用上次读取 `README.md` 的要求，只换一个文件名。
 
-路径还有另一种麻烦：我们记得文件放在 `docs/`，却不确定完整文件名。界面已经运行在这个项目里，可以列出实际候选，让用户选择，而不是让模型猜一个路径再尝试读取。
+![使用场景示意：取回旧读取要求，换上新的文件名，留在草稿中继续修改](assets/problem-scenario-0c541d2c35.gif)
 
-本节给草稿加上两种来源：已经提交过的输入，以及本地命令和项目路径的补全结果。两者都先进入草稿，用户仍可以修改并决定是否发送。
+逐字重写旧问题，或手写完整的文件路径和本地命令名称，都会重复输入已有文字。我们需要搜索并取回旧问题，也需要在名称写到一半时按 `Tab` 补全；这些文字取回后还要能继续修改。
 
-## 解决方案：取回旧文字，补齐当前文字
+## 解决方案：搜索已提交问题，按实际名称补全草稿
 
-输入历史按提交顺序保存用户的请求。查找时，从最近的一项向前搜索，把匹配项取回输入区。找不到合适内容时，用户应能退出搜索，继续编辑搜索前的草稿。
+输入历史与名称补全各有自己的来源，结果都先放进草稿：
 
-补全则从当前正在输入的片段出发：本地命令使用程序已支持的命令列表，路径使用项目中实际找到的文件。候选只帮助完成这段文字，不代替用户发送，也不提前读取文件正文。
+| 功能 | 做法 |
+| --- | --- |
+| 输入历史与搜索 | 保存当前进程已提交的普通问题，按关键词查找；选中一条后把原文取回草稿。 |
+| 文件与命令补全 | 按 `Tab` 时，从实际项目路径或本地命令名称中匹配光标前的文字；只有一个匹配就补完整，多个匹配只补共同前缀。 |
+
+取回或补全后仍可编辑；普通草稿中的 `Enter` 才请求发送，搜索中的 `Enter` 只确认候选。
 
 ## 工作原理
 
-### 1. 输入历史与模型历史解决不同的问题
+### 历史搜索：确认候选后才替换草稿
 
-输入历史回答的是“刚才写过什么”。其中一项可以直接是一段多行文本：
+![取回旧问题：搜索时保留原草稿，确认候选后只取回文字](assets/recall-prompt-5c2b03ec2c.gif)
 
-```text
-请读取 README.md，说明这个项目怎样启动。
-把安装依赖、启动程序和运行检查分开说明。
-```
+搜索只查当前进程已经提交的问题，从最近的记录开始找包含关键词的文字，相同问题只留最近一次。模型回答和工具结果不在这份输入列表中，取回问题也不会重放旧工具调用。
 
-模型历史回答的是“模型现在需要知道哪些已经发生的对话和工具结果”。一轮读取任务中，除了这份用户文本，还会有模型的工具请求、工具回复和最终回答。
+图中输入“检查”后，程序展示匹配项，原来的“请继续说明…”仍保留。按 `Enter` 才用候选替换草稿，这次按键用于取回，不用于发送；按 `Esc` 则关掉搜索，继续原草稿。
 
-所以取回输入不能靠把模型历史的所有消息塞进输入框。我们单独记录真正提交过的请求，搜索结果就能直接作为新草稿使用。恢复一条旧输入不会重放其中的工具调用；只有用户再次发送，才会启动一次新的任务。
+### 文件与命令补全：多个候选只补共同前缀
 
-本节保留当前进程最近 100 次已提交的普通问题。本地命令另有补全入口，不加入这份问题历史。退出再启动时，这些记录不会自动恢复；第十三章会把会话的保存、查找和恢复放到同一套持久化方案中。
+![路径补全：多个候选只补共同前缀，继续写后补全唯一路径并保留右侧要求](assets/complete-path-6a85655326.gif)
 
-### 2. 搜索期间，要保留正在写的东西
+`@pack` 同时匹配 `package-lock.json` 和 `package.json`，所以程序只补两者共有的 `@package`。继续写 `.j` 后，只剩 `package.json`，才能补完整。
 
-假设我们已经写了半句“请继续说明”，这时想找回上一条包含 `README` 的输入。进入搜索以后，屏幕上会出现查询词和匹配结果，但原来的半句还不能消失。
+补全只替换光标前正在写的路径，逗号和右侧要求原样接回。`@` 前不用加空格，它只是识别路径片段的标记；查询取得的是名称，文件正文仍要等发送后通过工具读取。
 
-可以把搜索理解成暂时打开一个抽屉。程序先记住进入前的草稿，再让用户查看历史候选。确认某项时，候选文本成为草稿；取消搜索时，抽屉关上，原来的正文和光标一起回来。
-
-搜索按最近优先有一个直接好处：我们通常刚完成一轮，就想修改其中的路径或要求。先找到最近一次输入，能减少继续翻找的次数。查询词改变后重新计算匹配，也避免把上一组结果的选中位置误用到另一组结果上。
-
-### 3. 补全只回答“这里可以接什么”
-
-命令补全的候选来自程序已经支持的命令。例如，本地权限查看与退出命令能被补全，但候选里不应出现尚未实现的会话恢复命令。
-
-文件补全的候选来自当前项目中的真实路径。它应沿用已有的项目发现与忽略规则，这样依赖目录、受保护文件与项目外路径不会因为换了一个入口就突然出现在列表里。
-
-本节用 `@` 标记要补全的路径。例如，草稿里的 `请读取 @README` 表示补齐 `README` 这一段，找到唯一文件后得到 `请读取 @README.md`。这个标记只帮助输入区识别路径；它不会把文件正文自动装进模型请求。
-
-用户接受补全时，程序只替换当前要补齐的那一段。前面的请求要求和后面的文字继续保留；否则多行草稿里一个方便的快捷键，就可能覆盖掉已经写好的条件。
-
-补全路径也不等于授权读取。发送以后，模型如果决定调用 `read_file`，仍由已有工具入口检查参数、项目边界与权限，然后返回读取结果。路径出现在候选列表里，只说明本地发现过程提供了这个名称。
-
-候选超过 20 项时，程序要求继续输入前缀，不从被截断的一小部分候选推断“公共前缀”。例如，我们只看到了 `docs/a` 下的前 20 项，不能就断言项目里所有匹配路径都以 `docs/a` 开头。
-
-### 4. 查询结果要对应当前这份草稿
-
-命令列表就在内存中，文件发现却需要等待文件系统。用户按下补全以后，可能已经继续输入，甚至切换了焦点。如果旧查询结束时直接覆盖输入框，就会把更新后的文字换回旧版本。
-
-因此，发起查询时要记住它对应的正文与光标。结果回来以后，先确认用户还在补全同一处；条件已经变化，就放弃这次旧结果。这个检查保护的是用户后写的文字，并不需要给输入框增加另一套任务队列。
+本地命令也按同样的方法匹配已支持的名称，例如 `/per` 可以补到 `/permissions`。补进草稿不执行命令；再次明确发送才由本地入口处理。
 
 ## 本节改动文件
 
 | 状态 | 文件 | 本节变化 |
 | --- | --- | --- |
-| NEW | [src/ui/tui/input-assist.ts](src/ui/tui/input-assist.ts) | 从历史与本地候选得到新文字 |
-| CHANGED | [src/ui/tui/editor.tsx](src/ui/tui/editor.tsx) | 在编辑器里接上搜索和补全 |
-| CHANGED | [src/ui/tui/app.tsx](src/ui/tui/app.tsx) | 只在普通问题提交后记录输入 |
+| NEW | [src/ui/tui/input-assist.ts](src/ui/tui/input-assist.ts) | 搜索普通问题，生成命令和路径补全建议 |
+| CHANGED | [src/ui/tui/editor.tsx](src/ui/tui/editor.tsx) | 连接历史位置、临时搜索和异步补全 |
+| CHANGED | [src/ui/tui/app.tsx](src/ui/tui/app.tsx) | 在普通问题提交时记录最近 100 条输入 |
 
 ## 动手构建
 
-跟写起点是 11.1，本节目标目录是 `chapter-11-terminal-workbench/02-recall-and-complete/`。沿用上一节完整 `src/`，在草稿周围增加输入历史搜索和本地补全。
+以 11.1 的完整 `src/` 为起点，目标目录为 `chapter-11-terminal-workbench/02-recall-and-complete/`。沿用草稿编辑函数，本节增加输入记录、搜索和补全。
 
-### 从历史与本地候选得到新文字
+### 新增查找与补全函数
 
-`searchPrompts()` 先反转输入记录，再去重并过滤，因此保留最近的匹配。`completeInput()` 只返回建议文字、光标与提示；文件候选复用已有项目发现，真正接受建议由编辑器完成。
+创建 `src/ui/tui/input-assist.ts`。`searchPrompts()` 倒序、去重，再做忽略大小写的子串匹配；`completeInput()` 查候选并返回新文字、光标和提示，不提交问题。
 
-创建 `src/ui/tui/input-assist.ts`，完整内容如下：
+路径查询复用项目根与忽略规则。先找名称匹配，再筛完整相对路径前缀，最后判断候选数；超过 20 项就保留草稿、提示继续输入。20 是补全候选上限，不是只检查 20 个文件，发现进程仍有原来的超时和输出字节限制。唯一候选带空白时用引号保留边界。
+
+`@路径` 只帮助写名字，不自动把附件装进模型请求；第 24 章再实现附件引用。完整新增文件如下：
+
+<details>
+<summary>完整新增文件：input-assist.ts</summary>
 
 <!-- source: src/ui/tui/input-assist.ts -->
 ```ts
@@ -132,7 +117,7 @@ export function commonPrefix(values: string[]): string {
  *
  * - 输入：草稿、UTF-16 光标下标及可选取消信号；光标由编辑器维护。
  * - 输出：新文字、新光标和提示；无候选、无补全位置或候选过多时保留原草稿。
- * - 关键步骤：本地命令查固定表；路径把输入中的 glob 特殊符号转义，再复用项目根、忽略规则与最多 20 项的路径结果。
+ * - 关键步骤：本地命令查固定表；路径识别不要求 @ 前有空格；转义 glob 特殊符号后复用项目根和忽略规则，先筛选完整路径前缀，再检查 20 项上限。
  * - 候选处理：唯一候选补全整项，多个候选只延长共同前缀；唯一且含空白的路径用 JSON 引号保留边界。
  * - 失败方式：路径检查、搜索或取消错误交给编辑器显示；返回前检查取消，但是否仍是原草稿由组件另行确认。
  * - 职责边界：读取的是路径名，不是文件正文；函数返回文字，不执行工具或提交模型请求。
@@ -144,13 +129,14 @@ export async function completeInput(text: string, cursor: number, signal?: Abort
     prefix = left; start = 0;
     candidates = ["/exit", "/reset", "/permissions", "/permissions reset"].filter((command) => command.startsWith(prefix));
   } else {
-    const match = /(?:^|\s)@([^\s]*)$/.exec(left);
+    const match = /@([^\s]*)$/.exec(left);
     if (!match) return { text, cursor, hint: "输入 / 补全本地命令，或 @ 后面的项目路径，再按 Tab。" };
     prefix = match[1]; start = left.length - prefix.length;
     const pattern = validateGlobPattern(prefix.replace(/[?*\[\]{}\\]/g, "\\$&") + "*");
-    const result = await findMatchingFiles(pattern, findProjectRoot(), 20, signal);
+    // [NEW 11.2] 名称匹配可能包含各目录同名文件，先筛选真正的路径候选，再限制数量。
+    const result = await findMatchingFiles(pattern, findProjectRoot(), Infinity, signal);
     candidates = result.paths.filter((path) => path.startsWith(prefix));
-    if (result.truncated) return { text, cursor, hint: "候选超过 20 项，请继续输入更完整的路径。" };
+    if (candidates.length > 20) return { text, cursor, hint: "候选超过 20 项，请继续输入更完整的路径。" };
   }
   signal?.throwIfAborted();
   if (!candidates.length) return { text, cursor, hint: "没有匹配的候选。" };
@@ -161,12 +147,14 @@ export async function completeInput(text: string, cursor: number, signal?: Abort
 }
 ```
 
+</details>
 
-### 在编辑器里接上搜索和补全
+### 在编辑器中取回或补入文字
 
-历史浏览临时记住原草稿，搜索则另存查询词和候选下标。异步补全发起时记住原状态，结果回来后再次确认这还是当前草稿；输入或焦点已经变化时，就不再应用旧结果。
+在 `src/ui/tui/editor.tsx` 中，替换文件开头的教学说明与导入：
 
-在 `src/ui/tui/editor.tsx` 中，先把文件开头的教学说明与导入替换为：
+<details>
+<summary>editor.tsx 文件说明与导入</summary>
 
 <!-- source: src/ui/tui/editor.tsx -->
 ```tsx
@@ -190,7 +178,7 @@ export async function completeInput(text: string, cursor: number, signal?: Abort
  * 光标下标用于切字符串，字素用于移动和删除；这几种计数不能互换。
  * 运行观察：粘贴两行只增加一份草稿，撤销可一起移除；找回旧问题或补全路径后仍要再按 Enter 发送。
  */
-import { Text, useInput, usePaste, type Key } from "ink";
+import { Box, Text, useInput, usePaste, type Key } from "ink";
 // [CHANGED 11.2] 引入异步补全的生命周期，以及历史搜索和补全函数。
 import { useEffect, useRef, useState } from "react";
 import { completeInput, searchPrompts } from "./input-assist.js";
@@ -199,8 +187,16 @@ import stringWidth from "string-width";
 import { screenText } from "./state.js";
 ```
 
+</details>
 
-替换同名函数 `DraftEditor()`，连同其前面的教学注释一起更新：
+替换 `DraftEditor()` 及其教学注释。搜索分支先处理确认并返回；顺序翻历史用 `Ctrl+P`、`Ctrl+N`，第一次翻时保存当前 `Draft`，向后回到末尾再恢复。搜索期间只改变查询与候选位置，确认前不替换草稿。
+
+文件查询需要等待。发起补全时记住当时的草稿，返回后再次确认没有被用户改过；输入、光标或焦点已变，就取消或丢弃旧建议。这样晚到的结果不会覆盖后来写的文字。
+
+完整替换片段如下；其他草稿变换函数沿用 11.1：
+
+<details>
+<summary>完整替换片段：DraftEditor()</summary>
 
 <!-- source: src/ui/tui/editor.tsx -->
 ```tsx
@@ -264,19 +260,26 @@ export function DraftEditor({ value, onChange, onSubmit, active, width, height =
     else update(() => insertText(value, text));
   }, { isActive: active });
   // [CHANGED 11.2] 搜索结果和补全提示占显示区，不写入草稿正文。
-  const shown = search ? `搜索历史：${screenText(search.query)}\n${screenText(candidates[search.index] ?? "没有匹配")}` : draftLines(value, width, height).join("\n");
-  return <Text>{error ? `${shown}\n${screenText(error)}` : shown}</Text>;
+  const lines: DisplayLine[] = search
+    ? `搜索历史：${screenText(search.query)}\n${screenText(candidates[search.index] ?? "没有匹配")}`.split("\n").map((text) => ({ text }))
+    : draftLines(value, width, height);
+  return <Box flexDirection="column">
+    {lines.map((line, index) => <DraftLine key={index} line={line} active={active} />)}
+    {error && <Text>{screenText(error)}</Text>}
+  </Box>;
 }
 ```
 
+</details>
 
-本文件其余实现沿用上一节。
+### 在普通问题提交时留下输入记录
 
-### 只在普通问题提交后记录输入
+问题列表随一次 TUI 会话存在，重绘不重建。它只保留最近 100 条已提交的普通问题，本地命令不加入；退出后记录消失，第十三章再处理持久化。
 
-输入记录属于这次 TUI 会话，重新绘制不会清空它。本地命令处理完就返回，只有普通问题才加入最近 100 次记录；这份列表通过组件参数交给编辑器。
+在 `src/ui/tui/app.tsx` 中，替换文件开头的教学说明与导入：
 
-在 `src/ui/tui/app.tsx` 中，先把文件开头的教学说明与导入替换为：
+<details>
+<summary>app.tsx 文件说明与导入</summary>
 
 <!-- source: src/ui/tui/app.tsx -->
 ```tsx
@@ -319,8 +322,12 @@ import { streamAgentRun } from "../../agent/run-stream.js";
 import { explainError } from "../../errors.js";
 ```
 
+</details>
 
-替换同名类型 `Session`，连同其前面的教学注释一起更新：
+替换 `Session` 及其教学注释，加入 `prompts`：
+
+<details>
+<summary>Session 类型</summary>
 
 <!-- source: src/ui/tui/app.tsx -->
 ```tsx
@@ -336,8 +343,12 @@ type Session = {
 };
 ```
 
+</details>
 
-替换同名函数 `TuiApp()`，连同其前面的教学注释一起更新：
+替换 `TuiApp()` 及其教学注释。本地命令处理后，普通问题才加入记录，并把列表交给草稿组件：
+
+<details>
+<summary>完整替换片段：TuiApp()</summary>
 
 <!-- source: src/ui/tui/app.tsx -->
 ```tsx
@@ -443,8 +454,12 @@ function TuiApp({ model, session, quit, interrupt }: { model: Model; session: Se
 }
 ```
 
+</details>
 
-替换同名函数 `startTui()`，连同其前面的教学注释一起更新：
+替换 `startTui()` 及其教学注释，创建会话时初始化 `prompts: []`。本文件其他函数沿用：
+
+<details>
+<summary>完整替换片段：startTui()</summary>
 
 <!-- source: src/ui/tui/app.tsx -->
 ```tsx
@@ -498,58 +513,47 @@ export async function startTui(model: Model): Promise<void> {
 }
 ```
 
-
-本文件其余实现沿用上一节。
+</details>
 
 ## 运行验证
 
 ### 构建并启动
 
-完成本节代码后，在仓库根目录构建：
+完成本节文件后，在仓库根目录构建：
 
 ```bash
 npm run lesson:11.2
 ```
 
-再启动新的终端会话：
+再启动：
 
 ```bash
 hello-my-agent
 ```
 
-这是新进程，所以不会带入上一节退出前的输入历史。
+这是新进程，输入记录从空列表开始。
 
-### 先补全，再保存一条真实输入
+### 检查共同前缀和后文保留
 
-输入 `/per`，按 `Tab`。输入区应补到 `/permissions`；再次补全时可以看到它与 `/permissions reset` 的候选。按 `Enter` 只查看本地授权，不发送模型请求。
+输入 `请看@pack，并解释配置`，把光标放在 `pack` 后、逗号前，按 `Tab`。应只补到 `@package`，右侧文字不变。继续输入 `.j`，再按 `Tab`，应补成 `@package.json`。
 
-然后在空草稿中输入：
-
-```text
-请读取 @README
-```
-
-按 `Tab`，在本仓库根目录应补成 `@README.md`。补全以后仍停留在草稿里。把请求继续写成下面两行，再按 `Enter`：
+这一过程没有发送问题，也没有读取正文。清空实验草稿，再输入 `请读取@README` 并补全，写成：
 
 ```text
-请读取 @README.md，说明这个项目怎样启动。
-把安装依赖、启动程序和运行检查分开说明。
+请读取@README.md
+说明启动和检查方法
 ```
 
-这时才真正发送普通问题，完成后它也成为本进程的输入历史。模型需要通过原有工具读取文件，补全没有提前提供文件内容。
+按 `Enter` 提交，等回答结束。模型通过已有工具读取文件，这份普通问题也进入输入记录。
 
-### 取回旧问题，也能放弃搜索
+输入 `/per` 并补全，应得到 `/permissions`；明确发送只查看本地授权，不调用模型。
 
-等本轮结束，先写下 `下一份草稿`，暂时不发送。按 `Ctrl+P` 取回最近输入，再按 `Ctrl+N` 回到历史末尾，应重新看到进入历史前的草稿。
+### 检查取回和取消
 
-按 `Ctrl+R` 进入搜索，输入 `README`。匹配结果按最近优先显示；如果有多条，继续按 `Ctrl+R` 切换。按 `Esc` 退出，原来的草稿应保留。
-
-再次搜索 `README`，这次按 `Enter` 接受。搜索结果只放回输入区，模型还没有开始执行；我们可以修改文件名或第二行，再按一次 `Enter` 发送。
-
-最后清空草稿，输入一个不存在的路径前缀后按 `Tab`，例如 `请读取 @no-such-course-file-`。界面应说明没有候选，原文字保留。退出再启动以后，刚才的普通问题不再能被搜索到，这对应本节只保留进程内历史的范围。
+1. 写下 `请继续说明…`，先不发送。`Ctrl+P` 取回最近问题，`Ctrl+N` 回到末尾后恢复这份草稿。
+2. `Ctrl+R` 搜索“检查”，按 `Enter` 取回匹配问题。界面仍空闲，再次发送才开始任务。
+3. 另一次搜索用 `Esc` 退出，原草稿和光标应保持。相同问题重复提交后，顺序浏览保留提交次数，关键词搜索只显示最近一份相同文字。
 
 ## 本节完成后的 Agent
 
-现在，我们可以找回当前进程里已经提交的请求，修改后重新发送，也可以用已有命令和项目路径补齐草稿。查找和补全都发生在本地；用户发送以后，Agent 才继续走模型判断、工具执行与结果回传的路线。
-
-输入越来越顺手，界面里积累的内容也越来越多。下一节把注意力转到结果区：当模型继续输出时，我们怎样停在刚才的工具摘要上阅读，并在需要时回到最新内容。
+以前的问题和真实项目路径都能成为新草稿的一部分，取回与补全以后仍可修改。接下来，问题发出后也要能回看结果，程序需要记住我们正在看的位置。

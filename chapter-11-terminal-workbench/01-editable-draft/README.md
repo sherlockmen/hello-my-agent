@@ -1,99 +1,77 @@
-# 11.1 编辑一份多行草稿
+# 11.1 让多行输入成为可编辑的草稿
 
-[第 11 章首页](../README.md) · [上一章：10.4 取消以后，继续留在对话里](../../chapter-10-terminal-ui/04-cancel-and-restore/README.md) · [下一节：11.2 找回输入，补全路径](../02-recall-and-complete/README.md)
+[第 11 章首页](../README.md) · [上一章：10.4 取消以后，继续留在对话里](../../chapter-10-terminal-ui/04-cancel-and-restore/README.md) · [下一节：11.2 取回旧问题，补全当前文字](../02-recall-and-complete/README.md)
 
-## 问题：请求还没写完，怎样继续修改
+## 问题：从单行编辑扩展到多行粘贴、撤销和重做
 
-第十章的单行输入已经能发送问题。现在，我们想把读取任务写得清楚一些：第一行说明要读哪个文件，第二行补充回答要求。
+第十章的单行输入已经能左右移动、改字和发送问题。现在要把读取要求和检查要求分成两行，补一句说明，再撤掉一次多余的粘贴：
 
 ```text
-请读取 README.md，说明这个项目怎样启动。
-把安装依赖、启动程序和运行检查分开说明。
+请读取 README.md
+说明启动和检查方法
 ```
 
-输入这段请求时，我们可能先写错文件名，再把光标移回去修改；也可能从别处粘贴两行，再撤销一次多余的插入。文字尚未发送，程序需要把它当作可以反复整理的草稿。
+![使用场景示意：在两行请求中补充文字，撤掉多余的粘贴，整理好后再发送](assets/problem-scenario-b84292ccf7.gif)
 
-这里还有一个容易混淆的动作：粘贴的文字可以包含换行，但这些换行属于正文。它们不能被当成用户按下了多次发送键，否则一份请求可能在尚未完整进入输入区时就开始执行。
+单行编辑已经不够用：这份请求需要保留换行，在多行之间移动光标，整段粘贴文字，也能撤销或重做一次修改。我们希望先把草稿整理好，再发送给模型。
 
-## 解决方案：先编辑草稿，再明确提交
+## 解决方案：保存多行草稿和修改记录
 
-我们把草稿的正文和光标位置一起保存。普通字符插到光标所在的位置，移动按键只改变光标，删除和换行改变正文；每次真正修改正文前，留下上一份状态，供撤销使用。
+我们把输入框换成一个保存在内存里的多行草稿，正文和光标位置一起保存。三项操作分别这样处理：
 
-提交是另一件事。用户明确发送时，程序取出当时的完整正文，继续交给已有执行链。本节先保留第十章的忙闲安排：任务运行时暂停输入，结束后再编辑下一份草稿；11.3 加入焦点管理以后，再让草稿与结果浏览同时存在。
+- **多行编辑**：在光标处插入或删除文字，用 `Ctrl+J` 或 `Alt+Enter` 插入换行。
+- **多行粘贴**：一次插入整段文字，保留其中的换行；粘贴结束后仍留在草稿里，普通 `Enter` 才请求发送。
+- **撤销与重做**：改字前留下正文和光标的旧版本；撤销取回旧版本，并保留刚撤掉的版本供重做。
 
 ## 工作原理
 
-### 1. 草稿不仅有文字，还有插入位置
+下面的动画是教学示意，展示草稿怎样变化。
 
-把输入框看成一张短便笺会更容易理解。便笺上已经写了文字，光标指出下一个字符应插在哪里。只有一份字符串，程序只能方便地向末尾追加；记住光标以后，才可以在中间补字或删除。
+### 在光标处插入，后面的文字仍保留
 
-例如，用竖线表示光标，下面两份草稿的正文相同，下次输入的结果却不同：
+![编辑草稿：在README前插入文字，原后文与第二行仍保留](assets/edit-draft-2ffe5ac91b.gif)
 
-```text
-请读取 |README.md
-请读取 README.md|
-```
+程序先取出光标左边和右边的文字，把新输入放在中间，再接回原来的后半段。因此，在 `README.md` 前插入“项目中的 ”，文件名和第二行要求都会保留；光标移到新文字之后，方便继续写。
 
-前者输入 `项目中的 `，会改变文件名前面的说明；后者输入同样内容，则会把它追加到末尾。所以撤销也应把文字与光标一起恢复，否则正文退回了上一步，下一次输入却可能落在意外的位置。
+移动和删除按用户看到的完整字符进行。emoji 或带组合音标的 `é` 作为一整组处理，退格不会只删掉半组。
 
-移动光标时，我们还要遵守用户眼中的“一个字符”。`中`、`🙂` 和带组合音标的字母，并不都能用 JavaScript 字符串的一个下标表示。编辑时按可见字符的边界移动和删除，能避免留下半个 emoji 或把音标单独删掉；终端里实际占几列的问题，留到 11.5 再展开。
+### 撤销取回旧稿，重做取回刚撤掉的稿
 
-### 2. 粘贴一次，就插入一段正文
+![撤销重做：保存两行原稿A，整段粘贴得到B，再取回A或B](assets/undo-redo-38f1f2dd2c.gif)
 
-支持括号粘贴的终端，会在粘贴内容前后加上标记。Ink 的 [`usePaste`](https://github.com/vadimdemedes/ink#usepastehandler-options) 接收这段完整文字；它与处理普通按键的 `useInput` 使用不同通道。因此，粘贴中的换行不会经过发送键的处理分支。
+这幅图单独从开头的两行原稿 A 开始，一次粘贴带换行的“先不要修改文件。”得到 B。一次粘贴产生一次文字修改，所以程序先保存粘贴前的正文和光标。按 `Ctrl+Z` 取回这份旧稿，同时留下刚撤掉的版本；`Ctrl+Y` 再把它取回来。
 
-这里依赖终端支持 bracketed paste。终端若把粘贴内容直接当作一串普通按键发送，程序就无法凭这些按键判断某个回车来自粘贴还是手动发送；本节的“整段粘贴不误提交”保证不覆盖这种环境。
+只移动光标没有改字，不另存撤销步骤。撤销后重新输入，程序沿新的修改继续，之前那条重做记录就清掉。这里回退的是尚未发送的草稿，不是工具已经修改的文件。
 
-回到我们的例子，用户一次粘贴两行读取要求，程序只做一次插入：把整段文字放到当前光标处，并把光标移到这段文字之后。这也自然确定了撤销的单位——撤销一次就移除本次粘贴，而不是要求用户逐字撤销。
+### 粘贴先成为正文，发送是另一个动作
 
-粘贴进入草稿时统一换行形式，显示时再把会控制终端的字符转成可见文字，同时保留正文中的换行。模型或工具给出的文字也沿用原有的显示转义处理，普通文本不能直接获得控制终端的能力。
+整段粘贴通过专门的输入事件交给程序，其中的换行也属于正文；程序一次插入整段，不逐行发送。手动写下一行可按 `Ctrl+J` 或 `Alt+Enter`，普通 `Enter` 才请求提交。
 
-中文输入法也有自己的阶段：拼音和候选先由系统输入法与终端处理，确认以后才把字符交给程序。本节从这些已提交字符开始编辑，不绘制输入法候选，也不实现输入法的合成过程。
-
-### 3. 撤销保存修改之前的草稿
-
-最容易理解的撤销方法，是在正文变化前保存一份旧草稿。插入、删除、粘贴都沿同一条路线处理，撤销时取出最近的一份。
-
-```text
-初始草稿：读取 README.md|
-插入一段：读取 README.md，说明启动方式。|
-撤销一次：读取 README.md|
-```
-
-单纯向左或向右移动不需要产生新的撤销记录，因为正文没有变。再次修改时，保存的仍是修改之前的实际光标位置。这样，我们既能连续调整光标，也能让一次撤销对应一次文字修改。
-
-本章的撤销只作用于尚未提交的草稿。已经交给 Agent 的问题，以及工具已经写入的文件，不属于输入框的撤销范围。
-
-这里保留最近 100 次修改，草稿最多包含 32,000 个 UTF-16 代码单元。前者限制撤销记录的数量，后者限制一份草稿的文本长度；超过正文上限时拒绝这次修改并保留旧草稿，不静默截掉请求的后半段。
-
-### 4. 提交的是当时的一份完整正文
-
-编辑过程中，所有修改都只发生在草稿里。用户发送以后，程序把当时的完整正文交给一轮任务，并开始一份新的空草稿；已经提交的正文不会再随着输入框的修改变化。
-
-程序仍先检查有没有活动任务，再决定能否提交。检查通过以后才取出草稿、清空输入并开始新一轮。即使键盘输入很快，也不能只依赖画面已经切成忙碌状态来阻止第二次发送。
-
-任务中如果需要审批，仍显示第十章的审批输入。用户填写的答案只回应当前批准请求，不是另一个普通问题。工具执行完成以后，结果回到模型，界面继续接收回答；整轮结束后才恢复普通草稿编辑。
-
-11.3 会让运行中的任务和正在编辑的草稿同时存在。至于把新要求交给活动任务，还是排在下一轮，第十二章再定义它们各自的生效时机。
+提交时，父组件先确认当前可以开始任务，再取正文并创建空草稿。本节任务中暂停草稿输入；11.3 再让等待期间也能编辑下一份。
 
 ## 本节改动文件
 
 | 状态 | 文件 | 本节变化 |
 | --- | --- | --- |
-| NEW | [src/ui/tui/editor.tsx](src/ui/tui/editor.tsx) | 建立草稿编辑器 |
-| CHANGED | [src/ui/tui/app.tsx](src/ui/tui/app.tsx) | 把多行草稿接回原有界面 |
+| NEW | [src/ui/tui/editor.tsx](src/ui/tui/editor.tsx) | 保存草稿、完整字符编辑、撤销和粘贴 |
+| CHANGED | [src/ui/tui/app.tsx](src/ui/tui/app.tsx) | 用 `Draft` 替换单行字符串，接回原有提交入口 |
 
 ## 动手构建
 
-跟写起点是 10.4，本节目标目录是 `chapter-11-terminal-workbench/01-editable-draft/`。沿用上一节完整 `src/`，本节只替换 TUI 的草稿编辑与按键处理。
+从 10.4 的完整 `src/` 继续，目标目录为 `chapter-11-terminal-workbench/01-editable-draft/`。第十章练习是独立实验，没有改动这份基线。本节只新增草稿编辑器，并替换界面中使用输入框的部分。
 
-### 建立草稿编辑器
+### 新增草稿编辑器
 
-这里把一次文字修改集中到 `changeDraft()`。它负责保存撤销记录和检查长度，键盘编辑与整段粘贴都复用它。`cursor` 使用 UTF-16 下标以便切分字符串，移动距离则从完整可见字符得到；两者各自解决一个问题。
+创建 `src/ui/tui/editor.tsx`。`Draft` 用 `text`、`cursor` 保存正文和位置，用 `past`、`future` 留下可撤销与可重做的版本。插入、删除和清空都经过 `changeDraft()`，移动只更新光标。
 
-按 `Ctrl+J` 时，Ink 交给编辑器的是正文换行 `\n`，会走 `editKey()` 末尾的普通插入分支；普通 `Enter` 才命中 `key.return` 的发送分支。
+实现提示：`cursor` 是 JavaScript 的 UTF-16 下标，用于 `slice()`；`Intl.Segmenter` 把文字分成完整字素，供移动和删除。撤销最多保留 100 步，正文最多 32,000 个 UTF-16 单元；超限先报错，原草稿不替换。
 
-创建 `src/ui/tui/editor.tsx`，完整内容如下：
+`usePaste()` 整段插入并统一换行，`useInput()` 区分编辑和发送。整段粘贴依赖终端支持 bracketed paste；中文输入法由系统和终端处理，程序接收确认后的字符。终端能区分 `Shift+Enter` 时也可换行；`Ctrl+J` 以 LF 字符进入普通插入分支。
+
+完整新增文件如下：
+
+<details>
+<summary>完整新增文件：editor.tsx</summary>
 
 <!-- source: src/ui/tui/editor.tsx -->
 ```tsx
@@ -115,7 +93,7 @@
  * 光标下标用于切字符串，字素用于移动和删除；这几种计数不能互换。
  * 运行观察：粘贴两行只增加一份草稿，撤销可一起移除；普通 Enter 才提交，多行文字不会逐行发送。
  */
-import { Text, useInput, usePaste, type Key } from "ink";
+import { Box, Text, useInput, usePaste, type Key } from "ink";
 import { useState } from "react";
 import wrapAnsi from "wrap-ansi";
 import stringWidth from "string-width";
@@ -222,23 +200,47 @@ export function editKey(draft: Draft, input: string, key: Partial<Key>): Draft {
   if (key.ctrl || key.meta || key.escape || key.tab || key.return) return draft;
   return input ? insertText(draft, input) : draft;
 }
+type DisplayLine = { text: string; cursor?: number };
+/**
+ * 显示一行草稿，在光标处反色显示整个字符，而不把后面的文字挤开。
+ *
+ * - 输入：纯文字显示行、行内光标下标，以及草稿区是否有焦点。
+ * - 输出：一行 Ink 文字；失焦时只显示正文，不显示光标。
+ * - 原理：只改变当前位置字符的显示样式，不插入字符，也不修改 Draft。
+ * - 边界：NO_COLOR 用同样列宽的方块代替反色；行尾的占位仅用于显示，不进入草稿。
+ */
+// [NEW 11.1] 块状光标是显示样式，不是草稿里的字符。
+function DraftLine({ line, active }: { line: DisplayLine; active: boolean }) {
+  if (!active || line.cursor === undefined) return <Text>{line.text}</Text>;
+  const at = line.cursor, char = graphemes(line.text.slice(at))[0] ?? " ";
+  return <Text>{line.text.slice(0, at)}<Text inverse={!process.env.NO_COLOR}>
+    {process.env.NO_COLOR ? "█".repeat(Math.max(1, stringWidth(char))) : char}
+  </Text>{line.text.slice(at + char.length)}</Text>;
+}
 /**
  * 按终端宽度折行，并截取包含光标的草稿片段。
  *
  * - 输入：当前草稿、可用列数与显示行数；列数至少按 2 计算。
- * - 输出：含可见光标标记的行数组，不修改原草稿。
- * - 关键步骤：先清理显示副本并插入光标，再折行；单独折叠光标前的文字，用它定位当前显示行。
- * - 边界：视口随光标向下移动，只截取附近行；本节折行复用 wrapAnsi，11.5 再统一字素和列宽计算。
+ * - 输出：每行纯文字和该行的光标位置，不修改原草稿。
+ * - 原理：先折行，再用正文偏移定位光标；样式由 DraftLine 添加，不能参与列宽计算。
+ * - 边界：行尾或空草稿需要一个显示占位；它不写入正文。视口随光标移动，只保留附近行。
  */
-export function draftLines(draft: Draft, width: number, height: number): string[] {
+// [NEW 11.1] 先排正文，再标记位置；中间的光标不会多占一列。
+export function draftLines(draft: Draft, width: number, height: number): DisplayLine[] {
   const columns = Math.max(2, width);
   const before = screenText(draft.text.slice(0, draft.cursor));
-  const shown = `${before}▏${screenText(draft.text.slice(draft.cursor))}`;
+  const after = screenText(draft.text.slice(draft.cursor));
+  const shown = before + (!after || after.startsWith("\n") ? " " : "") + after;
   const options = { hard: true, trim: false, wordWrap: false };
-  const lines = wrapAnsi(shown, columns, options).split("\n");
-  const prefix = wrapAnsi(before, columns, options).split("\n");
-  const cursorRow = prefix.length - 1 + (stringWidth(prefix.at(-1) ?? "") >= columns ? 1 : 0);
-  return lines.slice(Math.max(0, cursorRow - height + 1), Math.max(height, cursorRow + 1));
+  let offset = 0;
+  const lines = wrapAnsi(shown, columns, options).split("\n").map((text) => {
+    const line = { text, offset };
+    offset += text.length + (shown[offset + text.length] === "\n" ? 1 : 0);
+    return line;
+  });
+  const cursorRow = lines.reduce((found, line, index) => line.offset <= before.length ? index : found, 0);
+  return lines.map((line, index) => ({ text: line.text, cursor: index === cursorRow ? before.length - line.offset : undefined }))
+    .slice(Math.max(0, cursorRow - height + 1), Math.max(height, cursorRow + 1));
 }
 /**
  * 接管当前草稿区的输入，让编辑与提交走各自的回调。
@@ -260,16 +262,20 @@ export function DraftEditor({ value, onChange, onSubmit, active, width, height =
   }, { isActive: active });
   // 粘贴独立交付，正文里的换行不能触发 onSubmit。
   usePaste((text) => update(() => insertText(value, text)), { isActive: active });
-  return <Text>{error ? screenText(error) : draftLines(value, width, height).join("\n")}</Text>;
+  return <Box flexDirection="column">
+    {error ? <Text>{screenText(error)}</Text> : draftLines(value, width, height).map((line, index) => <DraftLine key={index} line={line} active={active} />)}
+  </Box>;
 }
 ```
 
+</details>
 
-### 把多行草稿接回原有界面
+### 把草稿接回界面
 
-界面把原来的字符串状态换成 `Draft`，再把正文交给原有 `submit()`。本节仍保留忙时暂停输入的安排，审批继续使用独立的单行答案；改变的是用户怎样准备请求，不是 Agent 怎样执行请求。
+在 `src/ui/tui/app.tsx` 中，先替换文件开头的教学说明与导入：
 
-在 `src/ui/tui/app.tsx` 中，先把文件开头的教学说明与导入替换为：
+<details>
+<summary>app.tsx 文件说明与导入</summary>
 
 <!-- source: src/ui/tui/app.tsx -->
 ```tsx
@@ -311,8 +317,12 @@ import { streamAgentRun } from "../../agent/run-stream.js";
 import { explainError } from "../../errors.js";
 ```
 
+</details>
 
-替换同名函数 `TuiApp()`，连同其前面的教学注释一起更新：
+替换 `TuiApp()` 及其紧邻的教学注释。父组件保存 `Draft`，把修改回调与提交回调分别交给 `DraftEditor`；原有模型事件、审批、取消和退出处理保留：
+
+<details>
+<summary>完整替换片段：TuiApp()</summary>
 
 <!-- source: src/ui/tui/app.tsx -->
 ```tsx
@@ -418,54 +428,43 @@ function TuiApp({ model, session, quit, interrupt }: { model: Model; session: Se
 }
 ```
 
+</details>
 
-本文件其余实现沿用上一节。
+本文件其他函数沿用 10.4。
+
+显示光标由 `DraftLine` 反色突出当前位置的完整字符，末尾用显示占位；它不插入草稿正文，也不把后文挤开。非空 `NO_COLOR` 下用同宽方块显示；`screenText()` 只处理显示副本。
 
 ## 运行验证
 
 ### 构建并启动
 
-完成本节代码后，在仓库根目录构建。继续使用第十章已经配置好的模型：
+完成本节文件后，在仓库根目录构建，继续使用第十章配置好的模型：
 
 ```bash
 npm run lesson:11.1
 ```
 
-再单独启动界面：
+再单独启动：
 
 ```bash
 hello-my-agent
 ```
 
-### 整理两行请求
+### 按动画操作一份草稿
 
-在支持 bracketed paste 的终端里，一次粘贴本节开头的两行请求。草稿中应保留换行，Agent 仍处于就绪状态；只有明确按 `Enter`，才开始发送。
+1. 一次粘贴开头的两行请求，先不发送。两行应完整出现，Agent 仍就绪。
+2. 把光标移到 `README.md` 前，一次粘贴“项目中的 ”。文件名和第二行要求应保留；撤销后，原文与插入位置一起回来。
+3. 移到草稿末尾，一次粘贴一个换行和“先不要修改文件。”。`Ctrl+Z` 撤掉整次粘贴，`Ctrl+Y` 整次恢复；单独按 `Ctrl+J` 也应能插入换行。
+4. 写入 `中文🙂é`，从末尾退格，`é` 和 emoji 应分别整体删除。左右移动时，光标不挤开后文。
 
-在发送之前，依次做下面几项操作：
+`Home`、`End` 到当前逻辑行首尾；上下键跨正文中的真实换行。`Ctrl+U` 清空草稿，再撤销应能恢复。
 
-| 操作 | 应看到的变化 |
-| --- | --- |
-| 按左右键，再输入一个字 | 文字插入光标位置，原来后面的文字保留 |
-| 按 `Ctrl+Z` | 撤销刚才的一次插入，光标也回到修改前 |
-| 按 `Ctrl+Y` | 重做刚才撤销的修改 |
-| 按 `Ctrl+J` 或 `Alt+Enter` | 插入正文换行，不发送 |
-| 按上下键、`Home`、`End` | 在多行正文中移动；`Home`、`End` 到当前逻辑行的开头或末尾 |
-| 按 `Ctrl+U`，再按 `Ctrl+Z` | 先清空草稿，再恢复清空前的文字 |
+### 检查发送确实发生在最后
 
-`Ctrl+J` 对应终端里的 LF 换行字节。终端能区分 `Shift+Enter` 时，它也可用于换行；不能区分时，用 `Ctrl+J` 或 `Alt+Enter`。
+恢复成读取请求，按普通 `Enter`，这时才调用模型。任务中草稿暂停输入，结束后可以继续；本节尚未实现运行中编辑。
 
-再输入 `中文🙂é`，把光标放到末尾，逐次按退格。`é` 中的字母与组合音标应一起删除，emoji 也不会留下半个字符。这里观察的是编辑单位；自动换行的列宽会在 11.5 进一步检查。
-
-### 发送以后，再开始下一份草稿
-
-把草稿恢复成开头的读取请求，再按 `Enter`。这是本节第一次真正向配置的模型发送问题；模型可以请求读取文件，工具结果回到模型后，界面继续显示回答。具体用词不必与示例一致。
-
-本节运行时先暂停草稿编辑。等本轮结束以后，输入区重新出现，再写下一份请求。这样可以先单独确认多行编辑与发送正常；11.3 再加入运行中编辑，并检查“可编辑”与“可提交”的区别。
-
-如需取消正在运行的任务，按 `Ctrl+C`，等清理完成后再输入下一份草稿。空闲时输入 `/exit` 并发送，或按 `Ctrl+D` 退出。
+`Ctrl+C` 取消当前任务，等待清理后继续。空闲时发送 `/exit` 或按 `Ctrl+D` 退出。
 
 ## 本节完成后的 Agent
 
-现在，输入区可以保存一份多行草稿，支持在中间修改、整段粘贴和撤销。明确发送时，完整正文才进入原有 Agent Loop；模型请求工具、工具结果回传与模型继续回答的路线保持不变。
-
-同一时刻仍只有一轮执行，任务结束后再编辑下一份草稿。接下来要减少重复输入：上一轮已经写过的请求应该能找回，项目里真实存在的文件名也应该能帮助我们把路径写完整。
+现在，请求可以先作为多行草稿整理，插入、粘贴与撤销都修改这份草稿，最后明确发送。下一节把已经写过的问题和项目文件名利用起来，减少重复输入。

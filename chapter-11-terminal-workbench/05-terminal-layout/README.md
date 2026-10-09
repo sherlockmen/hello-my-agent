@@ -1,101 +1,73 @@
-# 11.5 让界面适应终端
+# 11.5 按终端列宽排版，保留阅读位置
 
-[第 11 章首页](../README.md) · [上一节：11.4 用熟悉的编辑器整理草稿](../04-external-editor/README.md) · [下一步：练习与答案](../EXERCISES.md)
+[第 11 章首页](../README.md) · [上一节：11.4 把长草稿交给外部编辑器](../04-external-editor/README.md) · [下一步：练习与答案](../EXERCISES.md)
 
-## 问题：同样的文字，为什么换个窗口就挤乱了
+## 问题：中文与 emoji 要完整显示，resize 后要保留阅读位置
 
-我们已经能写多行请求，也能在执行过程中停下来阅读结果。接着把终端窗口缩小，正文、边框、输入区和快捷键提示都要争用有限的行列；再在草稿里写入 `中文🙂`，就会发现 JavaScript 的字符串长度不能直接当成终端宽度。
+上一节已经能用外部编辑器整理长草稿，回到 TUI 后继续编辑。草稿里有中文和 emoji，结果区正停在“启动步骤”这一段。为了并排看文件，我们把终端缩窄，随后又放大。
 
-这不是模型输出的问题。终端按一格格字符单元摆放内容，而字符串保存的是编码后的文本。要把一份内容画好，程序需要先知道文本实际占多少列，再决定哪里换行，以及屏幕上的空间怎样分配。
+![使用场景示意：终端变窄再变宽，文字重新换行，刚才读到的启动步骤仍然可见](assets/problem-scenario-1ac2d3c35e.gif)
 
-本节同时检查没有颜色和离开界面时的表现。颜色可以帮助区分角色，却不能成为理解状态的唯一办法；程序结束以后，还需要把原来的终端完整交回来。
+窗口缩放（resize）会让一行文字拆成几行，再放大又会合起来。正文没改，我们希望中文和 emoji 仍完整显示，光标仍对齐，也能接着读刚才那一段。关闭颜色时，角色、焦点和运行状态仍要看得出来。
 
-## 解决方案：按字符显示宽度排版，按窗口尺寸分配空间
+## 解决方案：按终端列宽换行，用消息中的文字位置定位
 
-编辑阶段继续把用户眼中的一个字符作为移动与删除单位；显示阶段则按终端列宽测量文字。正文超过可用宽度时换行，整个界面再根据当前行数给结果区、草稿区和状态提示分配空间。
+程序按完整字符实际占用的终端列数换行，草稿光标也按列宽对齐。浏览位置保存为消息 ID 和消息中的文字位置；窗口缩放后重新排成显示行，再找包含原来文字位置的行。
 
-窗口变化以后，我们重新计算显示，而不改写原文。窗口过小、已经放不下正常交互时，先给出明确的尺寸提示；审批继续沿用其最小窗口条件，不能在内容没有展示完整时批准。
+排版时先给草稿与提示留出高度，剩余空间用于结果区；窗口太小就暂时隐藏工作区，保留内容，放大后继续。无颜色显示仍保留角色名、状态文字和焦点提示，让操作不依赖颜色。
 
 ## 工作原理
 
-### 1. 字符串长度、可见字符数和终端列数不同
+下面两幅动画在完整 TUI 中框出一块局部内容区，再把它放大成字符格。局部省略角色前缀，4 列或 6 列用于看清排版过程；实际工作区至少需要 40 列、16 行。蓝框标记局部显示行或阅读位置。
 
-`A` 在 JavaScript 字符串中占一个 UTF-16 代码单元，在常见终端中也占一列，所以英文短句很容易掩盖问题。换成中文或 emoji，三种计数就会分开。
+### 中文与 emoji：按完整字符的列宽换行
 
-| 文本 | JavaScript 的 `length` | 用户通常看到几个字符 | 常见终端列宽 |
-| --- | --- | --- | --- |
-| `A` | 1 | 1 | 1 |
-| `中` | 1 | 1 | 2 |
-| `🙂` | 2 | 1 | 2 |
-| `é`，即 `e` 加组合音标 | 2 | 1 | 1 |
+![局部排版：按完整字符占用的列宽，将中文与emoji组合文字放进两条显示行](assets/column-width-08de89bb39.gif)
 
-因此，`slice(0, width)` 并不是可靠的屏幕裁剪：它按字符串下标切割，既可能切开一个可见字符，也没有把中文多占的一列算进去。
+我们拖动窗口边缘，局部可用宽度从 6 列变成 4 列。`Intl.Segmenter` 先分出完整字素，`stringWidth` 再计算占列：`中`、`文` 和 `🙂` 通常各占两格，`é` 占一格。第一行“中文”已经用了 4 列，下一组 emoji 还要 2 列，放不下；程序先收下第一行，把整个 emoji 放到下一行，再接上 `é`，不会拆开它们。
 
-我们采用已有的 Unicode 分段与终端宽度处理能力。分段告诉编辑器哪里可以移动、删除；列宽告诉显示组件一行还能放下多少文字。终端和字体对某些字符的宽度仍可能有差异，因此本章验证常见中文、组合字符与 emoji，不把有限样例说成所有终端都完全一致。
+这里得到的是两条显示行，原文仍是 `中文🙂é`，没有插入新的换行符。窗口再变宽，只需重新安排画面，草稿与撤销记录都不必改。
 
-### 2. 换行是一种显示，不是修改正文
+程序保存草稿正文和正文中的光标位置。排版时，程序记下每一条显示行在原文中的起点，再按保存的光标位置找到所在行；这行光标前的文字占多少列，光标就显示在下一列。例如草稿是 `中🙂a`，光标在 `a` 前：
 
-用户在草稿中按换行键，会真的插入 `\n`，下一次发送也保留它。窗口变窄以后出现的自动换行则不同：它只是这一帧的排版结果，不该被写回草稿。
+| 局部草稿宽度 | 光标所在行与列 |
+| --- | --- |
+| 6 列 | 三个字符在同一行，`中` 和 `🙂` 各占两列，光标在第 1 行第 5 列。 |
+| 4 列 | `中🙂` 占满第一行，`a` 移到第二行，光标在第 2 行第 1 列。 |
 
-例如，一行请求在 80 列终端里能完整显示，在 40 列终端里可能分成两行。把窗口重新放大以后，它应恢复成一行；撤销记录和模型将收到的文字都不需要变化。
+正文和光标的正文位置都没变，只重新计算了显示行列。光标反色显示整个 `a`，不会插入一个额外字符挤动正文。
 
-结果区也采用相同思路。先保留原来的消息与工具摘要，再根据当前可用列宽形成显示行，最后选出浏览窗口能容纳的部分。不能提前按某次窗口宽度永久切断保存的文本。
+### resize：按消息中的文字位置找回显示行
 
-前两节的浏览位置记住的是“哪条消息的第几条显示行”。这个办法可以抵抗后面不断追加的新内容，但不能精确应对换行变化：原来的第二行，放大窗口以后可能已经并入第一行。
+![缩放定位：启动步骤重新换行，程序找到包含原来“步”字位置的新显示行](assets/resize-position-49ddc8c870.gif)
 
-本节让每条显示行再记住自己从正文的哪个字符串位置开始。省略角色前缀，只看 `甲乙丙丁`，宽度从 4 列变成 6 列时，会出现下面的变化：
+图中正文是“启动步骤”，局部 4 列时原来停在“步骤”这行。程序记住“步”的 UTF-16 下标 `2`，连同消息 ID 保存。我们放大窗口，局部变成 6 列，“步”移到“启动步”这一行；若仍只找第二行，就会从“骤”开始。重新排版后的两行起点是 `0` 和 `3`，正文位置 `2` 落在第一行的范围内，所以程序找回第一行，“步”仍可见，不要求它成为画面的第一个字。终端占列用于排版，UTF-16 下标用于定位。
 
-| 可用列宽 | 第一条显示行 | 第二条显示行 |
-| --- | --- | --- |
-| 4 列 | `甲乙`，起点 0 | `丙丁`，起点 2 |
-| 6 列 | `甲乙丙`，起点 0 | `丁`，起点 3 |
-
-如果用户原来在看起点 2 的 `丙`，重新排版后就应该寻找包含位置 2 的那一行，而不是机械地停在第二行。我们保存消息 ID 与这个正文位置，再寻找“不超过该位置的最后一个行起点”，就能找到新的对应行。
-
-这也是本节增加一个短排版函数的原因：已有宽度库继续计算每个可见字符占几列，我们在换行时额外留下正文起点，供草稿光标和结果浏览定位使用。它只处理终端中要显示的文本，不承担 Markdown 排版或语言语法分析。
-
-### 3. 先给操作留出位置，再安排结果
-
-屏幕高度是有限的。假设一段结果已经有上百行，我们仍然需要看到当前焦点、任务状态和几行草稿，才能继续操作。所以界面先为这些交互区域留出空间，再把剩余行数交给结果区。
-
-草稿很长时，也只显示光标附近能够容纳的几行。完整正文继续留在编辑状态中，移动光标以后，显示窗口随之调整。这个方法让长草稿和长结果都不会无限增加整张画面的高度。
-
-上下移动光标也改用显示列宽。上一行光标前有一个中文字符，占了两列；下一行若是英文，程序就尽量落在两个英文字母之后，而不是按“一个字符”落在第一个字母后。真正的行仍由正文里的换行符确定，自动折行只负责显示。
-
-Ink 的 [`useWindowSize`](https://github.com/vadimdemedes/ink#usewindowsize) 提供当前列数与行数，并在窗口变化时触发重新绘制。程序按新的尺寸重新计算各区域；正在审批时也沿用第十章的重新分页规则，避免用户以旧窗口下看过一部分内容为由批准新分页中尚未看过的部分。
-
-当窗口少于 40 列，或少于 16 行时，本节暂时隐藏正常交互，只显示放大提示并保留取消与退出。草稿、待审批请求和浏览位置都留在内存中；窗口恢复到可用尺寸以后再继续操作。审批面板按新尺寸从头分页查看，不能把之前的页码或未提交答案直接套到新页面上。
-
-### 4. 没有颜色，也能知道发生了什么
-
-颜色适合帮助快速识别：用户文字用青色，Agent 文字用紫色，等待提示可以使用另一种颜色。但“谁说的话”“任务完成还是失败”“当前焦点在哪里”仍需要可见文字。
-
-所以关闭颜色以后，角色名称、状态词和焦点提示都保留。终端重绘所需的控制序列与颜色序列也要区分：无颜色的交互 TUI 仍需要移动光标和刷新画面；重定向到文件时，则继续采用第十章的文本或 JSONL 消费者，不把交互画面写进日志。
-
-### 5. 重新绘制与退出都不重建执行历史
-
-尺寸变化只改变屏幕安排，不会重新开始模型请求。外部编辑器结束只恢复终端，不会清空结果区。真正退出时，程序仍先取消并等待当前任务清理，再卸载 Ink，移除自己注册的监听。
-
-备用屏幕退出以后，用户回到进入 TUI 之前的主屏幕；原始输入模式和光标显示由 Ink 的恢复过程交还。我们用终端检查观察正常退出、取消后退出和尺寸变化，但不声称程序能在被操作系统强制终止时执行无法运行的清理代码。
+排版还要留出操作空间：先给草稿与提示留位置，剩余高度才显示结果。小到无法操作时暂时隐藏工作区，保留内容，放大后继续。
 
 ## 本节改动文件
 
 | 状态 | 文件 | 本节变化 |
 | --- | --- | --- |
-| NEW | [src/ui/tui/layout.ts](src/ui/tui/layout.ts) | 换行时保留正文位置 |
-| CHANGED | [src/ui/tui/editor.tsx](src/ui/tui/editor.tsx) | 按屏幕列对齐光标，显示光标附近的正文 |
-| CHANGED | [src/ui/tui/transcript.tsx](src/ui/tui/transcript.tsx) | 用正文位置找回重排后的阅读位置 |
-| CHANGED | [src/ui/tui/app.tsx](src/ui/tui/app.tsx) | 让区域高度、焦点与颜色服从当前终端 |
+| NEW | [src/ui/tui/layout.ts](src/ui/tui/layout.ts) | 按完整字素和列宽换行，保留显示文字起点 |
+| CHANGED | [src/ui/tui/editor.tsx](src/ui/tui/editor.tsx) | 按列宽对齐逻辑行光标，显示光标附近草稿 |
+| CHANGED | [src/ui/tui/transcript.tsx](src/ui/tui/transcript.tsx) | 用消息 ID 与 offset 找回缩放后的阅读位置 |
+| CHANGED | [src/ui/tui/app.tsx](src/ui/tui/app.tsx) | 分配行高，小窗口保留状态，无颜色仍显示角色与状态 |
 
 ## 动手构建
 
-跟写起点是 11.4，本节目标目录是 `chapter-11-terminal-workbench/05-terminal-layout/`。沿用上一节完整 `src/`，把终端尺寸与显示宽度落实到草稿、结果和提示区域。
+从 11.4 的完整 `src/` 继续，目标目录为 `chapter-11-terminal-workbench/05-terminal-layout/`。新增共同排版函数，让草稿和结果区都取得行文字与正文位置，再接入终端尺寸。
 
-### 换行时保留正文位置
+### 把文字排成带位置的显示行
 
-`wrapLines()` 按完整可见字符前进，用 `string-width` 累计列宽，每次换行都留下该行的正文起点。它给草稿和结果区提供相同的排版依据；`fitLine()` 则用于只容纳一行的提示。
+创建 `src/ui/tui/layout.ts`。`Intl.Segmenter` 分出可见字素，`string-width` 计算每组占多少终端列；`wrapLines()` 依次放入每行，返回行文字与 `offset`。`offset` 是显示字符串的 UTF-16 下标，供程序找正文位置，不是终端列数。
 
-创建 `src/ui/tui/layout.ts`，完整内容如下：
+完整字素负责不拆字符，列宽负责是否放得下，下标负责字符串定位。这三种计数各有用途，不能用 `text.slice(0, columns)` 代替排版。
+
+正文中真实的 `\n` 立即另起一行，空行和末尾换行也保留。单个字素即使宽于可用宽度，仍整体显示。`fitLine()` 取第一条显示行用于单行提示，`useColor` 统一读取 `NO_COLOR`。
+
+<details>
+<summary>完整新增文件：layout.ts</summary>
 
 <!-- source: src/ui/tui/layout.ts -->
 ```ts
@@ -161,12 +133,14 @@ export function fitLine(text: string, width: number): string {
 }
 ```
 
+</details>
 
-### 按屏幕列对齐光标，显示光标附近的正文
+### 让草稿光标跟着列宽对齐
 
-上下移动时先计算光标前面的显示列宽，再到目标逻辑行寻找不超过该列的可见字符边界。显示草稿时，根据行起点定位光标所在行，只取能放进输入区的窗口；原正文与撤销记录不变。
+在 `src/ui/tui/editor.tsx` 中，替换文件开头的教学说明与导入：
 
-在 `src/ui/tui/editor.tsx` 中，先把文件开头的教学说明与导入替换为：
+<details>
+<summary>editor.tsx 文件说明与导入</summary>
 
 <!-- source: src/ui/tui/editor.tsx -->
 ```tsx
@@ -200,8 +174,14 @@ import stringWidth from "string-width";
 import { screenText } from "./state.js";
 ```
 
+</details>
 
-替换同名函数 `moveVertical()`，连同其前面的教学注释一起更新：
+替换 `moveVertical()` 及其教学注释。上下键仍跨正文真实换行形成的逻辑行，不在自动折行之间逐行移动；本节把对齐方式改为终端列宽。
+
+例如正文是 `中文` 与 `abcd` 两行，光标在“中”后。向下时应停在 `ab` 后，因为“中”和 `ab` 都占两列。程序先量出光标前占列，再在目标行逐组累计，最后换回 UTF-16 光标下标。目标行短就停在末尾，放不下的宽字符不越过：
+
+<details>
+<summary>完整替换片段：moveVertical()</summary>
 
 <!-- source: src/ui/tui/editor.tsx -->
 ```tsx
@@ -230,32 +210,42 @@ export function moveVertical(draft: Draft, direction: number): number {
 }
 ```
 
+</details>
 
-替换同名函数 `draftLines()`，连同其前面的教学注释一起更新：
+替换 `draftLines()` 及其教学注释。用 `offset` 找光标所在行，返回纯行文字与可选光标位置，只显示包含光标的一段。完整草稿仍留在 `Draft` 中：
+
+<details>
+<summary>完整替换片段：draftLines()</summary>
 
 <!-- source: src/ui/tui/editor.tsx -->
 ```tsx
 /**
- * 按可用列宽折行，并只显示包含光标的一段草稿。
+ * 按终端宽度折行，并截取包含光标的草稿片段。
  *
  * - 输入：当前草稿、可用列数与显示行数；列数至少按 2 计算。
- * - 输出：包含可见光标标记的行数组，不修改原文字或光标下标。
- * - 关键步骤：先对显示副本清理控制字符，再插入光标标记；用 wrapLines 的正文偏移找到光标所在行。
- * - 边界：视口随光标向下移动，保留末尾最多 height 行；折行以完整字素和终端列宽计算。
+ * - 输出：每行纯文字和该行的光标位置，不修改原草稿。
+ * - 原理：先折行，再用正文偏移定位光标；样式由 DraftLine 添加，不能参与列宽计算。
+ * - 边界：行尾或空草稿需要一个显示占位；它不写入正文。视口随光标移动，只保留附近行。
  */
-// [CHANGED 11.5] 通过折行返回的正文偏移定位光标，避免宽字符造成显示行误判。
-export function draftLines(draft: Draft, width: number, height: number): string[] {
+// [CHANGED 11.5] 复用 wrapLines 的正文偏移定位光标，宽字符按完整字素折行。
+export function draftLines(draft: Draft, width: number, height: number): DisplayLine[] {
   const columns = Math.max(2, width);
   const before = screenText(draft.text.slice(0, draft.cursor));
-  const shown = `${before}▏${screenText(draft.text.slice(draft.cursor))}`;
+  const after = screenText(draft.text.slice(draft.cursor));
+  const shown = before + (!after || after.startsWith("\n") ? " " : "") + after;
   const lines = wrapLines(shown, columns);
   const cursorRow = lines.reduce((found, line, index) => line.offset <= before.length ? index : found, 0);
-  return lines.slice(Math.max(0, cursorRow - height + 1), Math.max(height, cursorRow + 1)).map((line) => line.text);
+  return lines.map((line, index) => ({ text: line.text, cursor: index === cursorRow ? before.length - line.offset : undefined }))
+    .slice(Math.max(0, cursorRow - height + 1), Math.max(height, cursorRow + 1));
 }
 ```
 
+</details>
 
-替换同名函数 `DraftEditor()`，连同其前面的教学注释一起更新：
+替换 `DraftEditor()` 及其教学注释。编辑、历史与补全分支沿用，把显示行交给已有 `DraftLine`；字符反色与末尾占位只在画面上，不加入正文。提示单独占一行，本文件其他实现不改：
+
+<details>
+<summary>完整替换片段：DraftEditor()</summary>
 
 <!-- source: src/ui/tui/editor.tsx -->
 ```tsx
@@ -315,24 +305,28 @@ export function DraftEditor({ value, onChange, onSubmit, active, width, height =
   }, { isActive: active });
   // [CHANGED 11.5] 为提示预留一行，并限制本组件的总显示高度。
   const contentHeight = Math.max(1, height - (error ? 1 : 0));
-  const lines = search
-    ? wrapLines(`搜索历史：${screenText(search.query)}\n${screenText(candidates[search.index] ?? "没有匹配")}`, width).slice(0, contentHeight).map((line) => line.text)
+  const lines: DisplayLine[] = search
+    ? wrapLines(`搜索历史：${screenText(search.query)}\n${screenText(candidates[search.index] ?? "没有匹配")}`, width).slice(0, contentHeight)
     : draftLines(value, width, contentHeight);
   return <Box flexDirection="column" height={height} overflow="hidden">
-    {lines.map((line, index) => <Text key={index} wrap="truncate">{line}</Text>)}
+    {lines.map((line, index) => <DraftLine key={index} line={line} active={active} />)}
     {error && <Text wrap="truncate">{fitLine(screenText(error), width)}</Text>}
   </Box>;
 }
 ```
 
+</details>
 
-本文件其余实现沿用上一节。
+### 缩放以后按文字位置定位
 
-### 用正文位置找回重排后的阅读位置
+11.3 保存消息 `id` 和消息内显示行号，本节把行号换成 `offset`。排版时每行已经留下起点，定位时就在同一消息里，找起点不超过原位置的最后一行；这就是包含原位置的行。
 
-把浏览位置中的 `row` 换成 `offset`。重新排版后，找到同一消息里包含该位置的显示行；窄窗口改变行数时，仍能继续读原来附近的文字。
+实际位置来自经过 `screenText()` 清理的显示正文，包含角色前缀与展开详情。它不指向工具文件的字节位置；动画省略前缀只是为了看清换行。
 
-在 `src/ui/tui/transcript.tsx` 中，先把文件开头的教学说明与导入替换为：
+在 `src/ui/tui/transcript.tsx` 中，替换文件开头的教学说明与导入：
+
+<details>
+<summary>transcript.tsx 文件说明与导入</summary>
 
 <!-- source: src/ui/tui/transcript.tsx -->
 ```tsx
@@ -364,8 +358,12 @@ import { copyText } from "./system-actions.js";
 import { screenText, type RunView } from "./state.js";
 ```
 
+</details>
 
-替换同名类型 `ViewLine`，连同其前面的教学注释一起更新：
+替换 `ViewLine` 类型及其教学注释，用 `offset` 代替 `row`：
+
+<details>
+<summary>ViewLine 类型</summary>
 
 <!-- source: src/ui/tui/transcript.tsx -->
 ```tsx
@@ -373,16 +371,24 @@ import { screenText, type RunView } from "./state.js";
 export type ViewLine = { id: string; offset: number; text: string };
 ```
 
+</details>
 
-替换同名类型 `Anchor`，连同其前面的教学注释一起更新：
+替换 `Anchor` 类型及其教学注释，用同一种位置保存阅读起点：
+
+<details>
+<summary>Anchor 类型</summary>
 
 <!-- source: src/ui/tui/transcript.tsx -->
 ```tsx
 export type Anchor = { id: string; offset: number } | undefined;
 ```
 
+</details>
 
-替换同名函数 `transcriptLines()`，连同其前面的教学注释一起更新：
+替换 `transcriptLines()` 及其教学注释。仍组合角色、正文与展开详情，再把排版结果带上消息 ID：
+
+<details>
+<summary>完整替换片段：transcriptLines()</summary>
 
 <!-- source: src/ui/tui/transcript.tsx -->
 ```tsx
@@ -403,8 +409,12 @@ export function transcriptLines(entries: Entry[], width: number, expanded: Set<s
 }
 ```
 
+</details>
 
-替换同名函数 `visibleStart()`，连同其前面的教学注释一起更新：
+替换 `visibleStart()` 及其教学注释，按刚才的包含关系找回首行：
+
+<details>
+<summary>完整替换片段：visibleStart()</summary>
 
 <!-- source: src/ui/tui/transcript.tsx -->
 ```tsx
@@ -424,8 +434,12 @@ export function visibleStart(lines: ViewLine[], height: number, anchor: Anchor):
 }
 ```
 
+</details>
 
-替换同名函数 `Transcript()`，连同其前面的教学注释一起更新：
+替换 `Transcript()` 及其教学注释。滚动留下新文字位置，消息选择与展开从该消息的开头看；其他浏览和复制动作沿用：
+
+<details>
+<summary>完整替换片段：Transcript()</summary>
 
 <!-- source: src/ui/tui/transcript.tsx -->
 ```tsx
@@ -488,14 +502,14 @@ export function Transcript({ entries, active, width, height }: { entries: Entry[
 }
 ```
 
+</details>
 
-本文件其余实现沿用上一节。
+### 分配高度，小窗口保留状态
 
-### 让区域高度、焦点与颜色服从当前终端
+在 `src/ui/tui/app.tsx` 中，替换文件开头的教学说明与导入：
 
-界面先为输入和提示预留行数，剩下的空间交给结果区。窗口不足 40 列或 16 行时，正常交互暂时隐藏，状态仍留在组件中。非空 `NO_COLOR` 关闭配色，角色和状态文字继续保留。
-
-在 `src/ui/tui/app.tsx` 中，先把文件开头的教学说明与导入替换为：
+<details>
+<summary>app.tsx 文件说明与导入</summary>
 
 <!-- source: src/ui/tui/app.tsx -->
 ```tsx
@@ -548,8 +562,14 @@ import { streamAgentRun } from "../../agent/run-stream.js";
 import { explainError } from "../../errors.js";
 ```
 
+</details>
 
-替换同名函数 `ApprovalPanel()`，连同其前面的教学注释一起更新：
+替换 `ApprovalPanel()` 及其教学注释，提示与角色都用文字说明，审批条件沿用：
+
+窗口足够大时，任意页都能输入 `n` 拒绝；窗口过小则暂停审批输入，放大后继续，也可以用 `Ctrl+C` 取消本轮任务或 `Ctrl+D` 退出。
+
+<details>
+<summary>完整替换片段：ApprovalPanel()</summary>
 
 <!-- source: src/ui/tui/app.tsx -->
 ```tsx
@@ -560,6 +580,7 @@ import { explainError } from "../../errors.js";
  * - 输出：当前页、提示和一个审批输入框；next / prev 只翻页，y / n / s 还要按 Enter 才提交。
  * - 状态：page、answer、hint 属于这次面板；请求 key 或窗口尺寸改变时由父组件重新挂载并清空。
  * - 批准条件：窗口至少 40 列、16 行且已经到最后一页；窗口足够大时任意页都可输入 n 拒绝。
+ * - 小窗口：工作区暂停输入；放大后继续审批，或用 Ctrl+C 取消本轮任务、Ctrl+D 退出。
  * - 粘贴处理：审批输入不接收粘贴，复制来的正文不能变成审批按键。
  * - 关键原因：不能在只显示了部分修改时批准全部内容；尺寸变化后需按新分页重新查看。
  * - 职责边界：本函数只检查显示条件，s 是否属于可记住的只读范围仍由 pending.respond 检查。
@@ -572,7 +593,7 @@ function ApprovalPanel({ pending, columns, rows }: { pending: PendingApproval; c
   const [hint, setHint] = useState("");
   const tooSmall = columns < 40 || rows < 16;
   usePaste(() => setHint("审批不接受粘贴，请手动输入 y、n 或 s 后回车。"));
-  // 翻页只更新画面；批准还要满足末页和窗口尺寸条件，拒绝则随时可提交。
+  // 翻页只更新画面；窗口足够大时任意页可拒绝，批准还要到最后一页。
   const submit = (value: string) => {
     const choice = value.trim().toLowerCase();
     setAnswer("");
@@ -584,7 +605,7 @@ function ApprovalPanel({ pending, columns, rows }: { pending: PendingApproval; c
   // [CHANGED 11.5] 审批的颜色和光标装饰尊重 NO_COLOR，判断规则不靠颜色表达。
   return <Box borderStyle="round" borderColor={useColor ? "yellow" : undefined} paddingX={1} flexDirection="column">
     <Text bold={useColor} color={useColor ? "yellow" : undefined}>等待批准 · 第 {page + 1}/{pages.length} 页</Text>
-    {tooSmall ? <Text>窗口过小，请放大至至少 40 列、16 行，或输入 n 拒绝。</Text> : <Text>{pages[page]}</Text>}
+    {tooSmall ? <Text>窗口过小，请放大至至少 40 列、16 行后继续审批；Ctrl+C 取消本轮任务，Ctrl+D 退出。</Text> : <Text>{pages[page]}</Text>}
     <Text dimColor={useColor}>next 下一页 · prev 上一页 · n 拒绝</Text>
     <Text>{!tooSmall && page === pages.length - 1 ? `y 批准本次${pending.request.allowSession && !pending.request.preview ? " · s 本次会话允许" : ""}；输入后按 Enter` : "查看到最后一页后才能批准"}</Text>
     {hint && <Text color={useColor ? "yellow" : undefined}>{hint}</Text>}
@@ -594,8 +615,16 @@ function ApprovalPanel({ pending, columns, rows }: { pending: PendingApproval; c
 }
 ```
 
+</details>
 
-替换同名函数 `TuiApp()`，连同其前面的教学注释一起更新：
+替换 `TuiApp()` 及其教学注释。Ink 的 `useWindowSize()` 提供尺寸，变化后触发重绘；给草稿、状态与提示预留 12 行，其余作为结果高度。草稿默认显示 4 行，有提示时再给提示留一行。
+
+少于 40 列或 16 行时，只提示放大并保留取消与退出。工作区隐藏而不卸载，关闭普通输入，所以草稿与浏览位置仍在。待审批请求也保留；尺寸改变后审批重新分页，页码和未提交答案重置，用户按新页面重新查看。
+
+非空 `NO_COLOR` 关闭配色，角色、状态和焦点仍由文字说明。无颜色下的草稿光标使用同宽 `█`，不改正文；终端重绘所需的控制序列仍保留。
+
+<details>
+<summary>完整替换片段：TuiApp()</summary>
 
 <!-- source: src/ui/tui/app.tsx -->
 ```tsx
@@ -711,7 +740,7 @@ function TuiApp({ model, session, quit, interrupt }: { model: Model; session: Se
   // [CHANGED 11.5] 尺寸不足时隐藏工作区并停用输入；放大后沿用原草稿与浏览状态。
   return <Box flexDirection="column">
     <Text bold={useColor} wrap="truncate">Hello, My Agent · Ctrl+O 切换草稿 / 历史</Text>
-    {tooSmall && <Text wrap="truncate">请放大到 40 列、16 行；Ctrl+C 取消 / 退出。</Text>}
+    {tooSmall && <Text wrap="truncate">请放大到 40 列、16 行；Ctrl+C 取消任务 · Ctrl+D 退出。</Text>}
     <Box display={tooSmall ? "none" : "flex"} flexDirection="column">
     {approval && <ApprovalPanel key={`${approval.key}:${columns}:${rows}`} pending={approval} columns={columns} rows={rows} />}
     <Box display={approval ? "none" : "flex"} flexDirection="column">
@@ -728,81 +757,76 @@ function TuiApp({ model, session, quit, interrupt }: { model: Model; session: Se
 }
 ```
 
+</details>
 
-本文件其余实现沿用上一节。
+本文件其他类型、函数、外部编辑与退出路径沿用 11.4。
 
 ## 运行验证
 
 ### 构建并启动
 
-完成本节代码后，在仓库根目录构建：
+完成代码后，在仓库根目录构建：
 
 ```bash
 npm run lesson:11.5
 ```
 
-再启动界面：
+再启动：
 
 ```bash
 hello-my-agent
 ```
 
-### 改变窗口，只改变画面
+### 缩放后仍能找到文字
 
 粘贴下面的草稿，先不发送：
 
 ```text
 请读取 README.md，说明项目怎样启动。
 中文、🙂 和 é 应完整显示，窗口变窄时自动换行。
-保留这段文字，等我们检查布局以后再发送。
+保留这段文字，检查布局以后再发送。
 ```
 
-把终端从较宽的窗口逐步缩窄，再放大。正文应按当前列宽换行，输入区域仍显示光标附近的内容；窗口放大后，自动换行重新排布。上下移动光标，检查屏幕之外的草稿仍可找到。
+逐步缩窄、放大终端。草稿应重新折行，显示光标附近内容；退格与左右移动不拆字符，光标不挤开后文。上下键跨真实换行，不按自动折行逐行走。
 
-窗口少于 40 列或少于 16 行以后，界面会给出尺寸提示，普通编辑暂时停用。重新放大，再检查三行正文仍完整：程序改变的是显示位置，没有把窄窗口下的自动换行写进草稿。
+缩到少于 40 列或 16 行，应出现放大提示、暂停普通编辑。放大后，三行正文仍在，没有增加排版产生的 `\n`。
 
-发送读取请求，等结果超过一屏后切到历史区，再重复缩窄和放大。结果重新排版，方向键仍能浏览。已经存在的工具项不会因为 resize 又执行一次。
+发送请求，结果超过一屏后按 `Ctrl+O`，向上浏览并记住某段文字，再缩窄、放大。那段文字应仍在可见范围；它不一定仍在首行开头。改变高度会改变结果区可见行数，不再执行工具。
 
-### 不用颜色，也能继续操作
+### 无颜色时仍能阅读和操作
 
-退出后，以无颜色模式重新启动：
+正常退出后，以无颜色方式启动：
 
 ```bash
 NO_COLOR=1 hello-my-agent
 ```
 
-界面仍应显示“你”“Agent”、任务状态和当前焦点。关闭的是颜色，交互界面仍需要控制光标和重新绘制；不要用“输出中完全没有转义序列”判断无颜色 TUI 是否正确。
+“你”“Agent”、状态和 `[焦点]` 仍可见，按键含义不变。草稿光标用同宽方块显示，移走后原字符重新出现。无颜色仍需要控制光标与刷新画面。
 
-真正需要纯文本时，使用第十章已有的文本方式。下面这条命令会向配置的模型发送一次问题，并把回答保存到文件：
+需要纯文本时，用已有文本消费者。下面向模型发送一次问题并保存回答：
 
 ```bash
 hello-my-agent --output text --prompt "只回复一句：文本输出正常。" > /tmp/hello-my-agent-ch11-text.txt
 ```
 
-再单独查看文件：
+单独查看：
 
 ```bash
 cat /tmp/hello-my-agent-ch11-text.txt
 ```
 
-文件里不应出现 TUI 边框或光标重绘内容。最后重新启动一次界面并正常退出，在 shell 输入一条普通命令，确认键盘回显和光标恢复。
+文件不应有 TUI 边框或重绘。最后正常进入、退出一次界面，在 shell 输入普通命令，观察回显与光标恢复。
 
 ### 完成本章固定检查
 
-使用完整配套仓库并完成本节后，在仓库根目录运行：
+使用完整配套仓库且已完成 11.5 时，在仓库根目录运行：
 
 ```bash
 npm run check:11
 ```
 
-检查覆盖五个小节的真实按键与粘贴通道、历史搜索、运行中草稿保留、审批输入、结果展开与复制、外部编辑和退出恢复。它还用固定文本检查 Unicode 编辑、换行宽度及重新排版后的浏览位置。
-
-模型、剪贴板和编辑器使用本地替身。终端检查需要 macOS、Linux 或 WSL 中的 `python3`，不需要额外的 Python 包；通过这些样例不能替代对每一种真实终端与字体的观察。
+固定数据与伪终端检查覆盖编辑、补全、浏览、Unicode 排版、缩放、审批、复制、外编和退出恢复。模型、剪贴板与编辑器使用本地替身，不调用真实服务，也不改系统剪贴板；终端检查需要 POSIX 环境的 `python3`，只用标准库。真实终端与字体由上述操作观察。
 
 ## 本节完成后的 Agent
 
-第十一章把一次使用过程接完整了：先整理多行草稿，用历史和补全减少重复输入；发送后边观察执行边准备下一份文字；需要回看时切换焦点，停留在旧结果上；长草稿可以交给外部编辑器，返回后继续检查。
-
-这些交互始终围绕原来的执行核心。明确提交以后，模型判断是否需要工具，程序检查权限并执行，工具结果回到模型，模型给出下一步或最终回答。界面接收事件并更新画面，编辑、滚动和折叠都不替核心修改消息历史。
-
-先完成[章末练习](../EXERCISES.md)，用确定的输入检查这些状态如何变化。第十二章将回答接下来的问题：任务还没结束时，用户补充的新要求该立即生效，还是排到下一轮；用户又怎样编辑和撤回已经排队的请求。
+现在窗口变化只重新安排显示：完整字符按列宽换行，浏览按文字位置找回，草稿仍是原来的正文。完成[章末练习](../EXERCISES.md)后，第十二章再处理运行中的新要求如何进入当前任务或下一轮。

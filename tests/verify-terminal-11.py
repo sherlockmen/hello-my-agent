@@ -94,6 +94,14 @@ try:
   t=Terminal(['node',str(harness)],work,env)
   try:
    t.until('草稿' if step>=3 else '你 >')
+   # 块状光标突出当前位置，不在中间插入一列；尚未发送时模型调用数仍为零。
+   t.key(b'abcd');t.key(b'\x1b[D');t.key(b'\x1b[D');s=t.key(b'\x1b[D')
+   if step==5:t.until('a█cd',s)
+   else:
+    t.until('abcd',s)
+    assert b'\x1b[7mb\x1b[27m' in t.output[s:],'当前字符未显示为反色块状光标'
+   assert requests()==[]
+   t.key(b'\x15')
    if step>=3:
     assert 'Ctrl+O 进入历史区后，↑↓/PgUp/PgDn 才用于滚动' in ansi.sub('',t.output.decode(errors='replace')),'草稿焦点下必须说明滚动键的启用方式'
    # 真实 bracketed paste：带换行的代码只能进入草稿。
@@ -108,7 +116,7 @@ try:
     t.key(b'\x12');t.key(b'alp');count=len(requests());t.key(b'\r');assert len(requests())==count
     s=t.key(b'\r');t.until('REPLY_alpha',s)
     t.key(b'/res');t.key(b'\t');s=t.key(b'\r');t.until('历史已清空',s)
-    t.key(b'@READ');t.key(b'\t');t.until('@README.md');t.key(b'\x15')
+    t.key('请读取@README'.encode());t.key(b'\t');t.until('请读取@README.md');t.key(b'\x15')
    if step>=3:
     # 默认焦点编辑草稿；明确切到历史以后，四个导航键必须实际改变可见记录。
     s=t.send('scroll');t.until('SCROLL_69',s);t.key(b'kept input');count=len(requests())
@@ -118,7 +126,7 @@ try:
     s=t.key(b'\x1b[A');t.until('SCROLL_35',s)
     s=t.key(b'\x1b[B');t.until('SCROLL_36',s)
     s=t.key(b'\x1b[6~');t.until('SCROLL_69',s)
-    t.key(b'\x1b[F');s=t.key(b'\x0f');t.until('kept input▏',s);t.key(b'\x15')
+    t.key(b'\x1b[F');s=t.key(b'\x0f');t.until('kept input',s);t.key(b'\x15')
     s=t.send('wait');t.until('WAITING',s);t.key(b'kept draft');count=len(requests());t.key(b'\r');assert len(requests())==count
     t.key(b'\x0f');t.until('历史区 [焦点]');t.key(b'\x1b[H');t.key(b'\x03');t.until('已取消本轮')
     t.key(b'\x1b[F');t.key(b'\x0f');s=t.key(b'\r');t.until('REPLY_kept draft',s)

@@ -16,7 +16,7 @@
  * 光标下标用于切字符串，字素用于移动和删除；这几种计数不能互换。
  * 运行观察：粘贴两行只增加一份草稿，撤销可一起移除；普通 Enter 才提交，多行文字不会逐行发送。
  */
-import { Text, useInput, usePaste, type Key } from "ink";
+import { Box, Text, useInput, usePaste, type Key } from "ink";
 import { useState } from "react";
 import wrapAnsi from "wrap-ansi";
 import stringWidth from "string-width";
@@ -123,23 +123,47 @@ export function editKey(draft: Draft, input: string, key: Partial<Key>): Draft {
   if (key.ctrl || key.meta || key.escape || key.tab || key.return) return draft;
   return input ? insertText(draft, input) : draft;
 }
+type DisplayLine = { text: string; cursor?: number };
+/**
+ * 显示一行草稿，在光标处反色显示整个字符，而不把后面的文字挤开。
+ *
+ * - 输入：纯文字显示行、行内光标下标，以及草稿区是否有焦点。
+ * - 输出：一行 Ink 文字；失焦时只显示正文，不显示光标。
+ * - 原理：只改变当前位置字符的显示样式，不插入字符，也不修改 Draft。
+ * - 边界：NO_COLOR 用同样列宽的方块代替反色；行尾的占位仅用于显示，不进入草稿。
+ */
+// [NEW 11.1] 块状光标是显示样式，不是草稿里的字符。
+function DraftLine({ line, active }: { line: DisplayLine; active: boolean }) {
+  if (!active || line.cursor === undefined) return <Text>{line.text}</Text>;
+  const at = line.cursor, char = graphemes(line.text.slice(at))[0] ?? " ";
+  return <Text>{line.text.slice(0, at)}<Text inverse={!process.env.NO_COLOR}>
+    {process.env.NO_COLOR ? "█".repeat(Math.max(1, stringWidth(char))) : char}
+  </Text>{line.text.slice(at + char.length)}</Text>;
+}
 /**
  * 按终端宽度折行，并截取包含光标的草稿片段。
  *
  * - 输入：当前草稿、可用列数与显示行数；列数至少按 2 计算。
- * - 输出：含可见光标标记的行数组，不修改原草稿。
- * - 关键步骤：先清理显示副本并插入光标，再折行；单独折叠光标前的文字，用它定位当前显示行。
- * - 边界：视口随光标向下移动，只截取附近行；本节折行复用 wrapAnsi，11.5 再统一字素和列宽计算。
+ * - 输出：每行纯文字和该行的光标位置，不修改原草稿。
+ * - 原理：先折行，再用正文偏移定位光标；样式由 DraftLine 添加，不能参与列宽计算。
+ * - 边界：行尾或空草稿需要一个显示占位；它不写入正文。视口随光标移动，只保留附近行。
  */
-export function draftLines(draft: Draft, width: number, height: number): string[] {
+// [NEW 11.1] 先排正文，再标记位置；中间的光标不会多占一列。
+export function draftLines(draft: Draft, width: number, height: number): DisplayLine[] {
   const columns = Math.max(2, width);
   const before = screenText(draft.text.slice(0, draft.cursor));
-  const shown = `${before}▏${screenText(draft.text.slice(draft.cursor))}`;
+  const after = screenText(draft.text.slice(draft.cursor));
+  const shown = before + (!after || after.startsWith("\n") ? " " : "") + after;
   const options = { hard: true, trim: false, wordWrap: false };
-  const lines = wrapAnsi(shown, columns, options).split("\n");
-  const prefix = wrapAnsi(before, columns, options).split("\n");
-  const cursorRow = prefix.length - 1 + (stringWidth(prefix.at(-1) ?? "") >= columns ? 1 : 0);
-  return lines.slice(Math.max(0, cursorRow - height + 1), Math.max(height, cursorRow + 1));
+  let offset = 0;
+  const lines = wrapAnsi(shown, columns, options).split("\n").map((text) => {
+    const line = { text, offset };
+    offset += text.length + (shown[offset + text.length] === "\n" ? 1 : 0);
+    return line;
+  });
+  const cursorRow = lines.reduce((found, line, index) => line.offset <= before.length ? index : found, 0);
+  return lines.map((line, index) => ({ text: line.text, cursor: index === cursorRow ? before.length - line.offset : undefined }))
+    .slice(Math.max(0, cursorRow - height + 1), Math.max(height, cursorRow + 1));
 }
 /**
  * 接管当前草稿区的输入，让编辑与提交走各自的回调。
@@ -161,5 +185,7 @@ export function DraftEditor({ value, onChange, onSubmit, active, width, height =
   }, { isActive: active });
   // 粘贴独立交付，正文里的换行不能触发 onSubmit。
   usePaste((text) => update(() => insertText(value, text)), { isActive: active });
-  return <Text>{error ? screenText(error) : draftLines(value, width, height).join("\n")}</Text>;
+  return <Box flexDirection="column">
+    {error ? <Text>{screenText(error)}</Text> : draftLines(value, width, height).map((line, index) => <DraftLine key={index} line={line} active={active} />)}
+  </Box>;
 }
