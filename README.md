@@ -12,7 +12,7 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 ## 开始学习
 
-[从第一章开始](chapter-01-first-command/README.md) · [当前章节：第十一章](chapter-11-terminal-workbench/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
+[从第一章开始](chapter-01-first-command/README.md) · [当前章节：第十二章](chapter-12-task-control/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
 
 第一次学习，先阅读[第一章的问题与原理](chapter-01-first-command/README.md)，到“动手构建”时再运行：
 
@@ -30,7 +30,7 @@ hello-my-agent
 npm run lesson:02.1
 ```
 
-每个小节的构建脚本已经包含对应源码的依赖安装、编译与命令注册。进入下一小节时只需更换编号，例如 `npm run lesson:02.2`。六个小节的命令列在[第二章构建表](chapter-02-model-dialogue/README.md#构建并选择每个小节)。02.2 和 02.3 只有带 `--prompt` 提问时才会调用模型；从 02.4 开始，无参数启动的连续会话也会调用模型。`--help`、`--version` 和 `--doctor` 不会调用模型。`-h`、`-v` 分别是帮助和版本的简写。
+每个小节的构建脚本已经包含对应源码的依赖安装、编译与命令注册。进入下一小节时只需更换编号，例如 `npm run lesson:02.2`。六个小节的命令列在[第二章构建表](chapter-02-model-dialogue/README.md#构建并选择每个小节)。02.2 和 02.3 只有带 `--prompt` 提问时才会调用模型；从 02.4 开始，无参数启动会进入连续会话，发送请求时才调用模型。`--help`、`--version` 和 `--doctor` 不会调用模型。`-h`、`-v` 分别是帮助和版本的简写。
 
 本地注册的命令指向当前仓库的构建产物。遇到找不到命令或运行了另一份代码时，按 [环境说明](docs/SETUP.md#注册命令后如何找到它) 检查。
 
@@ -50,7 +50,10 @@ Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS 
 | [第 08 章：流式输出与任务中断](chapter-08-streaming-turns/README.md) | 怎样逐段显示回答、收齐工具参数，并在中断后继续对话？ | [三个递进小节](chapter-08-streaming-turns/README.md)，已确认完成 |
 | [第 09 章：让执行过程可以被界面观察](chapter-09-observable-runs/README.md) | 怎样把同一轮执行交给终端、脚本和后续 TUI？ | [三个递进小节](chapter-09-observable-runs/README.md)，已确认完成 |
 | [第 10 章：第一个真正可用的 TUI](chapter-10-terminal-ui/README.md) | 怎样把输入、执行进展、审批和取消接到终端界面？ | [四个递进小节](chapter-10-terminal-ui/README.md)，已确认完成 |
-| [第 11 章：把终端变成可以编辑和浏览的工作区](chapter-11-terminal-workbench/README.md) | 怎样编辑长请求、找回旧输入、浏览结果，并适应终端变化？ | [五个递进小节](chapter-11-terminal-workbench/README.md) |
+| [第 11 章：把终端变成可以编辑和浏览的工作区](chapter-11-terminal-workbench/README.md) | 怎样编辑长请求、找回旧输入、浏览结果，并适应终端变化？ | [五个递进小节](chapter-11-terminal-workbench/README.md)，已确认完成 |
+| [第 12 章：计划、执行与运行中干预](chapter-12-task-control/README.md) | 怎样先审阅修复方案，再执行、看进展、问清需求，并在运行中补充或改变要求？ | [五个递进小节](chapter-12-task-control/README.md)，待学习确认 |
+
+第十二章按顺序学习：[12.1 计划与执行模式](chapter-12-task-control/01-plan-mode/README.md) · [12.2 任务清单](chapter-12-task-control/02-task-list/README.md) · [12.3 澄清问题](chapter-12-task-control/03-clarify-questions/README.md) · [12.4 运行中补充与打断](chapter-12-task-control/04-live-input/README.md) · [12.5 队列编辑与撤回](chapter-12-task-control/05-manage-queue/README.md)。
 
 完整路线与完成状态见 [六部分、36 章课程进度表](docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。
 
@@ -185,6 +188,22 @@ hello-my-agent/
     03-browse-results/  11.3 在输出继续时，停下来浏览结果
     04-external-editor/  11.4 把长草稿交给外部编辑器
     05-terminal-layout/  11.5 按终端列宽排版，保留阅读位置
+  chapter-12-task-control/   第 12 章：计划、执行与运行中干预
+    README.md                本章加法修复主线与五节路线
+    EXERCISES.md              清单、问答与队列状态实验
+    01-plan-mode/            12.1 计划与执行模式
+    02-task-list/            12.2 任务清单
+    03-clarify-questions/    12.3 澄清问题
+    04-live-input/           12.4 运行中补充与打断
+    05-manage-queue/         12.5 队列编辑与撤回
+      src/agent/
+        run-options.ts      本轮模式、清单与问答/队列接口
+      src/ui/tui/
+        questions.tsx       澄清等待对象与回答面板
+        input-queue.ts      补充的 ID、文字与所属 run
+        queue-panel.tsx     队列焦点、编辑与撤回
+    demo-project/           让 Agent 修复的加法代码与初始失败测试
+    exercises/              本地固定输入实验
   docs/
     SETUP.md                环境与从空目录搭建
     EDITORIAL-WORKFLOW.md   主 Agent、作者子 Agent 与学习者读者的编审流程
@@ -206,15 +225,29 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](chapter-07-command-feedback/03-ripgrep-search/README.md#先准备系统-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十、十一章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包入口当前选择第十一章完成版 `11.5`；学习时用各节自己的 `lesson` 命令选择版本。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](chapter-07-command-feedback/03-ripgrep-search/README.md#先准备系统-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十二章检查 Plan 限制、清单更新、问答配对、运行中补充、打断与队列编辑。第十至十二章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包前的 `prepack` 当前选择 `12.5`；学习时用各节自己的 `lesson` 命令选择版本。
 
 第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
 完成第二章 `/reset` 练习后，运行 `npm run exercise:02`。这条命令编译读者实际修改的终端文件，并用本地模拟接口检查两种协议中的历史是否真正清空。
 
-[第十一章练习](chapter-11-terminal-workbench/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第十一章验证记录](docs/verification/11-terminal-workbench.md)
+只检查本章时，在仓库根目录运行：
 
-第一章到第十章已确认完成。第十一章已提供正文、配套代码与练习，待学习确认。npm 包尚未发布。
+```bash
+npm run check:12
+```
+
+完成 12.5 和[第十二章练习](chapter-12-task-control/EXERCISES.md)后，运行独立状态实验：
+
+```bash
+npm run exercise:12
+```
+
+这两组检查使用本地固定响应，不调用真实模型。它们检查本地程序的数据、请求与终端行为，实际模型服务和回答按各节手动步骤观察。
+
+[第十二章练习](chapter-12-task-control/EXERCISES.md) · [当前进度](docs/PROGRESS.md) · [第十二章验证记录](docs/verification/12-task-control.md)
+
+第一章到第十一章已确认完成。第十二章已提供正文、配套代码、动图与练习，待学习确认。npm 包尚未发布。
 
 ## 许可证
 

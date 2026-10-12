@@ -31,23 +31,9 @@ export function add(a, b) {
 
 `command` 说明运行什么，`cwd` 说明从哪个目录开始运行。程序先检查参数，再把这两项展示给用户。用户批准后才启动命令，结束后再把输出和退出状态交给模型。
 
-```mermaid
-%%{init: {"themeCSS": ".loopLine, .messageLine1 { stroke: #64748b !important; }"}}%%
-sequenceDiagram
-    participant M as 模型
-    participant A as Agent Loop 与命令工具
-    participant U as 用户
-    participant P as 测试进程
-    M->>A: run_command(command, cwd)
-    A->>U: 展示命令与工作目录
-    U-->>A: 允许这次执行
-    A->>P: 启动测试
-    P-->>A: 输出与退出状态
-    A-->>M: 本次命令的实际结果
-    M->>A: 根据结果继续读取、修改或回答
-```
+![时序图：把命令作为一次需要批准的工具调用](assets/interaction-sequence-6a1e561ae6.png)
 
-图中的虚线表示结果返回。审批和命令执行都是这次工具调用的一部分：用户拒绝时不启动进程，模型收到拒绝原因；命令运行后，无论测试通过还是失败，模型都需要看到结果，才能继续判断。
+图中的横向虚线箭头表示结果返回。审批和命令执行都是这次工具调用的一部分：用户拒绝时不启动进程，模型收到拒绝原因；命令运行后，无论测试通过还是失败，模型都需要看到结果，才能继续判断。
 
 ## 工作原理
 

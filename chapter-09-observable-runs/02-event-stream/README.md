@@ -16,23 +16,7 @@
 
 **异步迭代**可以理解成“一条条读取，中间允许等待”。消费者用 `for await` 取出一条事件，处理完再取下一条；队列暂时为空时，它就等下一条到来，不用反复查询任务有没有新进度。
 
-```mermaid
-%%{init: {"themeCSS": ".loopLine, .messageLine1 { stroke: #64748b !important; }"}}%%
-sequenceDiagram
-    participant R as 任务入口
-    participant Q as 事件队列
-    participant U as 事件消费者
-    R->>Q: 放入 run_start
-    Q-->>U: 取出第 1 条事件
-    R->>Q: 放入 model_start
-    R->>Q: 放入后续过程事件
-    Note over U: 处理当前事件，可以 await
-    U->>Q: 继续取下一条
-    Q-->>U: 按先后顺序交出 model_start
-    R->>Q: 放入 run_finish，结束入队
-    U->>Q: 继续读取余下事件
-    Q-->>U: 交出 run_finish 后结束迭代
-```
+![时序图：事件先排队，消费者逐条读取](assets/interaction-sequence-b3b72b2a6b.png)
 
 图中画的是正常结束。如果本轮失败，队列也先交出 `run_finish`，让消费者得知失败状态；已经排队的事件读完后，迭代再抛出原因，让调用方进入原有的错误处理，不能继续当作成功执行。
 

@@ -16,21 +16,9 @@
 
 我们保留这个接口，新增一个很小的连接对象。核心调用审批函数时，它创建一个尚未完成的 Promise，并把当前请求交给界面显示。用户作出选择后，连接对象用允许或拒绝完成这个 Promise，核心的 `await` 才得到结果。
 
-```mermaid
-%%{init: {"themeCSS": ".loopLine, .messageLine1 { stroke: #64748b !important; }"}}%%
-sequenceDiagram
-    participant A as Agent Loop
-    participant P as TUI 审批连接
-    participant U as 审批区与用户
-    A->>P: 请求批准，携带实际请求与预览
-    P->>U: 保存并显示待审批内容
-    Note over A,P: 审批 Promise 保持等待
-    U->>P: 用户选择允许或拒绝
-    P-->>A: 完成 Promise，返回审批结果
-    Note over A: 按原有权限流程继续或拒绝
-```
+![时序图：让审批函数等待界面中的一次选择](assets/interaction-sequence-1023d4450f.png)
 
-图中的虚线是函数异步返回结果。画面显示来自审批请求本身；旁边的 `approval_start`、`approval_finish` 事件继续用于记录过程，二者不互相代替。
+图中的横向虚线箭头表示函数异步返回结果。画面显示来自审批请求本身；旁边的 `approval_start`、`approval_finish` 事件继续用于记录过程，二者不互相代替。
 
 ## 工作原理
 

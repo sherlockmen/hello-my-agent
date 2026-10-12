@@ -1,0 +1,325 @@
+/**
+ * 12.2 任务清单 | [CHANGED] agent/agent-loop.ts
+ *
+ * 学习目标：把多步任务的进度保存为会话清单，并看清这些控制能力接在模型与工具循环的哪里。
+ * 输入：问题、已有模型历史、取消信号、观察者、审批入口，以及本轮模式和本地控制选项。
+ * 输出：完成时返回回答并提交本轮历史；中断时补齐工具状态、保存中断说明后抛错。
+ * 状态：进入前已取消就不新增历史；清单由会话持有，已经发生的工具操作不会随取消撤销。
+ *
+ * 全局主流程（从这里进入各模块）：
+ *   CLI -> 帮助 / 版本 / 诊断？-- 是 -> 显示后结束
+ *                            +-- 否 -> 检查输出方式和模式 -- 无效 -> 错误结束
+ *                                                         +-- 有效 -> 配置、模型、消费者
+ *   [KEEP 来自 10.4] auto：交互连续输入 -> TUI；单次问题或管道 -> text
+ *   输入界面 -> 草稿 / 历史浏览 / 外部编辑 -> 等用户提交
+ *   [KEEP 来自 12.1] 空闲 /mode plan|execute -> 保存会话模式；新一轮取启动快照
+ *   [KEEP 来自 11.5] TUI Enter -> 正在运行？-- 是 -> 保留草稿、等待结束
+ *                                             +-- 否 -> 本地命令或新一轮问题
+ *   普通问题 -> streamAgentRun -> runAgent -> run_start -> 事件消费者
+ *                                       +-> agentLoop -> 进入前已取消？-- 是 -> 抛错结束
+ *                                                                   +-- 否 -> 建立本轮消息
+ *   [KEEP 来自 12.1] 固定本轮模式 -> A
+ *   [CHANGED 12.2] 本轮共用会话清单（未提供时创建本轮容器）
+ *   A: [KEEP] 请求模型
+ *      [KEEP 来自 12.1] models/client 按模式提示、筛选工具；本地策略仍负责真正禁止
+ *      文字片段 -> 事件消费者；完整结果 -> 结束原因和工具数量一致？-- 否 -> X
+ *                                                                        +-- 是 -> B
+ *   B: 有工具请求？-- 否 -> 回答非空且未取消？-- 否 -> X
+ *                  |                         +-- 是 -> 保存 assistant 回答
+ *                  |  -> 提交历史、返回回答
+ *                  +-- 是 -> 已到第 8 次？-- 是 -> X（不执行这批工具）
+ *                                       +-- 否 -> 保存 assistant 调用 -> C
+ *   C: [KEEP 来自 12.1] 权限策略 -> Plan 的写入 / 编辑 / 命令？-- 是 -> 拒绝结果 -> D
+ *                                                             +-- 否 -> 原有 deny / ask / allow
+ *      deny -> 拒绝结果 -> D；ask -> 准备预览 -- 失败 -> 错误结果 -> D
+ *                                        +-- 成功 -> 等本次审批 -- 拒绝 -> 拒绝结果 -> D
+ *                                                             +-- 批准 -> 执行 -> D
+ *      allow -> 注册表找到工具 -> 执行 -> D
+ *        [CHANGED 12.2] todo_write -> 全部条目校验成功？-- 否 -> ToolError、旧清单不变
+ *                                                     +-- 是 -> 一次替换内存清单 -> D
+ *   D: 保存工具正文与错误标记 -> 发过程事件 -> 本批还有调用？-- 是 -> C
+ *                                                                +-- 否 -> A
+ *      [KEEP] 一批调用全部有结果后才回到下一次模型请求
+ *      清单的 completed 是模型报告的进度；测试是否通过仍要看实际命令结果
+ *   X: 错误 / 取消 / 次数耗尽 -> 补齐缺少的工具结果 -> 保存历史与本地说明 -> 抛错
+ *   runAgent -> run_finish completed / cancelled / error -> 同一事件流
+ *   事件流 -> text：正文 stdout、过程 stderr；jsonl：逐条 JSON、等写入回调
+ *          +-> TUI：RunView -> 完整显示条目 -> 历史视口
+ *   [KEEP] 审批：交互 text 或 TUI 等明确决定；jsonl / 非交互环境拒绝待确认请求
+ *   [KEEP] Ctrl+C：忙碌取消当前轮并等清理；空闲退出；退出先封住提交再等任务清理
+ *   [KEEP] 事件队列超限 / 提前停止消费 -> 取消同一轮、等待模型与工具清理
+ *
+ * 图中带当前编号的是本节增量；KEEP 表示已经建立的能力。
+ * 普通事件最多暂存 128 条，结束事件另有位置；这是事件条数限制，不是总字节内存上限。
+ * 工具结果仍给模型，界面只处理显示副本；模式选择和聊天文字都不能产生批准。
+ * 运行观察：清单更新后界面显示进度，错误更新不会覆盖旧清单。
+ */
+
+import { ToolError, UserFacingError } from "../errors.js";
+import type { Message, Model, Reply } from "../models/client.js";
+import { decideToolPermission, type ApprovalHandler } from "../permissions/policy.js";
+import { executePreparedTool, executeTool, prepareTool } from "../tools/registry.js";
+import type { PreparedToolCall } from "../tools/types.js";
+import { emitAgentEvent, type AgentObserver } from "./events.js";
+import type { RunOptions } from "./run-options.js";
+
+const MAX_MODEL_CALLS = 8;
+
+/**
+ * 把新一次模型调用的 token 数累加到本轮总量。
+ *
+ * - 输入：当前累计值和本次调用值；任一值都可能是表示未知的 `null`。
+ * - 输出：两项都已知时返回和；任一项未知时返回 `null`。
+ * - 关键原因：部分缺失的数据不能计算出真实总量，继续显示数字会造成误导。
+ */
+function addUsage(total: number | null, value: number | null): number | null {
+  return total === null || value === null ? null : total + value;
+}
+
+/**
+ * 让模型读到问题和真实工具结果，继续决策直到本轮完成或中断。
+ * 进入前先检查取消；本轮模式在入口固定，模型提示与权限策略都使用它。
+ * 清单容器在这轮工具之间共用；工具完整校验后更新内存，核心不从回答文字推断进度。
+ * 每个工具先过权限，写入与命令先准备再审批；拒绝和 ToolError 也回给原调用。
+ * 成功提交完整本轮消息并返回回答；开始后中断则补齐工具结果、保存说明，再抛出原因。
+ * 本函数不会撤销已执行的操作，也不会把聊天、问答或模型承诺当成批准。
+ */
+// [KEEP 来自 08.3] 本轮中断后保存完整工具状态，下一轮使用新的取消信号继续。
+// [CHANGED 12.2] 核心接入本节控制选项；相互分开的新分支在下方另作标记。
+export async function agentLoop(
+  model: Model,
+  history: Message[],
+  input: string,
+  signal: AbortSignal,
+  observer?: AgentObserver,
+  requestApproval?: ApprovalHandler,
+  // [KEEP 来自 05.3] Set 由终端持有，Agent Loop 在用户输入 s 后写入批准记录。
+  sessionGrants: Set<string> = new Set(),
+  // [KEEP 来自 12.1] 增加本轮控制选项；调用方把模式快照传到核心。
+  options: RunOptions = {},
+): Promise<Reply> {
+  signal.throwIfAborted();
+  // [KEEP 来自 12.1] 本轮模式在循环前固定，后面的请求和策略共用它。
+  const mode = options.mode ?? "execute";
+  // [CHANGED 12.2] 未提供会话容器时，本轮仍能使用同一份任务清单。
+  // [CHANGED 12.2] 所有清单工具共用同一份容器，未传入时在本轮创建。
+  const toolOptions: RunOptions = { ...options, tasks: options.tasks ?? { items: [] } };
+  const turn: Message[] = [{ role: "user", content: input }];
+  let inputTokens: number | null = 0;
+  let outputTokens: number | null = 0;
+  let truncated = false;
+  let toolSequence = 0;
+  let pendingToolResults = 0;
+
+  // [KEEP 来自 08.3] 中断时区分“已开始但没结果”和“尚未开始”的调用。
+  let executingCallId: string | undefined;
+  try {
+    for (let modelCall = 1; modelCall <= MAX_MODEL_CALLS; modelCall += 1) {
+      // 每次请求都由核心主动检查取消，不能依赖具体 Model 实现自行处理 signal。
+      signal.throwIfAborted();
+      emitAgentEvent(observer, {
+        type: "model_start",
+        call: modelCall,
+        contextMessages: history.length + turn.length,
+        trigger: modelCall === 1
+          ? { kind: "user", content: input }
+          : { kind: "tool_results", count: pendingToolResults },
+      });
+      pendingToolResults = 0;
+      // [KEEP 来自 08.1] 增量成为观察事件，不提前执行工具，也不把半句回答写入历史。
+      // [KEEP 来自 12.1] 模型请求也接收本轮模式；工具隐藏只是辅助。
+      const result = await model.generate([...history, ...turn], signal, (text) => {
+        if (!signal.aborted) emitAgentEvent(observer, { type: "text_delta", call: modelCall, text });
+
+      }, { mode });
+      inputTokens = addUsage(inputTokens, result.inputTokens);
+      outputTokens = addUsage(outputTokens, result.outputTokens);
+      truncated ||= result.truncated;
+      emitAgentEvent(observer, {
+        type: "model_finish",
+        call: modelCall,
+        // [KEEP 来自 08.2] 长度上限和拒绝不会伪装成成功回答。
+        finishReason: result.finishReason,
+        outcome: !["stop", "tool_calls"].includes(result.finishReason) ? "incomplete"
+          : result.toolCalls.length > 0 ? "tools" : result.text.trim() ? "final" : "empty",
+        toolRequests: result.toolCalls.length,
+        text: result.text,
+      });
+
+      // [KEEP 来自 08.2] 正常结束与工具数量必须一致，完整响应才允许进入权限判断。
+      if (result.finishReason === "length") throw new UserFacingError("回答达到输出上限，本次响应未完成；其中的工具请求不会执行。");
+      if (result.finishReason === "refusal") throw new UserFacingError("模型拒绝了本次请求，本次响应中的工具请求不会执行。");
+      if (result.finishReason !== (result.toolCalls.length ? "tool_calls" : "stop")) {
+        throw new UserFacingError("模型结束原因与内容不一致，或当前接口返回了不支持的结束原因。");
+      }
+      if (result.toolCalls.length === 0) {
+        if (!result.text.trim()) throw new UserFacingError("模型没有返回可用的最终回答。");
+        signal.throwIfAborted();
+        turn.push({ role: "assistant", content: result.text });
+        history.push(...turn);
+        return { text: result.text, inputTokens, outputTokens, truncated };
+      }
+
+      // 最后一次模型机会仍要求工具时，结果已不可能再反馈给模型，因此不执行无用操作。
+      if (modelCall === MAX_MODEL_CALLS) break;
+
+      turn.push({ role: "assistant", content: result.text, toolCalls: result.toolCalls });
+      for (const call of result.toolCalls) {
+        signal.throwIfAborted();
+        toolSequence += 1;
+        // [KEEP 来自 12.1] 每次请求仍经过本地模式检查，不能靠模型工具列表保证禁止。
+        const permission = await decideToolPermission(call, sessionGrants, undefined, mode);
+        emitAgentEvent(observer, {
+          type: "permission_check",
+          sequence: toolSequence,
+          call,
+          decision: permission,
+        });
+        let rejection: string | null = null;
+        let prepared: PreparedToolCall | null = null;
+        // [KEEP 来自 08.3] 权限检查期间也可能收到取消。
+        signal.throwIfAborted();
+        if (permission.action === "deny") rejection = `权限拒绝：${permission.reason}`;
+        if (permission.action === "ask") {
+          try {
+            // [KEEP 来自 06.1] prepareTool 只检查并准备预览，不写文件，也不启动命令。
+            prepared = await prepareTool(call, signal);
+          } catch (error) {
+            if (!(error instanceof ToolError)) throw error;
+            turn.push({
+              role: "tool",
+              toolCallId: call.id,
+              content: `工具准备失败：${error.message}`,
+              isError: true,
+            });
+            pendingToolResults += 1;
+            emitAgentEvent(observer, {
+              type: "tool_prepare",
+              sequence: toolSequence,
+              call,
+              outcome: "error",
+              error: error.message,
+            });
+            continue;
+          }
+          if (prepared) {
+            emitAgentEvent(observer, {
+              type: "tool_prepare",
+              sequence: toolSequence,
+              call,
+              outcome: "success",
+              previewChars: prepared.preview.length,
+            });
+          }
+          emitAgentEvent(observer, {
+            type: "approval_start",
+            sequence: toolSequence,
+            call,
+            scope: permission.scope,
+            allowSession: permission.remember,
+            hasPreview: prepared !== null,
+          });
+          const response = requestApproval
+            ? await requestApproval({
+                call,
+                reason: permission.reason,
+                resource: permission.resource,
+                scope: permission.scope,
+                allowSession: permission.remember,
+                ...(prepared ? { preview: prepared.preview } : {}),
+              }, signal)
+            : { decision: "deny" as const, reason: "当前运行方式无法请求用户批准" };
+          // [KEEP 来自 08.3] 用户取消不保存刚刚返回的会话授权。
+          signal.throwIfAborted();
+          emitAgentEvent(observer, {
+            type: "approval_finish",
+            sequence: toolSequence,
+            call,
+            response,
+          });
+          // [KEEP 来自 06.1] 写入和命令批准都不能保存；只有可复用的读取范围进入 Set。
+          if (response.decision === "allow_session") {
+            if (permission.remember) sessionGrants.add(permission.scope);
+            // [KEEP 来自 07.1] 写入与命令都只能批准当前操作。
+            else rejection = "当前批准只适用于这一次操作预览";
+          }
+          if (response.decision === "deny") rejection = `用户未批准工具执行：${response.reason}`;
+        }
+        if (rejection) {
+          turn.push({ role: "tool", toolCallId: call.id, content: rejection, isError: true });
+          pendingToolResults += 1;
+          continue;
+        }
+        // [KEEP 来自 08.3] 审批后的取消必须在真实工具启动之前生效。
+        signal.throwIfAborted();
+        executingCallId = call.id;
+        emitAgentEvent(observer, { type: "tool_start", sequence: toolSequence, call });
+        try {
+          // [KEEP 来自 04.1] 同一个取消信号继续穿过注册表，文件遍历和读取才能响应取消。
+          // [KEEP 来自 06.1] 已准备的 execute 保存了用户刚刚审查的文件修改或命令。
+          // [CHANGED 12.2] 直接工具收到本轮共用选项，清单更新使用同一个容器。
+          const result = prepared
+            ? await executePreparedTool(prepared, signal)
+            : await executeTool(call, signal, toolOptions);
+          // [KEEP 来自 07.1] 非零退出码表示本次命令失败，保留输出供模型决定下一步。
+          turn.push({ role: "tool", toolCallId: call.id, content: result.content, isError: result.isError ?? false });
+          // [KEEP 来自 08.3] 已经返回的工具结果保留；取消不会撤销真实副作用。
+          executingCallId = undefined;
+          pendingToolResults += 1;
+          emitAgentEvent(observer, {
+            type: "tool_finish",
+            sequence: toolSequence,
+            call,
+            outcome: "success",
+            result,
+          });
+        } catch (error) {
+          // [KEEP 来自 03.3] 预期内的工具错误回到循环；编程错误、系统异常仍交给外层处理。
+          if (!(error instanceof ToolError)) throw error;
+          turn.push({
+            role: "tool",
+            toolCallId: call.id,
+            content: `工具执行失败：${error.message}`,
+            isError: true,
+          });
+          // [KEEP 来自 08.3] 已经返回的工具结果保留；取消不会撤销真实副作用。
+          executingCallId = undefined;
+          pendingToolResults += 1;
+          emitAgentEvent(observer, {
+            type: "tool_finish",
+            sequence: toolSequence,
+            call,
+            outcome: "error",
+            error: error.message,
+          });
+        }
+      }
+    }
+
+    throw new UserFacingError(`Agent 连续请求模型 ${MAX_MODEL_CALLS} 次仍未得到最终回答，已停止本轮。`);
+  } catch (error) {
+    // [KEEP 来自 08.3] 保存完整调用及其状态；未收齐的模型输出从未进入 turn。
+    // 每个批次单独配对：后续模型请求即使复用同一个 ID，也不能借用前一批的完成记录。
+    const lastBatch = turn.map((message) => message.role === "assistant" && Boolean(message.toolCalls?.length)).lastIndexOf(true);
+    const completed = new Set(turn.slice(lastBatch + 1).filter((message) => message.role === "tool").map((message) => message.toolCallId));
+    for (const message of lastBatch < 0 ? [] : [turn[lastBatch]]) {
+      if (message.role !== "assistant") continue;
+      for (const call of message.toolCalls ?? []) {
+        if (completed.has(call.id)) continue;
+        turn.push({ role: "tool", toolCallId: call.id, isError: true,
+          content: call.id === executingCallId
+            ? "操作已开始，但本轮中断前没有取得完整结果。可能已发生部分修改，请先核实当前文件或进程状态，不要直接重试。"
+            : "本轮在该工具启动前中断，这个调用未执行。" });
+        completed.add(call.id);
+      }
+    }
+    // 这条状态由本地程序生成，明确标注来源，不把它冒充模型完成的回答。
+    // [KEEP 来自 09.2] 按取消原因写入本地状态；队列或输出故障是错误，普通取消才记为取消。
+    const cancelled = signal.aborted && !(signal.reason instanceof UserFacingError);
+    turn.push({ role: "assistant", content: cancelled
+      ? "[本地状态] 本轮已取消。已执行的操作不会自动撤销；继续前先核实工具结果。"
+      : "[本地状态] 本轮因错误中断。已执行的操作不会自动撤销；继续前先核实工具结果。" });
+    history.push(...turn);
+    throw error;
+  }
+}

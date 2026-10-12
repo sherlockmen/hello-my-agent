@@ -1,0 +1,6 @@
+{
+  "name": "chapter-12-demo",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test test/add.test.mjs" }
+}

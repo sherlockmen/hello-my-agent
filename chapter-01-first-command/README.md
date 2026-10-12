@@ -24,13 +24,7 @@ console.log("Hello，My Agent！");
 
 我们用 TypeScript 编写入口，编译后得到 `dist/cli.js`，再通过 npm 的 `bin` 配置把它连到 `hello-my-agent` 这个名字。帮助、版本和默认行为交给 Commander 选择，无需自己拆分每个命令行参数。
 
-```mermaid
-flowchart LR
-  A[cli.ts] -->|tsc 编译| B[dist/cli.js]
-  B -->|build 自动注册| C[hello-my-agent 命令]
-  C -->|Node 运行| B
-  B -->|npm pack 打包| D[安装包]
-```
+![cli.ts 经 tsc 编译为 dist/cli.js，build 注册 hello-my-agent 命令，命令由 Node 运行 dist/cli.js；npm pack 将运行文件打成安装包。](assets/control-flow-e153a845a7.png)
 
 本章的入口源码是 [cli.ts](cli.ts)，编译后的运行文件是 `dist/cli.js`。Commander 负责解析命令行参数；第 02 章在这个入口后接入模型，第 03 章再接入工具循环。
 

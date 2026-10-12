@@ -20,28 +20,7 @@
 
 我们把工具分成两步。第一步检查路径和内容，生成预览，并记住批准后该怎样创建文件；第二步才真正写入。Agent Loop 拿到第一步的结果后，先等待用户的决定。用户同意，它才开始第二步。
 
-```mermaid
-%%{init: {"themeCSS": ".loopLine, .messageLine1 { stroke: #64748b !important; }"}}%%
-sequenceDiagram
-    participant M as 模型
-    participant A as Agent Loop
-    participant T as 文件工具
-    participant U as 终端与用户
-    M->>A: write_file(path, content)
-    A->>A: 权限判断：本次需要确认
-    A->>T: 准备新文件创建
-    T-->>A: 预览 + 待执行的创建动作
-    A->>U: 显示完整差异，等待决定
-    alt 批准
-        U-->>A: 允许这次修改
-        A->>T: 执行已准备的创建
-        T-->>A: 成功或执行错误
-    else 拒绝
-        U-->>A: 拒绝
-        A->>A: 生成拒绝结果
-    end
-    A-->>M: 工具结果，供下一次决策使用
-```
+![时序图：先把内容准备好，批准后再写入](assets/interaction-sequence-82430c0a3b.png)
 
 这样一来，“展示预览”就发生在“保存到文件”之前。等待结束后，程序也已经知道该保存什么，不需要再让模型生成一遍正文。
 

@@ -27,15 +27,7 @@
 
 可以把本章的显示路线看成下面这条链：
 
-```mermaid
-flowchart LR
-    A[原有 Agent Loop] --> B[按顺序交付 AgentRecord]
-    B --> C[更新当前文字、工具与任务状态]
-    C --> D[React 根据状态计算界面]
-    D --> E[Ink 更新终端画面]
-    F[用户输入] --> G[启动一轮任务]
-    G --> A
-```
+![用户输入启动一轮任务，原有 Agent Loop 按顺序交付 AgentRecord。界面先更新文字、工具与任务状态，再由 React 根据状态计算界面，Ink 更新终端画面。](assets/control-flow-14f14c7e7d.png)
 
 React 帮我们保存会影响显示的状态，并在状态变化后重新计算组件。Ink 负责把组件描述的文字与布局画到终端。两者都不负责选择模型、执行工具或决定权限；这些能力仍在此前的模块里。
 

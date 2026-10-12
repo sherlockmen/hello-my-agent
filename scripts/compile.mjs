@@ -54,9 +54,14 @@ const targets = {
   "11.3": "chapter-11-terminal-workbench/03-browse-results/src",
   "11.4": "chapter-11-terminal-workbench/04-external-editor/src",
   "11.5": "chapter-11-terminal-workbench/05-terminal-layout/src",
+  "12.1": "chapter-12-task-control/01-plan-mode/src",
+  "12.2": "chapter-12-task-control/02-task-list/src",
+  "12.3": "chapter-12-task-control/03-clarify-questions/src",
+  "12.4": "chapter-12-task-control/04-live-input/src",
+  "12.5": "chapter-12-task-control/05-manage-queue/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "11.5";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "12.5";
 const source = targets[target];
 
 if (!source) {

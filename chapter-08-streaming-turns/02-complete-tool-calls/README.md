@@ -18,26 +18,7 @@
 
 Agent Loop 向模型发出“读取文件并解释内容”的请求后，模型会陆续返回文字和工具调用信息。程序收到文字就可以显示，收到工具名称和参数片段则先保存起来。这次模型响应正常结束后，程序再检查收齐的参数和读取权限，检查通过后才调用 `read_file` 读取文件。读取完成后，Agent Loop 把文件内容交回模型，让模型根据实际代码回答。
 
-```mermaid
-%%{init: {"themeCSS": ".loopLine, .messageLine1 { stroke: #64748b !important; }"}}%%
-sequenceDiagram
-    participant M as 模型
-    participant A as 程序（含 Agent Loop）
-    participant T as 文件工具
-    A->>M: 发起模型请求：读取 add.mjs 并解释
-    Note over A,T: 接收模型输出期间，文件工具尚未执行
-    M-->>A: 文字片段：“我先读一下这个文件”
-    A->>A: 逐段显示文字
-    M-->>A: 工具请求片段：read_file + 部分参数
-    M-->>A: 工具请求片段：剩余参数
-    M-->>A: 本次模型响应正常结束（包含工具请求）
-    A->>A: 检查结束原因与完整参数
-    A->>A: 权限判断，必要时等待用户批准
-    A->>T: 执行 read_file（完整参数）
-    T-->>A: 工具结果：读到的文件内容
-    A->>M: 再次请求模型，附上工具结果
-    M-->>A: 根据文件内容回答，文字逐段返回
-```
+![时序图：先收齐模型的工具请求，再执行工具](assets/interaction-sequence-d096b4e787.png)
 
 图中的“程序”把流式接收代码和 Agent Loop 合在一列：接收代码收齐模型响应，Agent Loop 安排工具执行，并把结果发回模型。**工具请求由模型提出，工具结果在工具执行后才产生。**
 

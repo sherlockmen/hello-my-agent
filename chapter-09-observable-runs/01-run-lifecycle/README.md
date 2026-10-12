@@ -22,27 +22,9 @@
 
 本节增加两个事件：`run_start` 告诉界面“这一轮开始了”，`run_finish` 告诉界面“这一轮结束了，以及为什么结束”。任务入口先发出开始事件，再等待原来的 Agent Loop；等它返回或完成失败处理以后，只发出一次结束事件。
 
-```mermaid
-%%{init: {"themeCSS": ".loopLine, .messageLine1 { stroke: #64748b !important; }"}}%%
-sequenceDiagram
-    participant U as 终端
-    participant R as 任务入口
-    participant A as Agent Loop
-    U->>R: 开始“读取 README 并说明启动方式”
-    R-->>U: run_start
-    R->>A: 运行原有模型与工具循环
-    A-->>R: 模型、文字、权限与工具事件
-    R-->>U: 转交这些过程事件
-    alt 正常完成
-        A-->>R: 已保存完整历史，返回 Reply
-        R-->>U: run_finish：completed
-    else 取消或失败
-        A-->>R: 已完成清理并保存中断状态，抛出原因
-        R-->>U: run_finish：cancelled 或 error
-    end
-```
+![时序图：给一轮任务补上开始和结束](assets/interaction-sequence-92ae659c4e.png)
 
-图里的 `alt` 表示二选一的分支：正常完成就走上半部分，中断就走下半部分。两条路线最后都回到同一种结束事件，终端不用再从最后一句话猜测任务状态。
+图中的条件框表示二选一的分支：正常完成就走上半部分，中断就走下半部分。两条路线最后都回到同一种结束事件，终端不用再从最后一句话猜测任务状态。
 
 ## 工作原理
 

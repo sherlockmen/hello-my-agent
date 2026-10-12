@@ -23,27 +23,7 @@
 
 如果文件还是原来那一个，内容也没变，就先备份原文，再保存新内容。如果不一样，就停止这次修改，把原因交回模型，让它重新读取。
 
-```mermaid
-%%{init: {"themeCSS": ".loopLine, .messageLine1 { stroke: #64748b !important; }"}}%%
-sequenceDiagram
-    participant A as Agent 与文件工具
-    participant U as 用户
-    participant F as value.ts
-    A->>F: 读取身份与全文 2
-    F-->>A: 保存为准备依据
-    A->>U: 展示 2 → 3，等待批准
-    Note over U,F: 等待期间，编辑器可能保存新内容
-    U-->>A: 批准这份预览
-    A->>F: 重新检查身份与全文
-    alt 文件仍符合准备依据
-        A->>A: 先保存原文备份
-        A->>F: 写入 3
-        A-->>U: 根据成功结果回答
-    else 文件已经变化
-        A->>A: 当前请求返回错误，交给模型
-        A-->>U: 解释失败，或提出新预览再审批
-    end
-```
+![时序图：记住准备时的文件，保存前再检查](assets/interaction-sequence-982e1dc807.png)
 
 这个方案没有在用户看预览的时候锁住文件，所以其他程序还能正常编辑。代价是保存前需要再检查一次：既然文件已经变了，之前算好的修改就不能直接拿来覆盖它。
 

@@ -34,6 +34,8 @@ const currentPackageModules = [
   "ui/tui/app", "ui/tui/state", "ui/tui/approval",
   "ui/tui/editor", "ui/tui/input-assist", "ui/tui/transcript", "ui/tui/system-actions", "ui/tui/layout",
   "ui/teaching-trace", "ui/terminal", "ui/input", "ui/jsonl", "agent/run", "agent/run-stream",
+  "agent/run-options", "tools/todo-write", "tools/ask-user",
+  "ui/tui/questions", "ui/tui/input-queue", "ui/tui/queue-panel",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {
