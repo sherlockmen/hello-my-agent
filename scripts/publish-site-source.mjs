@@ -143,6 +143,7 @@ try {
     run('git', ['config', 'user.name', 'sherlockmen'], temporary);
     run('git', ['config', 'user.email', '59763768+sherlockmen@users.noreply.github.com'], temporary);
     run('git', ['add', '--all'], temporary);
+    assert.deepEqual(run('git', ['ls-files', '-z'], temporary).split('\0').filter(Boolean).sort(), files, 'Git 忽略规则使公开源码缺失，请先检查后再发布');
     if (run('git', ['status', '--porcelain'], temporary)) {
       run('git', ['commit', '--quiet', '-m', 'Publish current tutorial and Docsify source'], temporary);
       run('git', ['push', '--quiet', 'origin', branch], temporary);
