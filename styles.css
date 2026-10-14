@@ -20,7 +20,7 @@ body, .sidebar, .markdown-section { background: var(--paper); }
 .markdown-section details { margin: 1.3rem 0; border: 1px solid var(--line); border-radius: 6px; padding: .7rem 1rem; }
 .markdown-section summary { cursor: pointer; color: var(--theme-color); padding: .2rem 0; }
 .markdown-section details pre { margin-bottom: .4rem; }
-.sidebar { width: 294px; border-color: var(--line); padding-top: 18px; }
+body .sidebar { width: 294px; border-color: var(--line); padding-top: 44px; }
 .sidebar > h1 { margin: 20px 22px 22px; text-align: left; font-size: 23px; font-weight: 600; }
 .sidebar-nav { padding: 0 12px 70px 6px; }
 .sidebar-nav li { margin: 2px 0; }
@@ -81,6 +81,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
   .markdown-section pre { padding: 1rem; }
   .markdown-section pre > code { font-size: 13px; }
   .sidebar { width: 294px; }
+  .sidebar .search input { font-size: 16px; }
   .content { left: 0; padding-top: 12px; }
   .sidebar-toggle { width: 48px; }
   .markdown-section table { font-size: 14px; }
