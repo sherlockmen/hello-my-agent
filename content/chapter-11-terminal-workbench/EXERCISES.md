@@ -6,7 +6,7 @@
 
 一次粘贴再撤销，应该取回原文和光标；向上停留后收到新结果，应该继续看到旧内容。终端操作可以观察这些行为，但模型每次输出可能不同。给正式函数固定输入，再检查每一步，就能反复验证同一个过程。
 
-<img src="./content/chapter-11-terminal-workbench/assets/exercise-problem-d994f2590e.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/assets/exercise-problem-d994f2590e.gif" data-cover="./content/chapter-11-terminal-workbench/assets/exercise-problem-d994f2590e.gif.cover.png" alt="状态实验示意：固定输入，调用正式函数插入、撤销与重做，逐步核对正文和光标">
+<img src="./content/chapter-11-terminal-workbench/assets/exercise-problem-d994f2590e.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/assets/exercise-problem-d994f2590e.gif" data-cover="./content/chapter-11-terminal-workbench/assets/exercise-problem-d994f2590e.gif.cover.png" data-no-zoom alt="状态实验示意：固定输入，调用正式函数插入、撤销与重做，逐步核对正文和光标">
 
 我们希望每次重跑，都能核对同一组操作后的文字、光标和阅读位置，而不用等模型再次生成一份输出。图中的操作卡直接调用正式的 `insertText()` 和 `editKey()`；右侧是返回状态的模拟显示，没有启动 TUI，也没有向界面发送真实按键。
 

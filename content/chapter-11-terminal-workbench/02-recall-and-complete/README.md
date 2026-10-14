@@ -6,7 +6,7 @@
 
 上一节已经能把请求写成多行草稿。接下来检查 `package.json` 时，我们想沿用上次读取 `README.md` 的要求，只换一个文件名。
 
-<img src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/problem-scenario-0c541d2c35.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/problem-scenario-0c541d2c35.gif" data-cover="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/problem-scenario-0c541d2c35.gif.cover.png" alt="使用场景示意：取回旧读取要求，换上新的文件名，留在草稿中继续修改">
+<img src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/problem-scenario-0c541d2c35.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/problem-scenario-0c541d2c35.gif" data-cover="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/problem-scenario-0c541d2c35.gif.cover.png" data-no-zoom alt="使用场景示意：取回旧读取要求，换上新的文件名，留在草稿中继续修改">
 
 逐字重写旧问题，或手写完整的文件路径和本地命令名称，都会重复输入已有文字。我们需要搜索并取回旧问题，也需要在名称写到一半时按 `Tab` 补全；这些文字取回后还要能继续修改。
 
@@ -25,7 +25,7 @@
 
 ### 历史搜索：确认候选后才替换草稿
 
-<img src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/recall-prompt-5c2b03ec2c.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/recall-prompt-5c2b03ec2c.gif" data-cover="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/recall-prompt-5c2b03ec2c.gif.cover.png" alt="取回旧问题：搜索时保留原草稿，确认候选后只取回文字">
+<img src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/recall-prompt-5c2b03ec2c.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/recall-prompt-5c2b03ec2c.gif" data-cover="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/recall-prompt-5c2b03ec2c.gif.cover.png" data-no-zoom alt="取回旧问题：搜索时保留原草稿，确认候选后只取回文字">
 
 搜索只查当前进程已经提交的问题，从最近的记录开始找包含关键词的文字，相同问题只留最近一次。模型回答和工具结果不在这份输入列表中，取回问题也不会重放旧工具调用。
 
@@ -33,7 +33,7 @@
 
 ### 文件与命令补全：多个候选只补共同前缀
 
-<img src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/complete-path-6a85655326.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/complete-path-6a85655326.gif" data-cover="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/complete-path-6a85655326.gif.cover.png" alt="路径补全：多个候选只补共同前缀，继续写后补全唯一路径并保留右侧要求">
+<img src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/complete-path-6a85655326.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/complete-path-6a85655326.gif" data-cover="./content/chapter-11-terminal-workbench/02-recall-and-complete/assets/complete-path-6a85655326.gif.cover.png" data-no-zoom alt="路径补全：多个候选只补共同前缀，继续写后补全唯一路径并保留右侧要求">
 
 `@pack` 同时匹配 `package-lock.json` 和 `package.json`，所以程序只补两者共有的 `@package`。继续写 `.j` 后，只剩 `package.json`，才能补完整。
 

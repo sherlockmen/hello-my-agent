@@ -11,7 +11,7 @@
 说明启动和检查方法
 ```
 
-<img src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif" data-cover="./content/chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png" alt="使用场景示意：在两行请求中补充文字，撤掉多余的粘贴，整理好后再发送">
+<img src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif" data-cover="./content/chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png" data-no-zoom alt="使用场景示意：在两行请求中补充文字，撤掉多余的粘贴，整理好后再发送">
 
 单行编辑已经不够用：这份请求需要保留换行，在多行之间移动光标，整段粘贴文字，也能撤销或重做一次修改。我们希望先把草稿整理好，再发送给模型。
 
@@ -29,7 +29,7 @@
 
 ### 在光标处插入，后面的文字仍保留
 
-<img src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif" data-cover="./content/chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png" alt="编辑草稿：在README前插入文字，原后文与第二行仍保留">
+<img src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif" data-cover="./content/chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png" data-no-zoom alt="编辑草稿：在README前插入文字，原后文与第二行仍保留">
 
 程序先取出光标左边和右边的文字，把新输入放在中间，再接回原来的后半段。因此，在 `README.md` 前插入“项目中的 ”，文件名和第二行要求都会保留；光标移到新文字之后，方便继续写。
 
@@ -37,7 +37,7 @@
 
 ### 撤销取回旧稿，重做取回刚撤掉的稿
 
-<img src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/undo-redo-38f1f2dd2c.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/undo-redo-38f1f2dd2c.gif" data-cover="./content/chapter-11-terminal-workbench/01-editable-draft/assets/undo-redo-38f1f2dd2c.gif.cover.png" alt="撤销重做：保存两行原稿A，整段粘贴得到B，再取回A或B">
+<img src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/undo-redo-38f1f2dd2c.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/01-editable-draft/assets/undo-redo-38f1f2dd2c.gif" data-cover="./content/chapter-11-terminal-workbench/01-editable-draft/assets/undo-redo-38f1f2dd2c.gif.cover.png" data-no-zoom alt="撤销重做：保存两行原稿A，整段粘贴得到B，再取回A或B">
 
 这幅图单独从开头的两行原稿 A 开始，一次粘贴带换行的“先不要修改文件。”得到 B。一次粘贴产生一次文字修改，所以程序先保存粘贴前的正文和光标。按 `Ctrl+Z` 取回这份旧稿，同时留下刚撤掉的版本；`Ctrl+Y` 再把它取回来。
 

@@ -12,7 +12,7 @@
 
 
 
-<img src="./content/chapter-12-task-control/01-plan-mode/assets/plan-purpose-cover-c556d1a8ec.png" data-gif-src="./content/chapter-12-task-control/01-plan-mode/assets/plan-purpose-0f5d75ec67.gif" data-cover="./content/chapter-12-task-control/01-plan-mode/assets/plan-purpose-cover-c556d1a8ec.png" alt="Plan先交付加法修复方案；用户切换模式后，另发执行要求才开始新一轮">
+<img src="./content/chapter-12-task-control/01-plan-mode/assets/plan-purpose-cover-c556d1a8ec.png" data-gif-src="./content/chapter-12-task-control/01-plan-mode/assets/plan-purpose-0f5d75ec67.gif" data-cover="./content/chapter-12-task-control/01-plan-mode/assets/plan-purpose-cover-c556d1a8ec.png" data-no-zoom alt="Plan先交付加法修复方案；用户切换模式后，另发执行要求才开始新一轮">
 
 图中先读取实现与测试，再把依据交回模型，最后交付方案。方案中的“运行测试”是将来怎样验证的建议；Plan 本身没有执行它。`/mode execute` 选择下一项任务的模式，另发实施要求才开始执行。[静态图](/content/chapter-12-task-control/01-plan-mode/assets/plan-purpose-f660f7c56b.jpg.md)
 
@@ -44,7 +44,7 @@
 
 如果条件换成“函数已经返回 `left + right`，但另一个输入失败”，这份改减号的计划就失去了依据。仍用相同方法调查，方案应围绕新的失败条件重新形成。这说明 Plan 控制的是调查与交付方案的阶段，不是一套固定修复步骤。
 
-<img src="./content/chapter-12-task-control/01-plan-mode/assets/plan-method-cover-2e4d59dc31.png" data-gif-src="./content/chapter-12-task-control/01-plan-mode/assets/plan-method-6c132b6bc8.gif" data-cover="./content/chapter-12-task-control/01-plan-mode/assets/plan-method-cover-2e4d59dc31.png" alt="源码和测试的读取结果交回模型形成方案；额外编辑请求被本地Plan检查拒绝">
+<img src="./content/chapter-12-task-control/01-plan-mode/assets/plan-method-cover-2e4d59dc31.png" data-gif-src="./content/chapter-12-task-control/01-plan-mode/assets/plan-method-6c132b6bc8.gif" data-cover="./content/chapter-12-task-control/01-plan-mode/assets/plan-method-cover-2e4d59dc31.png" data-no-zoom alt="源码和测试的读取结果交回模型形成方案；额外编辑请求被本地Plan检查拒绝">
 
 前半段展示正常调查：两份读取结果完整交回，模型再形成方案。后半段回到终答尚未返回的时点，单独比较模型请求编辑的另一种响应：本地先拒绝，配对的拒绝结果回到模型，文件没有因此改变。正常调查不需要先经历一次拒绝。[静态图](/content/chapter-12-task-control/01-plan-mode/assets/plan-method-694da43fd3.jpg.md)
 

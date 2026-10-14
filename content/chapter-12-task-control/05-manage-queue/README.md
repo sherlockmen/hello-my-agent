@@ -12,7 +12,7 @@
 
 
 
-<img src="./content/chapter-12-task-control/05-manage-queue/assets/queue-problem-cover-2cf14885ea.png" data-gif-src="./content/chapter-12-task-control/05-manage-queue/assets/queue-problem-26f8504079.gif" data-cover="./content/chapter-12-task-control/05-manage-queue/assets/queue-problem-cover-2cf14885ea.png" alt="把第一条补充改为两个负数相加，再选中第二条并撤回">
+<img src="./content/chapter-12-task-control/05-manage-queue/assets/queue-problem-cover-2cf14885ea.png" data-gif-src="./content/chapter-12-task-control/05-manage-queue/assets/queue-problem-26f8504079.gif" data-cover="./content/chapter-12-task-control/05-manage-queue/assets/queue-problem-cover-2cf14885ea.png" data-no-zoom alt="把第一条补充改为两个负数相加，再选中第二条并撤回">
 
 图中编辑 `#17` 的副本，保存成功后才改变队列原文，并清空副本、退出编辑；`#18` 被撤回后，后续收取也不会带上它。这里展示的是本地待处理项的变化，保存不代表模型已经收到新文字。[静态图](/content/chapter-12-task-control/05-manage-queue/assets/queue-problem-1d1f8b89f2.jpg.md)
 
@@ -47,7 +47,7 @@ ID 还不同于任务编号。`17` 回答“这是哪一条”，`run: 6` 回答
 
 保存前仍检查空白和长度。有效文字才替换原项，不合法就留下编辑稿和原队列，方便继续修改。保存成功意味着待处理原文已经更新，后续是否进入请求仍由核心收取决定。
 
-<img src="./content/chapter-12-task-control/05-manage-queue/assets/queue-edit-cover-d91a09d3f7.png" data-gif-src="./content/chapter-12-task-control/05-manage-queue/assets/queue-edit-d7dbe33a52.gif" data-cover="./content/chapter-12-task-control/05-manage-queue/assets/queue-edit-cover-d91a09d3f7.png" alt="按稳定ID编辑副本，保存前重查原项；已收取时保留新写的文字">
+<img src="./content/chapter-12-task-control/05-manage-queue/assets/queue-edit-cover-d91a09d3f7.png" data-gif-src="./content/chapter-12-task-control/05-manage-queue/assets/queue-edit-d7dbe33a52.gif" data-cover="./content/chapter-12-task-control/05-manage-queue/assets/queue-edit-cover-d91a09d3f7.png" data-no-zoom alt="按稳定ID编辑副本，保存前重查原项；已收取时保留新写的文字">
 
 图中两种先后分别从独立场景开始。保存先完成，编辑副本清空并退出，核心随后取得新版本；收取先完成，原 ID 已移出队列，保存失败时新稿被保留。已经收取的旧文在本地 user 消息中，不能再通过队列改写；图只比较本地版本与先后，不判断后续请求的远端接收时刻。[静态图](/content/chapter-12-task-control/05-manage-queue/assets/queue-edit-3da28c979e.jpg.md)
 

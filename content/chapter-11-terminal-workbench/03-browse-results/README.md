@@ -6,7 +6,7 @@
 
 上一节已经能搜索旧问题、补全文件与命令名称。现在发送读取请求，结果超过一屏，我们想向上翻，核对前面的启动步骤。
 
-<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/problem-scenario-7fabc1fe06.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/problem-scenario-7fabc1fe06.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/problem-scenario-7fabc1fe06.gif.cover.png" alt="使用场景示意：输出继续时回看启动步骤，看完当前内容后再回到最新结果">
+<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/problem-scenario-7fabc1fe06.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/problem-scenario-7fabc1fe06.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/problem-scenario-7fabc1fe06.gif.cover.png" data-no-zoom alt="使用场景示意：输出继续时回看启动步骤，看完当前内容后再回到最新结果">
 
 模型还在输出，我们希望先看完当前这一段，新内容也能继续接收。等核对完，再回到最新结果接着看；工具返回很长时，还需要折叠它，或复制完整正文留作核对。[静态图](/content/chapter-11-terminal-workbench/03-browse-results/assets/problem-scenario-7fabc1fe06.jpg.md)
 
@@ -22,19 +22,19 @@
 
 下标从 0 开始。蓝框表示本次 `slice(start, end)` 取出的 4 行，包含 `start`，到 `end` 前停；橙色突出新内容或当前操作，灰色旧行仍保留。动画是教学示意，一屏简化为 4 行，实际长消息可能占多行。
 
-<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/scroll-window-57ac43a39a.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/scroll-window-57ac43a39a.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/scroll-window-57ac43a39a.gif.cover.png" alt="教学示意：左侧显示行数组增长，右侧窗口停留，按 End 后重新跟随">
+<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/scroll-window-57ac43a39a.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/scroll-window-57ac43a39a.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/scroll-window-57ac43a39a.gif.cover.png" data-no-zoom alt="教学示意：左侧显示行数组增长，右侧窗口停留，按 End 后重新跟随">
 
 动画无法播放时，打开 [JPEG 静态总览](/content/chapter-11-terminal-workbench/03-browse-results/assets/scroll-window-57ac43a39a.jpg.md)。
 
 ### 1. 跟随最新：显示范围一直贴在末尾
 
-<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/follow-tail-dc2e1d3995.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/follow-tail-dc2e1d3995.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/follow-tail-dc2e1d3995.gif.cover.png" alt="跟随最新：显示范围贴在数组末尾，离开画面的旧行仍保存在内存中">
+<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/follow-tail-dc2e1d3995.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/follow-tail-dc2e1d3995.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/follow-tail-dc2e1d3995.gif.cover.png" data-no-zoom alt="跟随最新：显示范围贴在数组末尾，离开画面的旧行仍保存在内存中">
 
 收到「执行步骤」时，程序先把它存到下标 6，再用 `slice(3, 7)` 取末尾 4 行。右边从「启动命令」显示到「执行步骤」；离开画面的旧行仍在数组里，后面还可以向上翻看。[静态图](/content/chapter-11-terminal-workbench/03-browse-results/assets/follow-tail-dc2e1d3995.png.md)
 
 ### 2. 向上浏览：记住从哪里开始看
 
-<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/browse-window-8c04422ca5.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/browse-window-8c04422ca5.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/browse-window-8c04422ca5.gif.cover.png" alt="向上浏览：Ctrl+O切焦点，两次向上键分别改变起点并记住首行">
+<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/browse-window-8c04422ca5.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/browse-window-8c04422ca5.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/browse-window-8c04422ca5.gif.cover.png" data-no-zoom alt="向上浏览：Ctrl+O切焦点，两次向上键分别改变起点并记住首行">
 
 `Ctrl+O` 只把焦点切到历史区，`slice(3, 7)` 不变。每按一次 `↑`，程序记住更前面的首行，再取一屏：起点先从 3 到 2，再到 1。最后用 `slice(1, 5)` 显示「安装依赖」到「工具说明」，下次仍从记住的位置开始。[静态图](/content/chapter-11-terminal-workbench/03-browse-results/assets/browse-window-8c04422ca5.png.md)
 
@@ -42,7 +42,7 @@
 
 ### 3. 新消息到达：先存下来，再显示
 
-<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/receive-message-7e9b90fecb.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/receive-message-7e9b90fecb.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/receive-message-7e9b90fecb.gif.cover.png" alt="Agent输出结果核对和输出总结，分别保存到下标7和8，画面继续停在原来的四行">
+<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/receive-message-7e9b90fecb.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/receive-message-7e9b90fecb.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/receive-message-7e9b90fecb.gif.cover.png" data-no-zoom alt="Agent输出结果核对和输出总结，分别保存到下标7和8，画面继续停在原来的四行">
 
 Agent 继续输出「结果核对」和「输出总结」，程序把它们整理为下标 7、8 的新行。程序还记着「安装依赖」的位置，所以仍用 `slice(1, 5)` 显示原来的 4 行，新内容已保存也不会推走当前画面。[静态图](/content/chapter-11-terminal-workbench/03-browse-results/assets/receive-message-7e9b90fecb.png.md)
 
@@ -50,7 +50,7 @@ Agent 继续输出「结果核对」和「输出总结」，程序把它们整�
 
 ### 4. 按 End：取消停留，继续显示末尾
 
-<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/resume-follow-5e3e8bf312.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/resume-follow-5e3e8bf312.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/resume-follow-5e3e8bf312.gif.cover.png" alt="End清除所选位置，改为一直取末尾一屏，后续新行自动进入画面">
+<img src="./content/chapter-11-terminal-workbench/03-browse-results/assets/resume-follow-5e3e8bf312.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/03-browse-results/assets/resume-follow-5e3e8bf312.gif" data-cover="./content/chapter-11-terminal-workbench/03-browse-results/assets/resume-follow-5e3e8bf312.gif.cover.png" data-no-zoom alt="End清除所选位置，改为一直取末尾一屏，后续新行自动进入画面">
 
 `End` 清除刚才记住的首行，改用 `slice(5, 9)` 显示末尾。随后「下一步」存到下标 9，程序再用 `slice(6, 10)` 显示最新 4 行。结束的是停留浏览，程序继续运行。[静态图](/content/chapter-11-terminal-workbench/03-browse-results/assets/resume-follow-5e3e8bf312.png.md)
 

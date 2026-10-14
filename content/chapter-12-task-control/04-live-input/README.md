@@ -54,7 +54,7 @@ Agent 开始读取 `add.mjs`。这时，我们输入“请测试两个负数相�
 
 
 
-<img src="./content/chapter-12-task-control/04-live-input/assets/enter-after-tool-batch-cover-f8fb60af20.png" data-gif-src="./content/chapter-12-task-control/04-live-input/assets/enter-after-tool-batch-8317df6b66.gif" data-cover="./content/chapter-12-task-control/04-live-input/assets/enter-after-tool-batch-cover-f8fb60af20.png" alt="Enter 将负数测试要求保存到队列，等两份读取结果保存后加入下一次模型请求">
+<img src="./content/chapter-12-task-control/04-live-input/assets/enter-after-tool-batch-cover-f8fb60af20.png" data-gif-src="./content/chapter-12-task-control/04-live-input/assets/enter-after-tool-batch-8317df6b66.gif" data-cover="./content/chapter-12-task-control/04-live-input/assets/enter-after-tool-batch-cover-f8fb60af20.png" data-no-zoom alt="Enter 将负数测试要求保存到队列，等两份读取结果保存后加入下一次模型请求">
 
 模型返回工具响应后，由本地收齐并校验，再按清单开始读取。后续 Enter 保存的是补充队列；两份结果都保存后，补充才进入下一请求。[查看完整静态分镜](/content/chapter-12-task-control/04-live-input/assets/enter-full-storyboard-815a52563a.jpg.md)
 
@@ -136,7 +136,7 @@ Enter 让旧任务继续。如果我们现在希望“先别修改，只解释�
 
 前面的两种等待现在可以对应起来：Enter 补充时，Agent 等模型和工具交付结果，随后准备当前任务的下一次请求；Ctrl+S 换方向时，界面等整项旧任务退出并完成本地收尾，随后启动新任务。等待对象不同，决定了各自什么时候可以继续。
 
-<img src="./content/chapter-12-task-control/04-live-input/assets/interrupt-and-send-cover-de59d1554b.png" data-gif-src="./content/chapter-12-task-control/04-live-input/assets/interrupt-and-send-e38e128834.gif" data-cover="./content/chapter-12-task-control/04-live-input/assets/interrupt-and-send-cover-de59d1554b.png" alt="Ctrl+S 保存先解释的新要求，通知旧任务取消，等待本地收尾后启动新任务">
+<img src="./content/chapter-12-task-control/04-live-input/assets/interrupt-and-send-cover-de59d1554b.png" data-gif-src="./content/chapter-12-task-control/04-live-input/assets/interrupt-and-send-e38e128834.gif" data-cover="./content/chapter-12-task-control/04-live-input/assets/interrupt-and-send-cover-de59d1554b.png" data-no-zoom alt="Ctrl+S 保存先解释的新要求，通知旧任务取消，等待本地收尾后启动新任务">
 
 [查看完整静态分镜](/content/chapter-12-task-control/04-live-input/assets/interrupt-and-send-5ec2d92650.jpg.md)
 

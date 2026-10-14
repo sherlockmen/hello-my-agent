@@ -6,7 +6,7 @@
 
 上一节已经能边看结果边准备草稿。把读取要求、错误输出和限制条件放在一起以后，这份请求已经有好几段。
 
-<img src="./content/chapter-11-terminal-workbench/04-external-editor/assets/problem-scenario-7292f24a13.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/04-external-editor/assets/problem-scenario-7292f24a13.gif" data-cover="./content/chapter-11-terminal-workbench/04-external-editor/assets/problem-scenario-7292f24a13.gif.cover.png" alt="使用场景示意：用熟悉的编辑器整理长草稿，写完回到当前会话继续确认">
+<img src="./content/chapter-11-terminal-workbench/04-external-editor/assets/problem-scenario-7292f24a13.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/04-external-editor/assets/problem-scenario-7292f24a13.gif" data-cover="./content/chapter-11-terminal-workbench/04-external-editor/assets/problem-scenario-7292f24a13.gif.cover.png" data-no-zoom alt="使用场景示意：用熟悉的编辑器整理长草稿，写完回到当前会话继续确认">
 
 我们想用 Vim、Nano 或已有图形编辑器整理整段文字，写完再回到当前会话。图中以 Vim 为例：空闲时按 `Ctrl+G`，把“说明启动和检查步骤”改成“把启动和检查步骤分开说明”，再依次用 `Esc`、`:wq`、`Enter` 保存退出。带回来的内容仍是草稿，可以继续修改，确认后再发送。
 
@@ -16,7 +16,7 @@
 
 ## 工作原理
 
-<img src="./content/chapter-11-terminal-workbench/04-external-editor/assets/editor-handoff-1a651cc65f.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/04-external-editor/assets/editor-handoff-1a651cc65f.gif" data-cover="./content/chapter-11-terminal-workbench/04-external-editor/assets/editor-handoff-1a651cc65f.gif.cover.png" alt="外部编辑：写入临时文件，等待保存退出，再读回草稿并恢复TUI">
+<img src="./content/chapter-11-terminal-workbench/04-external-editor/assets/editor-handoff-1a651cc65f.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/04-external-editor/assets/editor-handoff-1a651cc65f.gif" data-cover="./content/chapter-11-terminal-workbench/04-external-editor/assets/editor-handoff-1a651cc65f.gif.cover.png" data-no-zoom alt="外部编辑：写入临时文件，等待保存退出，再读回草稿并恢复TUI">
 
 临时文件连接两个程序：TUI 的草稿在自己的内存中，编辑器先修改自己的缓冲区，再保存到文件。图中 A 是修改前的整份草稿，B 是第二行要求改过的整份草稿。Vim 缓冲区改成 B 时，文件和 TUI 内存仍是 A；保存后文件才变成 B。只有编辑器正常结束并读回成功，才用 B 替换 TUI 草稿。因此，启动失败或编辑失败都不会先丢掉旧稿。
 

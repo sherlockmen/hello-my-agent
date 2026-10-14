@@ -12,7 +12,7 @@
 
 
 
-<img src="./content/chapter-12-task-control/03-clarify-questions/assets/question-problem-cover-8db4414888.png" data-gif-src="./content/chapter-12-task-control/03-clarify-questions/assets/question-problem-78b95c8d07.gif" data-cover="./content/chapter-12-task-control/03-clarify-questions/assets/question-problem-cover-8db4414888.png" alt="非法字符串规则尚未给出，Agent提问，用户选择报错后原任务继续">
+<img src="./content/chapter-12-task-control/03-clarify-questions/assets/question-problem-cover-8db4414888.png" data-gif-src="./content/chapter-12-task-control/03-clarify-questions/assets/question-problem-78b95c8d07.gif" data-cover="./content/chapter-12-task-control/03-clarify-questions/assets/question-problem-cover-8db4414888.png" data-no-zoom alt="非法字符串规则尚未给出，Agent提问，用户选择报错后原任务继续">
 
 图中把已知的数字字符串行为与未定的非法输入规则分开。用户选择“报错”，答案先成为本地工具结果；连同原问题进入下一次请求以后，模型才能据此继续设计。回答没有批准文件修改。[静态图](/content/chapter-12-task-control/03-clarify-questions/assets/question-problem-46a2295263.jpg.md)
 
@@ -69,7 +69,7 @@
 
 答案返回后不一定立即请求模型。假如同一响应还提出第二项工具调用，本章的核心会按顺序完成这一批，再带着全部结果发出下一次请求。模型这时得到的是完整材料，才继续设计非法输入检查和测试。12.4 会进一步解释等待与批次怎样保证这个顺序。
 
-<img src="./content/chapter-12-task-control/03-clarify-questions/assets/question-result-cover-822e1e557d.png" data-gif-src="./content/chapter-12-task-control/03-clarify-questions/assets/question-result-c3514e9b83.gif" data-cover="./content/chapter-12-task-control/03-clarify-questions/assets/question-result-cover-822e1e557d.png" alt="ask_user等待用户答案，答案与原调用q1配对后进入下一次模型请求">
+<img src="./content/chapter-12-task-control/03-clarify-questions/assets/question-result-cover-822e1e557d.png" data-gif-src="./content/chapter-12-task-control/03-clarify-questions/assets/question-result-c3514e9b83.gif" data-cover="./content/chapter-12-task-control/03-clarify-questions/assets/question-result-cover-822e1e557d.png" data-no-zoom alt="ask_user等待用户答案，答案与原调用q1配对后进入下一次模型请求">
 
 `q1` 的答案先在本地配对，再进入下一次请求。图中 Esc 与取消分别从新的等待场景开始：Esc 产生未回答的工具错误；取消为 `q1` 补齐 `isError` 的中断工具结果，再保存本地取消状态并退出本轮，不继续请求正常答案。已结束的旧回调不能再交回答案。[静态图](/content/chapter-12-task-control/03-clarify-questions/assets/question-result-f9b35ee3a1.jpg.md)
 

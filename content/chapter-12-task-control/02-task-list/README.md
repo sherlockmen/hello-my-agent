@@ -10,7 +10,7 @@
 
 
 
-<img src="./content/chapter-12-task-control/02-task-list/assets/task-purpose-cover-b613c9d5c8.png" data-gif-src="./content/chapter-12-task-control/02-task-list/assets/task-purpose-ac95e67474.gif" data-cover="./content/chapter-12-task-control/02-task-list/assets/task-purpose-cover-b613c9d5c8.png" alt="同一份加法清单持续显示检查、修复和测试的进展">
+<img src="./content/chapter-12-task-control/02-task-list/assets/task-purpose-cover-b613c9d5c8.png" data-gif-src="./content/chapter-12-task-control/02-task-list/assets/task-purpose-ac95e67474.gif" data-cover="./content/chapter-12-task-control/02-task-list/assets/task-purpose-cover-b613c9d5c8.png" data-no-zoom alt="同一份加法清单持续显示检查、修复和测试的进展">
 
 图中三行步骤留在任务区，随着模型提交的新状态更新。测试标为进行中表示模型正在处理这一步；实际测试返回结果以后，本例才提交完成状态。判断是否修好仍要同时看文件与工具结果。[静态图](/content/chapter-12-task-control/02-task-list/assets/task-purpose-f77c02a9cc.jpg.md)
 
@@ -75,7 +75,7 @@ ID 原文上限为 80 个 UTF-16 单元，文字原文为 200 个；检查上限
 
 橙色候选在提交前与会话旧清单分开。只有右下方的提交会改变有效清单；左下方舍弃候选时，TUI 仍读取原来的完整状态。
 
-<img src="./content/chapter-12-task-control/02-task-list/assets/task-method-cover-c47c31c58a.png" data-gif-src="./content/chapter-12-task-control/02-task-list/assets/task-method-654cc7da54.gif" data-cover="./content/chapter-12-task-control/02-task-list/assets/task-method-cover-c47c31c58a.png" alt="完整新清单通过检查才整体替换；两项同时进行的更新被拒绝，旧清单仍保留">
+<img src="./content/chapter-12-task-control/02-task-list/assets/task-method-cover-c47c31c58a.png" data-gif-src="./content/chapter-12-task-control/02-task-list/assets/task-method-654cc7da54.gif" data-cover="./content/chapter-12-task-control/02-task-list/assets/task-method-cover-c47c31c58a.png" data-no-zoom alt="完整新清单通过检查才整体替换；两项同时进行的更新被拒绝，旧清单仍保留">
 
 第一次候选整体有效，检查结束和修复开始一起提交。第二次候选含两个进行中项，被拒绝后上一份清单仍完整保留；错误结果交回模型供它修正。[静态图](/content/chapter-12-task-control/02-task-list/assets/task-method-434c08fa2c.jpg.md)
 

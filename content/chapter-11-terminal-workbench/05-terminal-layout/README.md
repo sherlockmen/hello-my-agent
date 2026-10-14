@@ -6,7 +6,7 @@
 
 上一节已经能用外部编辑器整理长草稿，回到 TUI 后继续编辑。草稿里有中文和 emoji，结果区正停在“启动步骤”这一段。为了并排看文件，我们把终端缩窄，随后又放大。
 
-<img src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/problem-scenario-1ac2d3c35e.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/problem-scenario-1ac2d3c35e.gif" data-cover="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/problem-scenario-1ac2d3c35e.gif.cover.png" alt="使用场景示意：终端变窄再变宽，文字重新换行，刚才读到的启动步骤仍然可见">
+<img src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/problem-scenario-1ac2d3c35e.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/problem-scenario-1ac2d3c35e.gif" data-cover="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/problem-scenario-1ac2d3c35e.gif.cover.png" data-no-zoom alt="使用场景示意：终端变窄再变宽，文字重新换行，刚才读到的启动步骤仍然可见">
 
 窗口缩放（resize）会让一行文字拆成几行，再放大又会合起来。正文没改，我们希望中文和 emoji 仍完整显示，光标仍对齐，也能接着读刚才那一段。关闭颜色时，角色、焦点和运行状态仍要看得出来。
 
@@ -22,7 +22,7 @@
 
 ### 中文与 emoji：按完整字符的列宽换行
 
-<img src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/column-width-08de89bb39.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/column-width-08de89bb39.gif" data-cover="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/column-width-08de89bb39.gif.cover.png" alt="局部排版：按完整字符占用的列宽，将中文与emoji组合文字放进两条显示行">
+<img src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/column-width-08de89bb39.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/column-width-08de89bb39.gif" data-cover="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/column-width-08de89bb39.gif.cover.png" data-no-zoom alt="局部排版：按完整字符占用的列宽，将中文与emoji组合文字放进两条显示行">
 
 我们拖动窗口边缘，局部可用宽度从 6 列变成 4 列。`Intl.Segmenter` 先分出完整字素，`stringWidth` 再计算占列：`中`、`文` 和 `🙂` 通常各占两格，`é` 占一格。第一行“中文”已经用了 4 列，下一组 emoji 还要 2 列，放不下；程序先收下第一行，把整个 emoji 放到下一行，再接上 `é`，不会拆开它们。
 
@@ -39,7 +39,7 @@
 
 ### resize：按消息中的文字位置找回显示行
 
-<img src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/resize-position-49ddc8c870.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/resize-position-49ddc8c870.gif" data-cover="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/resize-position-49ddc8c870.gif.cover.png" alt="缩放定位：启动步骤重新换行，程序找到包含原来“步”字位置的新显示行">
+<img src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/resize-position-49ddc8c870.gif.cover.png" data-gif-src="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/resize-position-49ddc8c870.gif" data-cover="./content/chapter-11-terminal-workbench/05-terminal-layout/assets/resize-position-49ddc8c870.gif.cover.png" data-no-zoom alt="缩放定位：启动步骤重新换行，程序找到包含原来“步”字位置的新显示行">
 
 图中正文是“启动步骤”，局部 4 列时原来停在“步骤”这行。程序记住“步”的 UTF-16 下标 `2`，连同消息 ID 保存。我们放大窗口，局部变成 6 列，“步”移到“启动步”这一行；若仍只找第二行，就会从“骤”开始。重新排版后的两行起点是 `0` 和 `3`，正文位置 `2` 落在第一行的范围内，所以程序找回第一行，“步”仍可见，不要求它成为画面的第一个字。终端占列用于排版，UTF-16 下标用于定位。
 

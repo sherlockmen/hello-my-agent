@@ -21,7 +21,7 @@
 <!-- ch13.1 figures: purpose start -->
 
 
-<img src="./content/chapter-13-session-persistence/01-save-session/assets/session-file-cover-580030cb47.png" data-gif-src="./content/chapter-13-session-persistence/01-save-session/assets/session-file-c281b4e9f9.gif" data-cover="./content/chapter-13-session-persistence/01-save-session/assets/session-file-cover-580030cb47.png" alt="完整会话副本追加为本机 UUID.jsonl 文件中的新行，退出保存完成后文件仍保留">
+<img src="./content/chapter-13-session-persistence/01-save-session/assets/session-file-cover-580030cb47.png" data-gif-src="./content/chapter-13-session-persistence/01-save-session/assets/session-file-c281b4e9f9.gif" data-cover="./content/chapter-13-session-persistence/01-save-session/assets/session-file-cover-580030cb47.png" data-no-zoom alt="完整会话副本追加为本机 UUID.jsonl 文件中的新行，退出保存完成后文件仍保留">
 
 [查看完整静态分镜](/content/chapter-13-session-persistence/01-save-session/assets/session-file-storyboard-f954463b92.jpg.md)
 
@@ -110,7 +110,7 @@ TypeScript 中保存接口写出的 `Promise<number>`，表示异步成功后返
 <!-- ch13.1 figures: save-order start -->
 **先固定当次副本**
 
-<img src="./content/chapter-13-session-persistence/01-save-session/assets/session-capture-cover-ae578facbd.png" data-gif-src="./content/chapter-13-session-persistence/01-save-session/assets/session-capture-28814d1ca4.gif" data-cover="./content/chapter-13-session-persistence/01-save-session/assets/session-capture-cover-ae578facbd.png" alt="保存 A 固定进行中的完整副本，内存变为已完成后保存 B 固定新的副本，A 不跟着改变">
+<img src="./content/chapter-13-session-persistence/01-save-session/assets/session-capture-cover-ae578facbd.png" data-gif-src="./content/chapter-13-session-persistence/01-save-session/assets/session-capture-28814d1ca4.gif" data-cover="./content/chapter-13-session-persistence/01-save-session/assets/session-capture-cover-ae578facbd.png" data-no-zoom alt="保存 A 固定进行中的完整副本，内存变为已完成后保存 B 固定新的副本，A 不跟着改变">
 
 [查看完整静态分镜](/content/chapter-13-session-persistence/01-save-session/assets/session-capture-storyboard-bb47d26d4e.jpg.md)
 
@@ -118,7 +118,7 @@ A、B 只代表存储模块两次明确调用保存，不表示 Enter 或每个�
 
 **再依次写入，等各自同步返回**
 
-<img src="./content/chapter-13-session-persistence/01-save-session/assets/session-serial-cover-8c1c867db1.png" data-gif-src="./content/chapter-13-session-persistence/01-save-session/assets/session-serial-1eb40b2ce6.gif" data-cover="./content/chapter-13-session-persistence/01-save-session/assets/session-serial-cover-8c1c867db1.png" alt="A 的检查点进入文件下一行，B 等 A 写入和同步成功返回后才进入下一行，各次调用分别确认保存结果">
+<img src="./content/chapter-13-session-persistence/01-save-session/assets/session-serial-cover-8c1c867db1.png" data-gif-src="./content/chapter-13-session-persistence/01-save-session/assets/session-serial-1eb40b2ce6.gif" data-cover="./content/chapter-13-session-persistence/01-save-session/assets/session-serial-cover-8c1c867db1.png" data-no-zoom alt="A 的检查点进入文件下一行，B 等 A 写入和同步成功返回后才进入下一行，各次调用分别确认保存结果">
 
 [查看完整静态分镜](/content/chapter-13-session-persistence/01-save-session/assets/session-serial-storyboard-dc3a143980.jpg.md)
 

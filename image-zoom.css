@@ -1,0 +1,4 @@
+.medium-zoom-overlay { z-index: 1040; }
+.medium-zoom-image--opened { z-index: 1050; }
+.image-zoom-close { position: fixed; z-index: 1060; top: 18px; right: 18px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 6px; color: var(--theme-color); background: var(--paper); font: inherit; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .medium-zoom-overlay, .medium-zoom-image { transition-duration: .01s !important; } }
