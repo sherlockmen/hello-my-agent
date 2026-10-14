@@ -107,7 +107,7 @@ export function buildSite({ root = projectRoot, output = join(root, "site-dist")
       cover = `${path}.cover.png`;
       generatedGifCovers.set(path, cover);
     }
-    return `<img src="${escapeHtml(assetUrl(cover))}" data-gif-src="${escapeHtml(assetUrl(path))}" data-cover="${escapeHtml(assetUrl(cover))}" alt="${escapeHtml(alt)}">`;
+    return `<img src="${escapeHtml(assetUrl(cover))}" data-gif-src="${escapeHtml(assetUrl(path))}" data-cover="${escapeHtml(assetUrl(cover))}" data-no-zoom alt="${escapeHtml(alt)}">`;
   }
 
   function checkTarget(path, from) {

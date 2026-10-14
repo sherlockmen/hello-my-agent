@@ -51,7 +51,7 @@ try {
   const chapter = get("content/chapter-01-fixture/README.md");
   assert.match(chapter, /\[Lesson\]\(\/content\/chapter-01-fixture\/01-example\/README\.md\?id=why-await\)/, "Markdown links must let Docsify construct the hash route");
   assert.match(chapter, /href="#\/content\/chapter-01-fixture\/01-example\/README\.md\?id=why-await"/, "Raw HTML links need the final hash route");
-  assert.match(chapter, /<img src="\.\/content\/chapter-01-fixture\/assets\/cover\.png" data-gif-src="\.\/content\/chapter-01-fixture\/assets\/move\.gif" data-cover="\.\/content\/chapter-01-fixture\/assets\/cover\.png" alt="A moves into the file">/);
+  assert.match(chapter, /<img src="\.\/content\/chapter-01-fixture\/assets\/cover\.png" data-gif-src="\.\/content\/chapter-01-fixture\/assets\/move\.gif" data-cover="\.\/content\/chapter-01-fixture\/assets\/cover\.png" data-no-zoom alt="A moves into the file">/, "GIF playback controls must not be intercepted by static-image zoom");
   assert.doesNotMatch(chapter, /motion-player|motion-cover|motion-toggle|<style>|开始播放动图/);
   assert.match(chapter, /\[Literal\]\(not-a-file\.md\)/, "Fenced Markdown examples must not be interpreted as links");
   assert.match(chapter, /<img src="not-a-file\.png">/, "Fenced HTML examples must remain literal");
