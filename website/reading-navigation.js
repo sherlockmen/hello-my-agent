@@ -184,8 +184,16 @@
     onScroll();
   });
 
-  window.$docsify.plugins = [].concat(window.$docsify.plugins || [], function (hook) {
+  window.$docsify.plugins = [].concat(window.$docsify.plugins || [], function (hook, vm) {
     hook.beforeEach(content => { cleanup(); return content; });
-    hook.doneEach(() => { attachSidebar(); attachToc(); });
+    hook.doneEach(() => {
+      cleanup();
+      if (vm.route.path === '/') {
+        document.body.classList.remove('has-reading-nav');
+        return;
+      }
+      attachSidebar();
+      attachToc();
+    });
   });
 })();

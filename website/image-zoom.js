@@ -14,8 +14,12 @@
     }
   });
 
-  window.$docsify.plugins.push(function (hook) {
+  window.$docsify.plugins.push(function (hook, vm) {
     hook.doneEach(function () {
+      if (vm.route.path === '/') {
+        currentZoom?.close();
+        return;
+      }
       document.querySelectorAll('.markdown-section img.medium-zoom-image').forEach(function (image) {
         image.tabIndex = 0;
         image.setAttribute('role', 'button');

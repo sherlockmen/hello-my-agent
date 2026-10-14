@@ -2,6 +2,8 @@ window.$docsify = {
   name: 'Hello, My Agent',
   nameLink: '#/',
   homepage: 'content/README.md',
+  coverpage: '_coverpage.html',
+  onlyCover: true,
   loadSidebar: true,
   loadNavbar: true,
   alias: { '/.*/_sidebar.md': '/_sidebar.md', '/.*/_navbar.md': '/_navbar.md' },
@@ -24,8 +26,18 @@ window.$docsify = {
   pagination: { previousText: '上一节', nextText: '下一节', crossChapter: true, crossChapterText: true },
   gifcontrol: { mode: 'click', managed: true, iconColor: '#16766b', errorText: '动图加载失败，请重试' },
   plugins: [function (hook, vm) {
+    hook.init(function () {
+      // A slow cover request must not hide a chapter reached in the meantime.
+      const renderCover = vm._renderCover;
+      vm._renderCover = function (content, onlyCover) {
+        if (content && this.route.path !== '/') return;
+        return renderCover.call(this, content, onlyCover);
+      };
+    });
     hook.doneEach(function () {
-      document.title = (document.querySelector('.markdown-section h1')?.textContent || 'Hello, My Agent') + ' · Hello, My Agent';
+      document.title = vm.route.path === '/'
+        ? 'Hello, My Agent · 动手构建你的 Agent'
+        : (document.querySelector('.markdown-section h1')?.textContent || '课程') + ' · Hello, My Agent';
       document.querySelector('.markdown-section')?.setAttribute('aria-label', '教程正文');
       const search = document.querySelector('.search input');
       if (search) search.setAttribute('aria-label', '搜索教程');
