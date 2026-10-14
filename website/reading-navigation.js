@@ -188,10 +188,6 @@
     hook.beforeEach(content => { cleanup(); return content; });
     hook.doneEach(() => {
       cleanup();
-      if (vm.route.path === '/') {
-        document.body.classList.remove('has-reading-nav');
-        return;
-      }
       attachSidebar();
       attachToc();
     });

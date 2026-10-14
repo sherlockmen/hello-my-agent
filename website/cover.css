@@ -25,8 +25,9 @@ section.cover .cover-secondary:hover { background: #e6f1e9; }
 section.cover .cover-links a { padding: 8px 0; color: var(--muted); text-underline-offset: 4px; }
 section.cover .cover-links a:hover { color: var(--theme-color); text-decoration: underline; }
 section.cover .cover-credit { margin: 40px 0 0; color: var(--muted); font-size: 13px; }
-body:has(.cover.show) .app-nav, body:has(.cover.show) .reading-nav, body:has(.cover.show) .sidebar-toggle { display: none !important; }
-body:has(.cover.show) .skip-link { display: none; }
+body.cover-visible > .app-nav, body.cover-visible .reading-nav, body.cover-visible .sidebar-toggle { visibility: hidden; }
+body.cover-visible .sidebar { visibility: hidden; }
+body.cover-visible .skip-link { display: none; }
 @media (max-width: 768px) {
   section.cover { padding: 48px 24px; }
   .cover-brand img { width: 80px; height: 80px; }

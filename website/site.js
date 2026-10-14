@@ -3,7 +3,7 @@ window.$docsify = {
   nameLink: '#/',
   homepage: 'content/README.md',
   coverpage: '_coverpage.html',
-  onlyCover: true,
+  onlyCover: false,
   loadSidebar: true,
   loadNavbar: true,
   alias: { '/.*/_sidebar.md': '/_sidebar.md', '/.*/_navbar.md': '/_navbar.md' },
