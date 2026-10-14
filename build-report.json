@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "chapters": 13,
+  "tutorialPages": 76,
+  "lessonPages": 42,
+  "exercisePages": 13,
+  "sourcePages": 546,
+  "sourceIndexes": 26,
+  "imagePages": 19,
+  "referencedAssets": 93,
+  "gifReferences": 31,
+  "convertedMotionPlayers": 13,
+  "assetBytes": 82811866,
+  "generatedGifCovers": [
+    "chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png",
+    "chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png",
+    "chapter-11-terminal-workbench/01-editable-draft/assets/undo-redo-38f1f2dd2c.gif.cover.png",
+    "chapter-11-terminal-workbench/02-recall-and-complete/assets/complete-path-6a85655326.gif.cover.png",
+    "chapter-11-terminal-workbench/02-recall-and-complete/assets/problem-scenario-0c541d2c35.gif.cover.png",
+    "chapter-11-terminal-workbench/02-recall-and-complete/assets/recall-prompt-5c2b03ec2c.gif.cover.png",
+    "chapter-11-terminal-workbench/03-browse-results/assets/browse-window-8c04422ca5.gif.cover.png",
+    "chapter-11-terminal-workbench/03-browse-results/assets/follow-tail-dc2e1d3995.gif.cover.png",
+    "chapter-11-terminal-workbench/03-browse-results/assets/problem-scenario-7fabc1fe06.gif.cover.png",
+    "chapter-11-terminal-workbench/03-browse-results/assets/receive-message-7e9b90fecb.gif.cover.png",
+    "chapter-11-terminal-workbench/03-browse-results/assets/resume-follow-5e3e8bf312.gif.cover.png",
+    "chapter-11-terminal-workbench/03-browse-results/assets/scroll-window-57ac43a39a.gif.cover.png",
+    "chapter-11-terminal-workbench/04-external-editor/assets/editor-handoff-1a651cc65f.gif.cover.png",
+    "chapter-11-terminal-workbench/04-external-editor/assets/problem-scenario-7292f24a13.gif.cover.png",
+    "chapter-11-terminal-workbench/05-terminal-layout/assets/column-width-08de89bb39.gif.cover.png",
+    "chapter-11-terminal-workbench/05-terminal-layout/assets/problem-scenario-1ac2d3c35e.gif.cover.png",
+    "chapter-11-terminal-workbench/05-terminal-layout/assets/resize-position-49ddc8c870.gif.cover.png",
+    "chapter-11-terminal-workbench/assets/exercise-problem-d994f2590e.gif.cover.png"
+  ],
+  "excluded": [
+    "docs/.work/**",
+    "docs/verification/**",
+    "docs/AUTHORING.md",
+    "docs/EDITORIAL-WORKFLOW.md",
+    "docs/READER-REVIEW.md",
+    "docs/REFERENCE-STRUCTURE.md",
+    "docs/planning/README.md",
+    "docs/planning/PLAN.md",
+    "docs/planning/BLUEPRINT.md",
+    "docs/planning/CONTEXT.md",
+    ".git/**",
+    ".env (except .env.example)",
+    "node_modules/**",
+    "dist/**",
+    "unreferenced assets, including assets/variants candidates"
+  ],
+  "omittedLinks": [
+    {
+      "from": "README.md",
+      "target": "docs/verification/13-session-persistence.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "README.md",
+      "target": "docs/verification/12-task-control.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/12-task-control.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/13-session-persistence.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/AUTHORING.md",
+      "reason": "authoring or planning workspace"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/01-first-command.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/02-model-dialogue.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/03-first-tool.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/04-code-search.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/05-permission-gate.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/06-precise-edit.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/07-command-feedback.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/08-streaming-turns.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/09-observable-runs.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/10-terminal-ui.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/12-task-control.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/13-session-persistence.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/planning/README.md",
+      "reason": "authoring or planning workspace"
+    },
+    {
+      "from": "docs/CODING-AGENT-GAP-REVIEW.md",
+      "target": "docs/AUTHORING.md",
+      "reason": "authoring or planning workspace"
+    }
+  ],
+  "missingLocalReferences": [],
+  "assets": [
+    ".gitignore",
+    "chapter-01-first-command/assets/control-flow-e153a845a7.png",
+    "chapter-06-precise-edit/01-create-with-preview/assets/interaction-sequence-82430c0a3b.png",
+    "chapter-06-precise-edit/02-exact-replacement/assets/control-flow-9736fa324e.png",
+    "chapter-06-precise-edit/03-change-guard/assets/interaction-sequence-982e1dc807.png",
+    "chapter-06-precise-edit/assets/control-flow-312a5b7060.png",
+    "chapter-07-command-feedback/01-run-command/assets/interaction-sequence-6a1e561ae6.png",
+    "chapter-07-command-feedback/02-process-lifecycle/assets/control-flow-e957e0a177.png",
+    "chapter-07-command-feedback/assets/control-flow-5d0477aa25.png",
+    "chapter-08-streaming-turns/02-complete-tool-calls/assets/interaction-sequence-d096b4e787.png",
+    "chapter-08-streaming-turns/03-cancel-and-continue/assets/control-flow-52a6baa684.png",
+    "chapter-08-streaming-turns/assets/control-flow-517cf492f0.png",
+    "chapter-09-observable-runs/01-run-lifecycle/assets/interaction-sequence-92ae659c4e.png",
+    "chapter-09-observable-runs/02-event-stream/assets/interaction-sequence-b3b72b2a6b.png",
+    "chapter-09-observable-runs/assets/control-flow-bc0e542035.png",
+    "chapter-10-terminal-ui/01-first-screen/assets/control-flow-4e737914c9.png",
+    "chapter-10-terminal-ui/02-live-progress/assets/control-flow-5f43610bb6.png",
+    "chapter-10-terminal-ui/03-tool-approval/assets/interaction-sequence-1023d4450f.png",
+    "chapter-10-terminal-ui/04-cancel-and-restore/assets/control-flow-0ee841b52b.png",
+    "chapter-10-terminal-ui/assets/control-flow-14f14c7e7d.png",
+    "chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif",
+    "chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif",
+    "chapter-11-terminal-workbench/01-editable-draft/assets/undo-redo-38f1f2dd2c.gif",
+    "chapter-11-terminal-workbench/02-recall-and-complete/assets/complete-path-6a85655326.gif",
+    "chapter-11-terminal-workbench/02-recall-and-complete/assets/problem-scenario-0c541d2c35.gif",
+    "chapter-11-terminal-workbench/02-recall-and-complete/assets/recall-prompt-5c2b03ec2c.gif",
+    "chapter-11-terminal-workbench/03-browse-results/assets/browse-window-8c04422ca5.gif",
+    "chapter-11-terminal-workbench/03-browse-results/assets/browse-window-8c04422ca5.png",
+    "chapter-11-terminal-workbench/03-browse-results/assets/follow-tail-dc2e1d3995.gif",
+    "chapter-11-terminal-workbench/03-browse-results/assets/follow-tail-dc2e1d3995.png",
+    "chapter-11-terminal-workbench/03-browse-results/assets/problem-scenario-7fabc1fe06.gif",
+    "chapter-11-terminal-workbench/03-browse-results/assets/problem-scenario-7fabc1fe06.jpg",
+    "chapter-11-terminal-workbench/03-browse-results/assets/receive-message-7e9b90fecb.gif",
+    "chapter-11-terminal-workbench/03-browse-results/assets/receive-message-7e9b90fecb.png",
+    "chapter-11-terminal-workbench/03-browse-results/assets/resume-follow-5e3e8bf312.gif",
+    "chapter-11-terminal-workbench/03-browse-results/assets/resume-follow-5e3e8bf312.png",
+    "chapter-11-terminal-workbench/03-browse-results/assets/scroll-window-57ac43a39a.gif",
+    "chapter-11-terminal-workbench/03-browse-results/assets/scroll-window-57ac43a39a.jpg",
+    "chapter-11-terminal-workbench/04-external-editor/assets/editor-handoff-1a651cc65f.gif",
+    "chapter-11-terminal-workbench/04-external-editor/assets/problem-scenario-7292f24a13.gif",
+    "chapter-11-terminal-workbench/05-terminal-layout/assets/column-width-08de89bb39.gif",
+    "chapter-11-terminal-workbench/05-terminal-layout/assets/problem-scenario-1ac2d3c35e.gif",
+    "chapter-11-terminal-workbench/05-terminal-layout/assets/resize-position-49ddc8c870.gif",
+    "chapter-11-terminal-workbench/assets/exercise-problem-d994f2590e.gif",
+    "chapter-12-task-control/01-plan-mode/assets/plan-local-mode-gate-b8c15fb679.png",
+    "chapter-12-task-control/01-plan-mode/assets/plan-method-694da43fd3.jpg",
+    "chapter-12-task-control/01-plan-mode/assets/plan-method-6c132b6bc8.gif",
+    "chapter-12-task-control/01-plan-mode/assets/plan-method-cover-2e4d59dc31.png",
+    "chapter-12-task-control/01-plan-mode/assets/plan-purpose-0f5d75ec67.gif",
+    "chapter-12-task-control/01-plan-mode/assets/plan-purpose-cover-c556d1a8ec.png",
+    "chapter-12-task-control/01-plan-mode/assets/plan-purpose-f660f7c56b.jpg",
+    "chapter-12-task-control/02-task-list/assets/task-candidate-commit-e9896c2910.png",
+    "chapter-12-task-control/02-task-list/assets/task-method-434c08fa2c.jpg",
+    "chapter-12-task-control/02-task-list/assets/task-method-654cc7da54.gif",
+    "chapter-12-task-control/02-task-list/assets/task-method-cover-c47c31c58a.png",
+    "chapter-12-task-control/02-task-list/assets/task-purpose-ac95e67474.gif",
+    "chapter-12-task-control/02-task-list/assets/task-purpose-cover-b613c9d5c8.png",
+    "chapter-12-task-control/02-task-list/assets/task-purpose-f77c02a9cc.jpg",
+    "chapter-12-task-control/03-clarify-questions/assets/question-problem-46a2295263.jpg",
+    "chapter-12-task-control/03-clarify-questions/assets/question-problem-78b95c8d07.gif",
+    "chapter-12-task-control/03-clarify-questions/assets/question-problem-cover-8db4414888.png",
+    "chapter-12-task-control/03-clarify-questions/assets/question-result-c3514e9b83.gif",
+    "chapter-12-task-control/03-clarify-questions/assets/question-result-cover-822e1e557d.png",
+    "chapter-12-task-control/03-clarify-questions/assets/question-result-f9b35ee3a1.jpg",
+    "chapter-12-task-control/03-clarify-questions/assets/question-wait-call-result-375c0e6023.png",
+    "chapter-12-task-control/04-live-input/assets/await-tool-result-ebde169198.png",
+    "chapter-12-task-control/04-live-input/assets/cancellation-local-done-2bf4a421c4.png",
+    "chapter-12-task-control/04-live-input/assets/enter-after-tool-batch-8317df6b66.gif",
+    "chapter-12-task-control/04-live-input/assets/enter-after-tool-batch-cover-f8fb60af20.png",
+    "chapter-12-task-control/04-live-input/assets/enter-full-storyboard-815a52563a.jpg",
+    "chapter-12-task-control/04-live-input/assets/enter-request-boundaries-d8a6f85199.png",
+    "chapter-12-task-control/04-live-input/assets/interrupt-and-send-5ec2d92650.jpg",
+    "chapter-12-task-control/04-live-input/assets/interrupt-and-send-cover-de59d1554b.png",
+    "chapter-12-task-control/04-live-input/assets/interrupt-and-send-e38e128834.gif",
+    "chapter-12-task-control/05-manage-queue/assets/queue-edit-3da28c979e.jpg",
+    "chapter-12-task-control/05-manage-queue/assets/queue-edit-cover-d91a09d3f7.png",
+    "chapter-12-task-control/05-manage-queue/assets/queue-edit-d7dbe33a52.gif",
+    "chapter-12-task-control/05-manage-queue/assets/queue-problem-1d1f8b89f2.jpg",
+    "chapter-12-task-control/05-manage-queue/assets/queue-problem-26f8504079.gif",
+    "chapter-12-task-control/05-manage-queue/assets/queue-problem-cover-2cf14885ea.png",
+    "chapter-12-task-control/05-manage-queue/assets/queue-save-take-order-2af221c0ed.png",
+    "chapter-12-task-control/assets/control-sequence-e7588f4bc8.png",
+    "chapter-13-session-persistence/01-save-session/assets/session-boundary-96f896e0e6.png",
+    "chapter-13-session-persistence/01-save-session/assets/session-capture-28814d1ca4.gif",
+    "chapter-13-session-persistence/01-save-session/assets/session-capture-cover-ae578facbd.png",
+    "chapter-13-session-persistence/01-save-session/assets/session-capture-storyboard-bb47d26d4e.jpg",
+    "chapter-13-session-persistence/01-save-session/assets/session-exit-sequence-575fa36d42.png",
+    "chapter-13-session-persistence/01-save-session/assets/session-file-c281b4e9f9.gif",
+    "chapter-13-session-persistence/01-save-session/assets/session-file-cover-580030cb47.png",
+    "chapter-13-session-persistence/01-save-session/assets/session-file-storyboard-f954463b92.jpg",
+    "chapter-13-session-persistence/01-save-session/assets/session-serial-1eb40b2ce6.gif",
+    "chapter-13-session-persistence/01-save-session/assets/session-serial-cover-8c1c867db1.png",
+    "chapter-13-session-persistence/01-save-session/assets/session-serial-storyboard-dc3a143980.jpg"
+  ]
+}

@@ -1,0 +1,21 @@
+node_modules/
+dist/
+*.tgz
+.idea/
+.DS_Store
+.env
+.env.*
+!.env.example
+coverage/
+# Public reader guides are versioned; authoring notes and previews stay local.
+docs/*
+!docs/SETUP.md
+!docs/PROGRESS.md
+!docs/CODING-AGENT-REFERENCES.md
+!docs/CODING-AGENT-GAP-REVIEW.md
+!docs/planning/
+docs/planning/*
+!docs/planning/COURSE.md
+!docs/planning/CAPABILITIES.md
+!docs/planning/REFERENCE-NOTES.md
+site-dist/

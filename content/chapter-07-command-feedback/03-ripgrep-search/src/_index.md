@@ -1,0 +1,25 @@
+# src 源码
+
+`chapter-07-command-feedback/03-ripgrep-search/src/`
+
+- [agent/agent-loop.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/agent/agent-loop.ts.md)
+- [agent/events.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/agent/events.ts.md)
+- [cli.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/cli.ts.md)
+- [config/load-config.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/config/load-config.ts.md)
+- [errors.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/errors.ts.md)
+- [models/client.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/models/client.ts.md)
+- [permissions/policy.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/permissions/policy.ts.md)
+- [processes/run-process.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/processes/run-process.ts.md)
+- [tools/change-preview.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/change-preview.ts.md)
+- [tools/edit-file.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/edit-file.ts.md)
+- [tools/glob.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/glob.ts.md)
+- [tools/grep.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/grep.ts.md)
+- [tools/read-file.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/read-file.ts.md)
+- [tools/registry.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/registry.ts.md)
+- [tools/ripgrep.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/ripgrep.ts.md)
+- [tools/run-command.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/run-command.ts.md)
+- [tools/types.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/types.ts.md)
+- [tools/workspace.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/workspace.ts.md)
+- [tools/write-file.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/tools/write-file.ts.md)
+- [ui/teaching-trace.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/ui/teaching-trace.ts.md)
+- [ui/terminal.ts](/content/chapter-07-command-feedback/03-ripgrep-search/src/ui/terminal.ts.md)

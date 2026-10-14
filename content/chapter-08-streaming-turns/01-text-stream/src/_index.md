@@ -1,0 +1,25 @@
+# src 源码
+
+`chapter-08-streaming-turns/01-text-stream/src/`
+
+- [agent/agent-loop.ts](/content/chapter-08-streaming-turns/01-text-stream/src/agent/agent-loop.ts.md)
+- [agent/events.ts](/content/chapter-08-streaming-turns/01-text-stream/src/agent/events.ts.md)
+- [cli.ts](/content/chapter-08-streaming-turns/01-text-stream/src/cli.ts.md)
+- [config/load-config.ts](/content/chapter-08-streaming-turns/01-text-stream/src/config/load-config.ts.md)
+- [errors.ts](/content/chapter-08-streaming-turns/01-text-stream/src/errors.ts.md)
+- [models/client.ts](/content/chapter-08-streaming-turns/01-text-stream/src/models/client.ts.md)
+- [permissions/policy.ts](/content/chapter-08-streaming-turns/01-text-stream/src/permissions/policy.ts.md)
+- [processes/run-process.ts](/content/chapter-08-streaming-turns/01-text-stream/src/processes/run-process.ts.md)
+- [tools/change-preview.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/change-preview.ts.md)
+- [tools/edit-file.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/edit-file.ts.md)
+- [tools/glob.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/glob.ts.md)
+- [tools/grep.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/grep.ts.md)
+- [tools/read-file.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/read-file.ts.md)
+- [tools/registry.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/registry.ts.md)
+- [tools/ripgrep.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/ripgrep.ts.md)
+- [tools/run-command.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/run-command.ts.md)
+- [tools/types.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/types.ts.md)
+- [tools/workspace.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/workspace.ts.md)
+- [tools/write-file.ts](/content/chapter-08-streaming-turns/01-text-stream/src/tools/write-file.ts.md)
+- [ui/teaching-trace.ts](/content/chapter-08-streaming-turns/01-text-stream/src/ui/teaching-trace.ts.md)
+- [ui/terminal.ts](/content/chapter-08-streaming-turns/01-text-stream/src/ui/terminal.ts.md)

@@ -1,0 +1,264 @@
+# Hello, My Agent
+
+**你好，我的 Agent：从 0 到 npm 发布，亲手构建你的 TUI Coding Agent。**
+
+Build Your Own TUI Coding Agent — From Scratch to npm
+
+我们用 TypeScript 从第一个命令开始，逐章做出自己的 Coding Agent：先接通模型，让它能使用工具，再加入权限、会话、上下文和 TUI，继续实现扩展与协作，最终发布别人可以安装使用的 npm 包。
+
+CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持续刷新内容、响应键盘操作的交互界面；Coding Agent 则是在程序控制下调用模型和本地工具来完成编程任务的 Agent。本书先建立 CLI 和 Agent 核心，再逐步增加 TUI。
+
+**每章讲清一个主要机制，并提供可以运行的完整实现。** 本书面向具备 TypeScript 基础、用过 Coding Agent、想弄明白它怎样工作的开发者。我们先从熟悉的使用过程理解问题，再看程序用什么方法解决，最后跟着代码实现并检查结果。每节的解释都放在正文中，不需要先打开源码补课。
+
+## 开始学习
+
+[在线阅读教学网站](https://sherlockmen.github.io/hello-my-agent/)：支持章节搜索、代码复制，以及动图的播放、暂停和继续。
+
+[从第一章开始](/content/chapter-01-first-command/README.md) · [当前章节：第十三章](/content/chapter-13-session-persistence/README.md) · [课程进度](/content/docs/PROGRESS.md) · [从空目录跟写](/content/docs/SETUP.md)
+
+第一次学习，先阅读[第一章的问题与原理](/content/chapter-01-first-command/README.md)，到“动手构建”时再运行：
+
+```bash
+npm run lesson:01
+```
+
+```bash
+hello-my-agent
+```
+
+第一章不需要 API Key。完成第一章及 `--doctor` 练习后，再按 [02.1 配置说明](/content/chapter-02-model-dialogue/01-configuration/README.md?id=%E7%AC%AC%E4%B8%89%E6%AD%A5%E5%A1%AB%E5%86%99%E7%AC%AC%E4%B8%80%E7%BB%84%E9%85%8D%E7%BD%AE) 填写根目录 `.env`，进入第二章：
+
+```bash
+npm run lesson:02.1
+```
+
+每个小节的构建脚本已经包含对应源码的依赖安装、编译与命令注册。进入下一小节时只需更换编号，例如 `npm run lesson:02.2`。六个小节的命令列在[第二章构建表](/content/chapter-02-model-dialogue/README.md?id=%E6%9E%84%E5%BB%BA%E5%B9%B6%E9%80%89%E6%8B%A9%E6%AF%8F%E4%B8%AA%E5%B0%8F%E8%8A%82)。02.2 和 02.3 只有带 `--prompt` 提问时才会调用模型；从 02.4 开始，无参数启动会进入连续会话，发送请求时才调用模型。`--help`、`--version` 和 `--doctor` 不会调用模型。`-h`、`-v` 分别是帮助和版本的简写。
+
+本地注册的命令指向当前仓库的构建产物。遇到找不到命令或运行了另一份代码时，按 [环境说明](/content/docs/SETUP.md?id=%E6%B3%A8%E5%86%8C%E5%91%BD%E4%BB%A4%E5%90%8E%E5%A6%82%E4%BD%95%E6%89%BE%E5%88%B0%E5%AE%83) 检查。
+
+Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS arm64 验证，其他平台待验证。需要从空目录一步步建立工程时，按[环境准备](/content/docs/SETUP.md)完成初始化，再回到第一章继续。
+
+## 章节目录
+
+| 章节 | 本章解决的问题 | 实现 |
+| --- | --- | --- |
+| [第 01 章：从空目录到自己的命令](/content/chapter-01-first-command/README.md) | 怎样把源码变成可安装的命令？ | [cli.ts](/content/chapter-01-first-command/cli.ts.md)，已确认完成 |
+| [第 02 章：接通模型并持续对话](/content/chapter-02-model-dialogue/README.md) | 怎样接通模型并建立 Agent Loop 的无工具路径？ | [六个递进小节](/content/chapter-02-model-dialogue/README.md)，已确认完成 |
+| [第 03 章：第一个工具与 Agent Loop](/content/chapter-03-first-tool/README.md) | 怎样执行模型请求的工具，再回传结果？ | [三个递进小节](/content/chapter-03-first-tool/README.md)，已确认完成 |
+| [第 04 章：让 Agent 找到代码](/content/chapter-04-code-search/README.md) | 怎样发现文件、定位代码并分段读取？ | [三个递进小节](/content/chapter-04-code-search/README.md)，已确认完成 |
+| [第 05 章：工具执行之前，先检查权限](/content/chapter-05-permission-gate/README.md) | 怎样在执行工具前强制区分允许、询问和拒绝？ | [三个递进小节](/content/chapter-05-permission-gate/README.md)，已确认完成 |
+| [第 06 章：让 Agent 先预览，再修改文件](/content/chapter-06-precise-edit/README.md) | 怎样让用户先看清改动，并在文件变化后取消旧修改？ | [三个递进小节](/content/chapter-06-precise-edit/README.md)，已确认完成 |
+| [第 07 章：执行测试并读取结果](/content/chapter-07-command-feedback/README.md) | 怎样运行命令、根据测试结果继续修改，并停止卡住的命令或搜索？ | [三个递进小节](/content/chapter-07-command-feedback/README.md)，已确认完成 |
+| [第 08 章：流式输出与任务中断](/content/chapter-08-streaming-turns/README.md) | 怎样逐段显示回答、收齐工具参数，并在中断后继续对话？ | [三个递进小节](/content/chapter-08-streaming-turns/README.md)，已确认完成 |
+| [第 09 章：让执行过程可以被界面观察](/content/chapter-09-observable-runs/README.md) | 怎样把同一轮执行交给终端、脚本和后续 TUI？ | [三个递进小节](/content/chapter-09-observable-runs/README.md)，已确认完成 |
+| [第 10 章：第一个真正可用的 TUI](/content/chapter-10-terminal-ui/README.md) | 怎样把输入、执行进展、审批和取消接到终端界面？ | [四个递进小节](/content/chapter-10-terminal-ui/README.md)，已确认完成 |
+| [第 11 章：把终端变成可以编辑和浏览的工作区](/content/chapter-11-terminal-workbench/README.md) | 怎样编辑长请求、找回旧输入、浏览结果，并适应终端变化？ | [五个递进小节](/content/chapter-11-terminal-workbench/README.md)，已确认完成 |
+| [第 12 章：计划、执行与运行中干预](/content/chapter-12-task-control/README.md) | 怎样先审阅修复方案，再执行、看进展、问清需求，并在运行中补充或改变要求？ | [五个递进小节](/content/chapter-12-task-control/README.md)，已完成 |
+| [第 13 章：保存、查找与恢复会话](/content/chapter-13-session-persistence/README.md) | 怎样留下可信的会话记录，并在后续接上已有讨论？ | [13.1 会话保存](/content/chapter-13-session-persistence/01-save-session/README.md)，待确认 |
+
+第十二章按顺序学习：[12.1 计划与执行模式](/content/chapter-12-task-control/01-plan-mode/README.md) · [12.2 任务清单](/content/chapter-12-task-control/02-task-list/README.md) · [12.3 澄清问题](/content/chapter-12-task-control/03-clarify-questions/README.md) · [12.4 运行中补充与打断](/content/chapter-12-task-control/04-live-input/README.md) · [12.5 队列编辑与撤回](/content/chapter-12-task-control/05-manage-queue/README.md)。
+
+完整路线与完成状态见 [六部分、36 章课程进度表](/content/docs/PROGRESS.md)，包含 TUI、子 Agent、Skills、MCP、任务协作与发布。
+
+## 仓库结构
+
+```text
+hello-my-agent/
+  README.md                 全书入口与章节导航
+  package.json              统一依赖、构建脚本、npm 命令入口
+  package-lock.json         全书依赖锁文件
+  tsconfig.json             各章共享的类型检查配置
+  scripts/compile.mjs       按小节编号选择、编译并注册源码
+  chapter-01-first-command/  第 01 章：构建可安装的命令
+    README.md               本章中文讲解
+    cli.ts                  命令行入口，本章完整实现
+    EXERCISES.md             练习思路与运行说明
+    cli-with-doctor.ts       加入环境诊断后的完整练习答案
+  chapter-02-model-dialogue/ 第 02 章：六个递进小节
+    README.md               按顺序学习的导航
+    EXERCISES.md             本章练习与完整替换代码
+    01-configuration/       02.1 配置，从两个源码文件开始
+      README.md             本节讲解与运行步骤
+      src/
+        cli.ts              命令入口
+        config/
+          load-config.ts    配置读取
+    02-first-reply/         02.2 第一次模型请求
+    03-agent-loop/          02.3 一轮 Agent 执行的核心
+    04-conversation/        02.4 连续输入与历史
+    05-anthropic/           02.5 增加第二种协议
+    06-errors-and-usage/    02.6 错误分类与用量
+      README.md
+      src/
+        cli.ts              装配模块与启动
+        config/             配置读取
+        agent/              Agent Loop 核心
+        models/             模型接口与协议转换
+        ui/                 终端输入和显示，后续扩展 TUI
+        errors.ts           共用错误类型与提示
+  chapter-03-first-tool/     第 03 章：第一个工具与 Agent Loop
+    README.md               工具循环的完整原理与章节导航
+    EXERCISES.md             多工具请求练习与完整答案
+    01-tool-request/         03.1 工具定义与请求归一化
+    02-read-file-loop/       03.2 读取文件并回传结果
+    03-error-boundary/       03.3 把工具失败反馈给模型
+      src/
+        agent/              有界 Agent Loop
+        tools/              read_file 与本地注册表
+        models/             双协议工具消息转换
+  chapter-04-code-search/    第 04 章：让 Agent 找到代码
+    README.md               文件发现、内容搜索与分段读取原理
+    EXERCISES.md             搜索结果上限练习与完整答案
+    01-file-discovery/       04.1 控制文件搜索范围
+    02-content-search/       04.2 把文本目标变成代码位置
+    03-chunked-reading/      04.3 把代码位置变成上下文
+      src/agent/
+        events.ts            核心向终端、日志与后续 TUI 发送的结构化事件
+      src/tools/
+        types.ts             模型内容与观察元数据的工具结果契约
+        workspace.ts        共享项目根和忽略规则
+        glob.ts             路径发现
+        grep.ts             内容搜索
+        read-file.ts        分段读取
+      src/ui/
+        teaching-trace.ts    把事件转换成安全的中文教学记录
+  chapter-05-permission-gate/ 第 05 章：工具执行之前，先检查权限
+    README.md               权限决策、审批与会话范围的完整原理
+    EXERCISES.md             主动撤销会话授权的练习与答案
+    01-policy-decision/      05.1 allow、ask、deny 策略
+    02-terminal-approval/    05.2 终端一次审批
+    03-session-grants/       05.3 会话范围授权
+      src/permissions/
+        policy.ts            执行前权限判断与审批契约
+  chapter-06-precise-edit/    第 06 章：让 Agent 先预览，再修改文件
+    README.md                预览、唯一替换、变化检测与备份原理
+    EXERCISES.md             重复匹配计数练习与完整答案
+    01-create-with-preview/  06.1 先预览，再创建文件
+    02-exact-replacement/    06.2 找到原文，只替换这一处
+    03-change-guard/         06.3 保存之前，检查文件有没有变化
+      src/tools/
+        change-preview.ts   生成安全、完整的差异预览
+        write-file.ts       新文件预览与创建
+        edit-file.ts        精确替换、变化检测与备份
+  chapter-07-command-feedback/ 第 07 章：执行测试并读取结果
+    README.md                命令反馈、进程停止与 rg 搜索
+    EXERCISES.md              为本次命令选择等待时间
+    01-run-command/          07.1 执行测试并读懂结果
+    02-process-lifecycle/    07.2 停止卡住或输出过多的命令
+    03-ripgrep-search/       07.3 让搜索也使用受控子进程
+      src/tools/
+        run-command.ts      命令准备、审批与结果转换
+        ripgrep.ts          rg 参数和退出状态
+      src/processes/
+        run-process.ts      输出、时间上限、取消与进程组清理
+    demo/                   故意失败的加法函数与测试
+  chapter-08-streaming-turns/ 第 08 章：流式输出与任务中断
+    README.md                文字增量、完整工具请求与中断后续聊
+    EXERCISES.md              用本地实验观察取消后的文件与历史
+    01-text-stream/          08.1 让回答逐段显示
+    02-complete-tool-calls/  08.2 收齐工具参数，再执行
+    03-cancel-and-continue/  08.3 中断当前任务，继续对话
+      src/ui/
+        input.ts            聊天与审批共用的可取消输入
+  chapter-09-observable-runs/ 第 09 章：让执行过程可以被界面观察
+    README.md                任务状态、事件送达与 JSONL 输出
+    EXERCISES.md              通过事件记录真实工具调用的耗时
+    01-run-lifecycle/        09.1 让界面知道任务何时结束
+    02-event-stream/         09.2 按顺序接收执行事件
+    03-jsonl-output/         09.3 让脚本读懂执行过程
+      src/agent/
+        run.ts              一轮任务的开始与结束状态
+        run-stream.ts       按顺序交付带编号的事件
+      src/ui/
+        jsonl.ts            每行输出一条 JSON 记录
+  chapter-10-terminal-ui/    第 10 章：第一个真正可用的 TUI
+    README.md               本章教学与四节路线
+    EXERCISES.md             用真实事件验证界面状态
+    01-first-screen/        10.1 把对话放进一个界面
+    02-live-progress/       10.2 让界面跟着执行变化
+    03-tool-approval/       10.3 在界面中批准工具调用
+    04-cancel-and-restore/  10.4 取消以后，继续留在对话里
+      src/ui/tui/
+        app.tsx             输入、消息、进展与界面生命周期
+        state.ts            把执行事件转成显示状态
+        approval.ts         完整预览分页与等待用户决定
+  .env.example              模型配置模板，不含真实密钥
+  chapter-11-terminal-workbench/ 第 11 章：把终端变成可以编辑和浏览的工作区
+    README.md                本章主线与五节路线
+    EXERCISES.md              草稿、历史与浏览位置练习
+    01-editable-draft/  11.1 让多行输入成为可编辑的草稿
+    02-recall-and-complete/  11.2 取回旧问题，补全当前文字
+    03-browse-results/  11.3 在输出继续时，停下来浏览结果
+    04-external-editor/  11.4 把长草稿交给外部编辑器
+    05-terminal-layout/  11.5 按终端列宽排版，保留阅读位置
+  chapter-12-task-control/   第 12 章：计划、执行与运行中干预
+    README.md                本章加法修复主线与五节路线
+    EXERCISES.md              清单、问答与队列状态实验
+    01-plan-mode/            12.1 计划与执行模式
+    02-task-list/            12.2 任务清单
+    03-clarify-questions/    12.3 澄清问题
+    04-live-input/           12.4 运行中补充与打断
+    05-manage-queue/         12.5 队列编辑与撤回
+      src/agent/
+        run-options.ts      本轮模式、清单与问答/队列接口
+      src/ui/tui/
+        questions.tsx       澄清等待对象与回答面板
+        input-queue.ts      补充的 ID、文字与所属 run
+        queue-panel.tsx     队列焦点、编辑与撤回
+    demo-project/           让 Agent 修复的加法代码与初始失败测试
+    exercises/              本地固定输入实验
+  chapter-13-session-persistence/ 第 13 章：保存、查找与恢复会话
+    README.md                本章路线
+    01-save-session/         13.1 会话保存
+      src/sessions/
+        save-session.ts     会话状态投影、串行写入与关闭
+  docs/
+    SETUP.md                环境与从空目录搭建
+    EDITORIAL-WORKFLOW.md   主 Agent、作者子 Agent 与学习者读者的编审流程
+    AUTHORING.md            作者子 Agent 的统一教程写作规则
+    READER-REVIEW.md        Agent 开发学习者的读懂检查规则
+    PROGRESS.md             36 章目录、完成状态与完成日期
+    planning/               原规划与完整能力清单
+    verification/           实际验证记录
+  tests/                    全书共用的验收脚本
+```
+
+章节目录按 `chapter-编号-主题` 命名，代码文件按职责命名。第一章的 `cli.ts` 负责命令入口，`cli-with-doctor.ts` 展示环境诊断练习的完成状态。每章保留当时的完整实现，依赖在根目录统一管理。从第二章开始，每个小节的源码放进独立的 `src/`，按配置、Agent 核心、模型接入和终端交互分目录，仍可独立运行。目录随功能逐步出现，练习放在章目录；后续工具、权限和会话能力也各归其模块。具体分工见 [第二章执行链](/content/chapter-02-model-dialogue/README.md?id=%E5%85%AD%E4%B8%AA%E5%B0%8F%E8%8A%82%E6%80%8E%E6%A0%B7%E7%BB%84%E6%88%90%E4%B8%80%E6%9D%A1%E6%89%A7%E8%A1%8C%E9%93%BE)。
+
+## 运行、练习与安装验证
+
+在仓库根目录运行完整验收：
+
+```bash
+npm run verify
+```
+
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](/content/chapter-07-command-feedback/03-ripgrep-search/README.md?id=%E5%85%88%E5%87%86%E5%A4%87%E7%B3%BB%E7%BB%9F-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十二章检查 Plan 限制、清单更新、问答配对、运行中补充、打断与队列编辑。第十三章新增会话保存、快照顺序、同步完成与存储失败检查。第十至十二章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包前的 `prepack` 当前选择 `13.1`；学习时用各节自己的 `lesson` 命令选择版本。
+
+第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
+
+完成第二章 `/reset` 练习后，运行 `npm run exercise:02`。这条命令编译读者实际修改的终端文件，并用本地模拟接口检查两种协议中的历史是否真正清空。
+
+只检查当前的会话保存实现时，在仓库根目录运行：
+
+```bash
+npm run check:13
+```
+
+完成 12.5 和[第十二章练习](/content/chapter-12-task-control/EXERCISES.md)后，运行独立状态实验：
+
+```bash
+npm run exercise:12
+```
+
+回看第十二章时，使用 `npm run check:12` 检查任务控制实现。上述检查不调用真实模型；实际模型服务和回答按各节手动步骤观察。
+
+[第十三章练习](/content/chapter-13-session-persistence/EXERCISES.md) · 第十三章验证记录 · [当前进度](/content/docs/PROGRESS.md)
+
+回看上一章：[第十二章练习](/content/chapter-12-task-control/EXERCISES.md) · 第十二章验证记录。
+
+第一章到第十二章已确认完成。第十三章进行中，13.1 会话保存的正文、TypeScript 实现、配图与练习已整理，等待阅读确认；后续继续增加读取、恢复与管理。npm 包尚未发布。
+
+## 许可证
+
+本仓库原创教程与代码采用 [MIT](/content/LICENSE.md)。引用外部材料时保留其来源与相应许可要求。

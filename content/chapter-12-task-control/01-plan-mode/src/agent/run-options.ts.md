@@ -1,0 +1,36 @@
+# run-options.ts
+
+`chapter-12-task-control/01-plan-mode/src/agent/run-options.ts`
+
+<a href="./content/chapter-12-task-control/01-plan-mode/src/agent/run-options.ts" download>下载原始文件</a>
+
+```typescript
+/**
+ * 12.1 计划与执行模式 | [NEW] agent/run-options.ts
+ *
+ * 学习目标：把本节的运行控制数据交给核心，界面不需要代替核心作决策。
+ * 输入：本地入口选定的模式。
+ * 输出：RunOptions 描述这一轮允许使用的控制入口；这里只定义类型，不执行任务。
+ * 状态：模式由启动入口取快照；本文件不保存模型消息。
+ * 本文件数据关系（全局主流程见 agent/agent-loop.ts）：
+ *   本地界面 -> 本轮选项 -> 核心 / 工具 / 模型请求
+ * 省略模式时采用默认的 execute；类型声明不能代替运行时校验。
+ * 运行观察：不同界面传入同样的选项，核心仍使用同一条模型与工具循环。
+ */
+// [NEW 12.1] 本文件以下类型声明均为本节新增。
+// [NEW 12.1] 模式由本地运行入口选择，默认继续执行。
+/**
+ * 本地入口可选的两种运行模式。
+ * plan 只调查和制定计划；execute 仍需遵守每次工具的权限与审批。
+ */
+export type ExecutionMode = "plan" | "execute";
+
+/**
+ * 把本轮模式放在独立的运行选项里。
+ * 省略模式时沿用 execute；本地入口选择模式，普通聊天不能修改它。
+ */
+export type RunOptions = {
+  // [NEW 12.1] 本轮模式由本地入口取快照。
+  mode?: ExecutionMode;
+};
+```

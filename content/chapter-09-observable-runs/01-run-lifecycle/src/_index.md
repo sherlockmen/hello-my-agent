@@ -1,0 +1,27 @@
+# src 源码
+
+`chapter-09-observable-runs/01-run-lifecycle/src/`
+
+- [agent/agent-loop.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/agent/agent-loop.ts.md)
+- [agent/events.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/agent/events.ts.md)
+- [agent/run.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/agent/run.ts.md)
+- [cli.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/cli.ts.md)
+- [config/load-config.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/config/load-config.ts.md)
+- [errors.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/errors.ts.md)
+- [models/client.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/models/client.ts.md)
+- [permissions/policy.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/permissions/policy.ts.md)
+- [processes/run-process.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/processes/run-process.ts.md)
+- [tools/change-preview.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/change-preview.ts.md)
+- [tools/edit-file.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/edit-file.ts.md)
+- [tools/glob.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/glob.ts.md)
+- [tools/grep.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/grep.ts.md)
+- [tools/read-file.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/read-file.ts.md)
+- [tools/registry.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/registry.ts.md)
+- [tools/ripgrep.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/ripgrep.ts.md)
+- [tools/run-command.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/run-command.ts.md)
+- [tools/types.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/types.ts.md)
+- [tools/workspace.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/workspace.ts.md)
+- [tools/write-file.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/tools/write-file.ts.md)
+- [ui/input.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/ui/input.ts.md)
+- [ui/teaching-trace.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/ui/teaching-trace.ts.md)
+- [ui/terminal.ts](/content/chapter-09-observable-runs/01-run-lifecycle/src/ui/terminal.ts.md)

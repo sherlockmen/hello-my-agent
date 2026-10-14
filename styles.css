@@ -1,0 +1,55 @@
+:root { --theme-color: #16766b; --ink: #252925; --muted: #66706b; --paper: #fffefa; --line: #e4e8e2; }
+body { color: var(--ink); background: var(--paper); font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 16px; }
+body, .sidebar, .markdown-section { background: var(--paper); }
+.markdown-section { max-width: 880px; padding: 34px 42px 80px; line-height: 1.85; }
+.markdown-section p, .markdown-section ul, .markdown-section ol { line-height: 1.85; }
+.markdown-section h1 { font-size: 2rem; line-height: 1.45; margin: 0 0 1.3rem; }
+.markdown-section h2 { margin: 2.6rem 0 1rem; font-size: 1.5rem; line-height: 1.5; }
+.markdown-section h3 { margin-top: 2rem; font-size: 1.18rem; line-height: 1.6; }
+.markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4, .markdown-section strong { color: var(--ink); font-weight: 600; }
+.markdown-section a { text-underline-offset: 3px; }
+.markdown-section blockquote { border-left-color: var(--theme-color); color: #535f58; background: #f1f6ef; padding: .7rem 1.2rem; }
+.markdown-section blockquote p { margin: .4rem 0; }
+.markdown-section pre { border: 1px solid var(--line); border-radius: 6px; background: #f5f6f2; padding: 1.2rem 1.35rem; }
+.markdown-section pre > code { font-size: 14px; line-height: 1.75; padding: 0; background: transparent; tab-size: 2; }
+.markdown-section code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #9b4226; }
+.markdown-section img { display: block; max-width: 100%; height: auto; margin: 1.5rem auto; border-radius: 5px; }
+.markdown-section table { width: 100%; overflow-x: auto; font-size: 15px; }
+.markdown-section th, .markdown-section td { padding: .7rem .85rem; border-color: var(--line); }
+.markdown-section tr:nth-child(2n) { background: #f6f7f2; }
+.markdown-section details { margin: 1.3rem 0; border: 1px solid var(--line); border-radius: 6px; padding: .7rem 1rem; }
+.markdown-section summary { cursor: pointer; color: var(--theme-color); padding: .2rem 0; }
+.markdown-section details pre { margin-bottom: .4rem; }
+.sidebar { width: 294px; border-color: var(--line); padding-top: 18px; }
+.sidebar > h1 { margin: 20px 22px 22px; text-align: left; font-size: 23px; font-weight: 600; }
+.sidebar-nav { padding: 0 12px 70px 6px; }
+.sidebar-nav li { margin: 2px 0; }
+.sidebar ul li a { padding: 4px 9px; border-radius: 4px; font-size: 14px; white-space: normal; line-height: 1.6; }
+.sidebar ul li.active > a { border-right: 0; background: #e6f1e9; font-weight: 400; color: #11665b; }
+.sidebar ul li > p { color: var(--muted); font-weight: 600; font-size: 13px; letter-spacing: .02em; margin: 20px 9px 8px; }
+.sidebar .search { margin: 0 20px 14px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: #f6f7f2; }
+.sidebar .search input { background: transparent; padding: 12px; font-size: 14px; color: var(--ink); }
+.content { left: 294px; }
+.app-nav { margin-right: 38px; }
+.app-nav a { font-size: 14px; }
+.sidebar-toggle { background: var(--paper); width: 48px; height: 48px; padding: 15px; }
+.sidebar-toggle span { background-color: var(--theme-color); }
+.docsify-copy-code-button { border-radius: 4px; font-family: inherit; min-height: 36px; }
+.pagination-item-label { color: var(--muted); }
+.pagination-item-title { font-size: 1rem; }
+.skip-link { position: fixed; left: 12px; top: -100px; z-index: 100; background: var(--theme-color); color: white; padding: 10px 16px; border-radius: 4px; }
+.skip-link:focus { top: 12px; }
+button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visible, [role='button']:focus-visible { outline: 3px solid #6bb8a8; outline-offset: 3px; }
+@media (max-width: 900px) { .markdown-section { padding: 30px 28px 70px; } .app-nav { margin-right: 24px; } }
+@media (max-width: 768px) {
+  .markdown-section { max-width: 100%; padding: 22px 20px 64px; }
+  .markdown-section h1 { font-size: 1.7rem; }
+  .markdown-section h2 { font-size: 1.35rem; }
+  .markdown-section pre { padding: 1rem; }
+  .markdown-section pre > code { font-size: 13px; }
+  .sidebar { width: 294px; }
+  .content { left: 0; padding-top: 12px; }
+  .sidebar-toggle { width: 48px; }
+  .markdown-section table { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; } }
