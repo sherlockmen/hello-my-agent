@@ -14,6 +14,8 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 [在线阅读教学网站](https://sherlockmen.github.io/hello-my-agent/)：支持章节搜索、代码复制，以及动图的播放、暂停和继续。
 
+[与网站同步的配套源码](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site)包含当前全部小节和验收脚本，取得方式见[环境准备](/content/docs/SETUP.md)。
+
 [从第一章开始](/content/chapter-01-first-command/README.md) · [当前章节：第十三章](/content/chapter-13-session-persistence/README.md) · [课程进度](/content/docs/PROGRESS.md) · [从空目录跟写](/content/docs/SETUP.md)
 
 第一次学习，先阅读[第一章的问题与原理](/content/chapter-01-first-command/README.md)，到“动手构建”时再运行：

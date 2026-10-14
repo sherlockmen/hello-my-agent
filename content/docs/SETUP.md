@@ -8,6 +8,15 @@
 
 ## 已有配套仓库
 
+在网站上阅读时，先取得[与教程同步的配套源码](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site)。在准备存放练习项目的目录运行：
+
+```bash
+git clone --branch codex/teaching-site --single-branch https://github.com/sherlockmen/hello-my-agent.git hello-my-agent-study
+cd hello-my-agent-study
+```
+
+这个分支包含当前教程的全部小节源码、依赖锁文件和验收脚本。希望从空目录自己跟写时，继续使用下文的“检查环境”和“建立一个练习项目”。
+
 读到第一章的“动手构建”后，在仓库根目录选择这一章：
 
 ```bash

@@ -89,7 +89,8 @@
     "site:build": "node scripts/build-site.mjs",
     "site:check": "node tests/verify-site-build.mjs",
     "site:serve": "node scripts/serve-site.mjs",
-    "site:deploy": "npm run site:build && npm run site:check && node scripts/deploy-site.mjs"
+    "site:source": "npm run site:build && node scripts/publish-site-source.mjs",
+    "site:deploy": "npm run site:build && npm run site:check && node scripts/publish-site-source.mjs && node scripts/deploy-site.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.126.0",
