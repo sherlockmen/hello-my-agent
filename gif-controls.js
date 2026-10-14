@@ -133,9 +133,7 @@
   window.$docsify.plugins = [].concat(window.$docsify.plugins || [], function (hook, vm) {
     hook.beforeEach(function (content) { clear(); return content; });
     hook.doneEach(function () {
-      // An onlyCover route does not pass through Markdown's beforeEach hook.
-      if (vm.route.path === '/') clear();
-      else attach();
+      attach();
     });
   });
 })();
