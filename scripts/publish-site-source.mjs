@@ -10,6 +10,21 @@ import { fileURLToPath } from 'node:url';
 const root = realpathSync(fileURLToPath(new URL('../', import.meta.url)));
 const remote = 'https://github.com/sherlockmen/hello-my-agent.git';
 const branch = 'codex/teaching-site';
+// master excludes the website; its publication restores the site's commands and ignore rules.
+function publicContent(path) {
+  const content = readFileSync(join(root, path));
+  if (path === '.gitignore') return Buffer.from(content.toString().split('\n# Docsify belongs to codex/teaching-site;')[0].trimEnd() + '\n');
+  if (path !== 'package.json') return content;
+  const pkg = JSON.parse(content);
+  Object.assign(pkg.scripts, {
+    'site:build': 'node scripts/build-site.mjs',
+    'site:check': 'node tests/verify-site-build.mjs',
+    'site:serve': 'node scripts/serve-site.mjs',
+    'site:source': 'npm run site:build && node scripts/publish-site-source.mjs',
+    'site:deploy': 'npm run site:build && npm run site:check && node scripts/publish-site-source.mjs && node scripts/deploy-site.mjs',
+  });
+  return Buffer.from(JSON.stringify(pkg, null, 2) + '\n');
+}
 const args = process.argv.slice(2);
 const checkOnly = args.length === 1 && args[0] === '--check';
 const publicDocs = [
@@ -73,7 +88,7 @@ function selectSource(report) {
     if (path.startsWith('docs/')) assert.ok(publicDocs.includes(path), `文档不在公开清单：${path}`);
     if (path.startsWith('chapter-') && (path.includes('/assets/') || imagePattern.test(path))) assert.ok(assets.has(path), `图片未被网站引用：${path}`);
   }
-  for (const chapter of [13, 14, 15, 16, 17]) assert.ok(files.includes(`tests/verify-chapter-${chapter}.mjs`));
+  for (const chapter of [13, 14, 15, 16, 17, 18, 19]) assert.ok(files.includes(`tests/verify-chapter-${chapter}.mjs`));
   assert.ok(files.includes('tests/verify-terminal-14.py'));
   assert.ok(files.includes('tests/verify-terminal-15.py'));
   assert.ok(files.includes('tests/verify-terminal-16.py'));
@@ -115,13 +130,13 @@ function verifySnapshot(snapshot, expected) {
   symlinkSync(dependencies, join(snapshot, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir');
   try {
     run(process.execPath, ['node_modules/typescript/bin/tsc', '--noEmit'], snapshot);
-    for (const chapter of [13, 14, 15, 16, 17]) run(process.execPath, [`tests/verify-chapter-${chapter}.mjs`], snapshot);
+    for (const chapter of [13, 14, 15, 16, 17, 18, 19]) run(process.execPath, [`tests/verify-chapter-${chapter}.mjs`], snapshot);
   } finally {
     rmSync(join(snapshot, 'node_modules'), { force: true });
     rmSync(join(snapshot, 'dist'), { recursive: true, force: true });
     rmSync(join(snapshot, 'site-dist'), { recursive: true, force: true });
   }
-  return { websiteRebuild: true, websiteFixtures: true, typecheck: true, chapter13: true, chapter14: true, chapter15: true, chapter16: true, chapter17: true };
+  return { websiteRebuild: true, websiteFixtures: true, typecheck: true, chapter13: true, chapter14: true, chapter15: true, chapter16: true, chapter17: true, chapter18: true, chapter19: true };
 }
 
 let temporary;
@@ -144,7 +159,7 @@ try {
   const manifest = [];
   for (const path of files) {
     mkdirSync(dirname(join(temporary, path)), { recursive: true });
-    copyFileSync(join(root, path), join(temporary, path));
+    writeFileSync(join(temporary, path), publicContent(path));
     const content = readFileSync(join(temporary, path));
     manifest.push({ path: slash(path), bytes: content.length, sha256: createHash('sha256').update(content).digest('hex') });
   }
@@ -157,7 +172,7 @@ try {
     assert.deepEqual(run('git', ['ls-files', '-z'], temporary).split('\0').filter(Boolean).sort(), files, 'Git 忽略规则使公开源码缺失，请先检查后再发布');
     if (run('git', ['status', '--porcelain'], temporary)) {
       run('git', ['commit', '--quiet', '-m', 'Publish current tutorial and Docsify source'], temporary);
-      run('git', ['push', '--quiet', 'origin', branch], temporary);
+      run('git', ['-c', 'http.postBuffer=524288000', 'push', '--quiet', 'origin', branch], temporary);
     }
     commit = run('git', ['rev-parse', 'HEAD'], temporary);
   }
@@ -167,7 +182,7 @@ try {
     repository: 'sherlockmen/hello-my-agent', branch, commit, checkOnly, checkedAt: new Date().toISOString(),
     checks, files: manifest,
   }, null, 2) + '\n');
-  console.log(`✓ ${files.length} 份公开源码通过网站重建、TypeScript 和第十三至十七章验收${checkOnly ? '（未推送）' : `，已发布到 ${branch} ${commit.slice(0, 8)}`}。`);
+  console.log(`✓ ${files.length} 份公开源码通过网站重建、TypeScript 和第十三至十九章验收${checkOnly ? '（未推送）' : `，已发布到 ${branch} ${commit.slice(0, 8)}`}。`);
 } catch (error) {
   console.error(`源码发布失败：${error.message}`);
   process.exitCode = 1;

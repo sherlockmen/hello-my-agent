@@ -105,7 +105,7 @@ loglevel=warn
 
 把根目录 `package.json` 改为下面的公共配置。它与当前仓库同步，包含第 01—17 章需要的脚本和依赖。学习第一章时先关注 `type`、`bin`、`lesson:01`、Commander 和 TypeScript；进入后续章节时，再回来看对应的 `lesson:02.N`—`lesson:17.N`、验收脚本、模型 SDK 和 `ignore`：
 
-从空目录跟写时，包清单中出现一条脚本，不代表它依赖的文件已经创建。只完成第一章时，使用 `lesson:01`、`typecheck` 和下文的手动打包安装步骤；`verify` 需要完整配套仓库的章节与测试，`build` 和 `prepack` 当前也会选择尚未写到的 17.3。后面的 `check:*`、`exercise:*` 自动检查同样需要配套的 `tests/` 文件。
+从空目录跟写时，包清单中出现一条脚本，不代表它依赖的文件已经创建。只完成第一章时，使用 `lesson:01`、`typecheck` 和下文的手动打包安装步骤；`verify` 需要完整配套仓库的章节与测试，`build` 和 `prepack` 当前也会选择尚未写到的 19.3。后面的 `check:*`、`exercise:*` 自动检查同样需要配套的 `tests/` 文件。
 
 ```json
 {
@@ -125,7 +125,7 @@ loglevel=warn
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node scripts/compile.mjs 17.3 --prepare",
+    "build": "node scripts/compile.mjs 19.3 --prepare",
     "lesson:01": "node scripts/compile.mjs 01 --prepare",
     "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare",
     "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare",
@@ -183,8 +183,8 @@ loglevel=warn
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/compile.mjs 17.3",
-    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 17.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && node scripts/compile.mjs 17.3 && node -e \"if (!require('node:fs').existsSync('dist/project/instructions.js')) throw new Error('默认构建未恢复到 17.3')\"",
+    "prepack": "node scripts/compile.mjs 19.3",
+    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 19.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && node scripts/compile.mjs 19.3 && node -e \"if (!require('node:fs').existsSync('dist/skills/catalog.js')) throw new Error('默认构建未恢复到 19.3')\"",
     "check:11": "node tests/verify-chapter-11.mjs && python3 tests/verify-terminal-11.py",
     "exercise:11": "node tests/verify-exercise-11.mjs",
     "lesson:12.1": "node scripts/compile.mjs 12.1 --prepare",
@@ -214,7 +214,15 @@ loglevel=warn
     "lesson:17.1": "node scripts/compile.mjs 17.1 --prepare",
     "lesson:17.2": "node scripts/compile.mjs 17.2 --prepare",
     "lesson:17.3": "node scripts/compile.mjs 17.3 --prepare",
-    "check:17": "node tests/verify-chapter-17.mjs && python3 tests/verify-terminal-17.py"
+    "check:17": "node tests/verify-chapter-17.mjs && python3 tests/verify-terminal-17.py",
+    "lesson:18.1": "node scripts/compile.mjs 18.1 --prepare",
+    "lesson:18.2": "node scripts/compile.mjs 18.2 --prepare",
+    "lesson:18.3": "node scripts/compile.mjs 18.3 --prepare",
+    "check:18": "node tests/verify-chapter-18.mjs && python3 tests/verify-terminal-18.py",
+    "lesson:19.1": "node scripts/compile.mjs 19.1 --prepare",
+    "lesson:19.2": "node scripts/compile.mjs 19.2 --prepare",
+    "lesson:19.3": "node scripts/compile.mjs 19.3 --prepare",
+    "check:19": "node tests/verify-chapter-19.mjs && python3 tests/verify-terminal-19.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.126.0",
@@ -247,11 +255,11 @@ loglevel=warn
 | `npm run build` | 按锁文件安装依赖、编译 TypeScript，成功后自动注册本地命令 |
 | `npm run lesson:02.N`—`npm run lesson:17.N` | 选择、编译并注册对应小节；命令中不需要 `--` |
 | `npm run exercise:02`、`04`、`05`、`06`、`07`、`08`、`09`、`10`、`11`、`12` | 运行对应章的练习验收 |
-| `npm run check:03`—`npm run check:17` | 运行对应章的确定性验收 |
+| `npm run check:03`—`npm run check:19` | 运行对应章的确定性验收 |
 | `prepack` | 打包前只编译代码，不改变本地命令的指向 |
 | `private: true` | 防止误发布，仍可本地注册、打包和安装 |
 
-`build` 默认选择 17.3，`prepack` 也编译 17.3。小节脚本把编号交给 `scripts/compile.mjs`，按顺序运行 `npm ci`、编译和 `npm link`，成功后显示一行完成提示。安装失败时不会进入后续步骤。
+`build` 默认选择 19.3，`prepack` 也编译 19.3。小节脚本把编号交给 `scripts/compile.mjs`，按顺序运行 `npm ci`、编译和 `npm link`，成功后显示一行完成提示。安装失败时不会进入后续步骤。
 
 `--include=dev` 确保编译所需的开发依赖也会安装；`--ignore-scripts` 跳过安装和注册时的生命周期脚本，当前依赖不需要这些脚本；`--no-audit` 和 `--no-fund` 省去这两步的审计和资助提示。每次构建都会按锁文件重新安装依赖，不需要手动清理 `node_modules`。
 
@@ -373,7 +381,7 @@ npm run lesson:01
 npm pack --ignore-scripts
 ```
 
-第一条命令保证 `dist` 中保存的是第一章产物。`--ignore-scripts` 让这次检查直接打包该产物，不再执行默认编译 17.3 的 `prepack`；否则从空目录只写到第一章时，npm 会尝试编译尚不存在的第十七章源码。随后 npm 生成 `sherlockmen-hello-my-agent-0.1.0-dev.1.tgz`。这个文件名对应上面的包名和版本；如果修改了它们，后续命令也要使用实际生成的文件名。安装包包含 `dist/*.js`、`package.json`、`README.md` 和 `LICENSE`。
+第一条命令保证 `dist` 中保存的是第一章产物。`--ignore-scripts` 让这次检查直接打包该产物，不再执行默认编译 19.3 的 `prepack`；否则从空目录只写到第一章时，npm 会尝试编译尚不存在的第十九章源码。随后 npm 生成 `sherlockmen-hello-my-agent-0.1.0-dev.1.tgz`。这个文件名对应上面的包名和版本；如果修改了它们，后续命令也要使用实际生成的文件名。安装包包含 `dist/*.js`、`package.json`、`README.md` 和 `LICENSE`。
 
 创建一个临时目录作为安装前缀，把包安装到那里：
 
