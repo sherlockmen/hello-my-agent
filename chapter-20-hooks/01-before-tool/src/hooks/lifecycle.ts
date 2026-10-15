@@ -1,0 +1,91 @@
+/**
+ * 20.1 执行前钩子与显式启用 | [NEW] hooks/lifecycle.ts
+ *
+ * 学习目标：在已获批准的工具启动前串行执行项目检查；只有 before_tool 的 continue=false 能阻止这次工具。
+ * 输入：显式启用状态、项目配置、事件数据与取消信号。
+ * 输出：校验后的 HookState，或事件的 blocked/messages；失败以 ToolError 说明。
+ * 状态：配置完整校验后才交出列表；脚本自行产生的外部副作用不回滚。
+ * 本文件局部流程（全局主流程见 agent/agent-loop.ts）：
+ *   未启用？-- 是 -> 不打开配置；否 -> 有界读取 -> 校验 -> 成功交出 / 失败拒绝
+ *   事件脚本 -> 串行等待 -> 退出/输出正常？-- 否 -> ToolError
+ *                                             +-- 是 -> 解析单个 JSON -> 收集 message
+ *   before_tool 且 continue=false？-- 是 -> blocked；否 -> 下一脚本 / 返回反馈
+ *   取消 -> 请求停止同组进程 -> 等待 close 清理 -> 抛出取消原因
+ * 观察：检查拒绝时工具尚未启动，错误仍交回原调用；取消要等子进程关闭。
+ */
+
+import { open, realpath } from "node:fs/promises";
+import { join } from "node:path";
+import { ToolError } from "../errors.js";
+import { runProcess } from "../processes/run-process.js";
+import type { ToolCall } from "../tools/registry.js";
+
+// [NEW 20.1] 本文件以下实现均为本节新增。
+export type HookEvent = "before_tool";
+type Hook = { command: string; args: string[]; timeout_ms: number };
+export type HookState = { root: string; hooks: Partial<Record<HookEvent, Hook[]>> };
+
+/**
+ * 只在本地启动参数明确启用后读取项目钩子，默认不打开配置、更不启动脚本。
+ * 限制配置32KiB、每事件最多8条；命令以参数数组执行，不隐式打开shell。
+ * 完整配置校验失败就拒绝启动；配置不携带环境变量或模型凭据。
+ */
+export async function loadHooks(root: string, enabled: boolean): Promise<HookState | undefined> {
+  if (!enabled) return undefined;
+  let handle;
+  try {
+    handle = await open(join(root, ".hello-my-agent/hooks.json"), "r");
+    const bytes = Buffer.alloc(32769);
+    if ((await handle.stat()).size > 32768) throw new ToolError("Hooks 配置超过 32768 字节。");
+    const { bytesRead } = await handle.read(bytes, 0, bytes.length, 0);
+    if (bytesRead > 32768) throw new ToolError("Hooks 配置超过 32768 字节。");
+    const input: unknown = JSON.parse(bytes.subarray(0, bytesRead).toString("utf8"));
+    if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error();
+    const hooks: HookState["hooks"] = {};
+    for (const [event, value] of Object.entries(input)) {
+      if (!["before_tool"].includes(event) || !Array.isArray(value) || value.length > 8) throw new Error();
+      hooks[event as HookEvent] = value.map((item: unknown) => {
+        if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error();
+        const record = item as Record<string, unknown>;
+        if (Object.keys(record).some(key => !["command", "args", "timeout_ms"].includes(key))
+          || typeof record.command !== "string" || !record.command.trim()
+          || !Array.isArray(record.args) || record.args.length > 64 || record.args.some(arg => typeof arg !== "string" || arg.length > 4096)
+          || (record.timeout_ms !== undefined && (!Number.isSafeInteger(record.timeout_ms) || Number(record.timeout_ms) < 1 || Number(record.timeout_ms) > 30000))) throw new Error();
+        return { command: record.command, args: record.args as string[], timeout_ms: Number(record.timeout_ms ?? 5000) };
+      });
+    }
+    return { root: await realpath(root), hooks };
+  } catch (error) {
+    if (error instanceof ToolError) throw error;
+    throw new ToolError("Hooks 配置缺失或无效；请检查事件名与 command / args / timeout_ms。");
+  } finally { await handle?.close(); }
+}
+
+/**
+ * 串行运行已启用的事件脚本，stdin是一条JSON，stdout只能是一条约定JSON。
+ * before_tool输出continue:false会阻止工具；输出不能改参数或授予权限。
+ * 非零退出、格式错误、超时和超量是失败；取消先等待进程清理，再向外抛出。
+ */
+export async function runHooks(state: HookState | undefined, event: HookEvent,
+  payload: { call?: ToolCall; result?: string; outcome?: string }, signal: AbortSignal): Promise<{ blocked: boolean; messages: string[] }> {
+  const messages: string[] = [];
+  for (const hook of state?.hooks[event] ?? []) {
+    signal.throwIfAborted();
+    const result = await runProcess(hook.command, hook.args, { cwd: state!.root, signal,
+      timeoutMs: hook.timeout_ms, maxOutputBytes: 8192,
+      input: JSON.stringify({ event, ...payload }) + "\n" });
+    if (result.stopReason || result.exitCode !== 0) throw new ToolError(`钩子 ${event} 失败：${result.stopReason ?? `退出码 ${result.exitCode}`}。脚本已清理，已有副作用不会撤销。`);
+    let value: Record<string, unknown>;
+    try {
+      const parsed: unknown = JSON.parse(result.stdout);
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error();
+      value = parsed as Record<string, unknown>;
+      if (Object.keys(value).some(key => !["continue", "message"].includes(key))
+        || (value.continue !== undefined && typeof value.continue !== "boolean")
+        || (value.message !== undefined && (typeof value.message !== "string" || value.message.length > 4096))) throw new Error();
+    } catch { throw new ToolError(`钩子 ${event} 的 stdout 必须是单个 JSON 对象，字段仅 continue 和 message。`); }
+    if (typeof value.message === "string" && value.message) messages.push(value.message);
+    if (event === "before_tool" && value.continue === false) return { blocked: true, messages };
+  }
+  return { blocked: false, messages };
+}
