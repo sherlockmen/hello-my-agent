@@ -15,7 +15,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node scripts/compile.mjs 17.3 --prepare",
+    "build": "node scripts/compile.mjs 19.3 --prepare",
     "lesson:01": "node scripts/compile.mjs 01 --prepare",
     "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare",
     "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare",
@@ -73,8 +73,8 @@
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/compile.mjs 17.3",
-    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 17.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && node scripts/compile.mjs 17.3 && node -e \"if (!require('node:fs').existsSync('dist/project/instructions.js')) throw new Error('默认构建未恢复到 17.3')\"",
+    "prepack": "node scripts/compile.mjs 19.3",
+    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 19.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && node scripts/compile.mjs 19.3 && node -e \"if (!require('node:fs').existsSync('dist/skills/catalog.js')) throw new Error('默认构建未恢复到 19.3')\"",
     "check:11": "node tests/verify-chapter-11.mjs && python3 tests/verify-terminal-11.py",
     "exercise:11": "node tests/verify-exercise-11.mjs",
     "lesson:12.1": "node scripts/compile.mjs 12.1 --prepare",
@@ -104,7 +104,15 @@
     "lesson:17.1": "node scripts/compile.mjs 17.1 --prepare",
     "lesson:17.2": "node scripts/compile.mjs 17.2 --prepare",
     "lesson:17.3": "node scripts/compile.mjs 17.3 --prepare",
-    "check:17": "node tests/verify-chapter-17.mjs && python3 tests/verify-terminal-17.py"
+    "check:17": "node tests/verify-chapter-17.mjs && python3 tests/verify-terminal-17.py",
+    "lesson:18.1": "node scripts/compile.mjs 18.1 --prepare",
+    "lesson:18.2": "node scripts/compile.mjs 18.2 --prepare",
+    "lesson:18.3": "node scripts/compile.mjs 18.3 --prepare",
+    "check:18": "node tests/verify-chapter-18.mjs && python3 tests/verify-terminal-18.py",
+    "lesson:19.1": "node scripts/compile.mjs 19.1 --prepare",
+    "lesson:19.2": "node scripts/compile.mjs 19.2 --prepare",
+    "lesson:19.3": "node scripts/compile.mjs 19.3 --prepare",
+    "check:19": "node tests/verify-chapter-19.mjs && python3 tests/verify-terminal-19.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.126.0",
