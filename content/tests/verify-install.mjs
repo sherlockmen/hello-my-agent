@@ -39,6 +39,8 @@ const currentPackageModules = [
   "sessions/read-session", "sessions/manage-sessions", "sessions/fork-session",
   "sessions/file-checkpoints", "context/budget", "context/tool-results", "tools/read-tool-result",
   "context/compaction", "project/instructions",
+  "memory/store", "memory/commands", "tools/propose-memory",
+  "skills/catalog", "tools/skill-tools",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {

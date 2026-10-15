@@ -1,6 +1,6 @@
 # 17.3 检查实际加载了哪些规则
 
-[第 17 章首页](/content/chapter-17-project-instructions/README.md) · [上一节：17.2 区分不同目录的适用范围](/content/chapter-17-project-instructions/02-scoped-instructions/README.md) · [练习与答案](/content/chapter-17-project-instructions/EXERCISES.md)
+[第 17 章首页](/content/chapter-17-project-instructions/README.md) · [上一节：17.2 区分不同目录的适用范围](/content/chapter-17-project-instructions/02-scoped-instructions/README.md) · [下一节：18.1 显式保存项目记忆](/content/chapter-18-long-term-memory/01-save-memory/README.md) · [练习与答案](/content/chapter-17-project-instructions/EXERCISES.md)
 
 ## 问题：模型没有按约定做，原因可能发生在不同位置
 
@@ -234,3 +234,5 @@ hello-my-agent --project-info
 ## 本节完成后的 Agent
 
 Agent 已能从启动位置确定项目、加载有作用范围的说明，并提供不依赖模型的检查依据。它能确认请求准备所用的本地参考，工具是否允许执行、测试是否成功与模型是否遵守，仍分别由后续环节证明。
+
+接下来进入 [18.1 显式保存项目记忆](/content/chapter-18-long-term-memory/01-save-memory/README.md)：把用户选择保留的少量事实保存到独立文件，并在下一项任务开始时重新读取。

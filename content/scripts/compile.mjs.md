@@ -82,9 +82,15 @@ const targets = {
   "17.1": "chapter-17-project-instructions/01-project-root/src",
   "17.2": "chapter-17-project-instructions/02-scoped-instructions/src",
   "17.3": "chapter-17-project-instructions/03-inspect-loading/src",
+  "18.1": "chapter-18-long-term-memory/01-save-memory/src",
+  "18.2": "chapter-18-long-term-memory/02-propose-memory/src",
+  "18.3": "chapter-18-long-term-memory/03-manage-memory/src",
+  "19.1": "chapter-19-skills/01-discover-skills/src",
+  "19.2": "chapter-19-skills/02-load-on-demand/src",
+  "19.3": "chapter-19-skills/03-model-skill-tools/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "17.3";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "19.3";
 const source = targets[target];
 
 if (!source) {

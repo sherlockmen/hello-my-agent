@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "chapters": 17,
-  "tutorialPages": 99,
-  "lessonPages": 57,
-  "exercisePages": 17,
-  "sourcePages": 610,
+  "chapters": 19,
+  "tutorialPages": 109,
+  "lessonPages": 63,
+  "exercisePages": 19,
+  "sourcePages": 645,
   "sourceIndexes": 26,
-  "imagePages": 45,
-  "referencedAssets": 139,
-  "gifReferences": 45,
+  "imagePages": 63,
+  "referencedAssets": 163,
+  "gifReferences": 51,
   "convertedMotionPlayers": 15,
-  "assetBytes": 145482385,
+  "assetBytes": 189829265,
   "generatedGifCovers": [
     "chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png",
     "chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png",
@@ -82,6 +82,16 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/17-project-instructions.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/18-long-term-memory.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/19-skills.md",
       "reason": "verification evidence"
     },
     {
@@ -167,6 +177,16 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/17-project-instructions.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/18-long-term-memory.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/19-skills.md",
       "reason": "verification evidence"
     },
     {
@@ -320,6 +340,30 @@
     "chapter-17-project-instructions/02-scoped-instructions/assets/project-scoped-chain-storyboard-ee791a35ca.jpg",
     "chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-cover-7e1de202df.png",
     "chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-e41035951b.gif",
-    "chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-storyboard-c3c9be6a02.jpg"
+    "chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-storyboard-c3c9be6a02.jpg",
+    "chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-59b436dd6b.gif",
+    "chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-cover-0dc9ef1ad6.png",
+    "chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-flow-a4f2a403f1.png",
+    "chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-storyboard-1a0e667185.jpg",
+    "chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-2ed5d7383e.gif",
+    "chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-cover-13bf012602.png",
+    "chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-flow-a165c49d6b.png",
+    "chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-storyboard-46ce8d5b2c.jpg",
+    "chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-cover-83a74cc03e.png",
+    "chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-da9fe54804.gif",
+    "chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-flow-09ab34b06c.png",
+    "chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-storyboard-ce0de955d2.jpg",
+    "chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-cover-34987611d1.png",
+    "chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-ecee048146.gif",
+    "chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-flow-8dba0fbea3.png",
+    "chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-storyboard-18ce45c4e8.jpg",
+    "chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-be523f8bd3.gif",
+    "chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-cover-3551fcb40d.png",
+    "chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-flow-4f63bb24e1.png",
+    "chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-storyboard-1c0d5e162b.jpg",
+    "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-1ed2e847e9.gif",
+    "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-cover-4253f3828f.png",
+    "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-flow-981fad57bf.png",
+    "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-storyboard-b62dfcfe1b.jpg"
   ]
 }

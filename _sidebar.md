@@ -93,6 +93,16 @@
   - [17.2 区分不同目录的适用范围](/content/chapter-17-project-instructions/02-scoped-instructions/README.md)
   - [17.3 检查实际加载了哪些规则](/content/chapter-17-project-instructions/03-inspect-loading/README.md)
   - [练习与答案](/content/chapter-17-project-instructions/EXERCISES.md)
+- [第 18 章：保存可检查的长期记忆](/content/chapter-18-long-term-memory/README.md)
+  - [18.1 显式保存项目记忆](/content/chapter-18-long-term-memory/01-save-memory/README.md)
+  - [18.2 让模型提出记忆候选](/content/chapter-18-long-term-memory/02-propose-memory/README.md)
+  - [18.3 检查与纠正记忆](/content/chapter-18-long-term-memory/03-manage-memory/README.md)
+  - [练习与答案](/content/chapter-18-long-term-memory/EXERCISES.md)
+- [第 19 章：按需加载 Skills](/content/chapter-19-skills/README.md)
+  - [19.1 发现技能目录](/content/chapter-19-skills/01-discover-skills/README.md)
+  - [19.2 按需加载技能正文](/content/chapter-19-skills/02-load-on-demand/README.md)
+  - [19.3 让模型选择技能与资源](/content/chapter-19-skills/03-model-skill-tools/README.md)
+  - [练习与答案](/content/chapter-19-skills/EXERCISES.md)
 
 - 课程与参考资料
   - [连续课程大纲：36 章，从命令入口到完整发布](/content/docs/planning/COURSE.md)

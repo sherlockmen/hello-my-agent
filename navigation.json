@@ -210,6 +210,30 @@
       ],
       "exercises": "chapter-17-project-instructions/EXERCISES.md",
       "other": []
+    },
+    {
+      "directory": "chapter-18-long-term-memory",
+      "title": "第 18 章：保存可检查的长期记忆",
+      "overview": "chapter-18-long-term-memory/README.md",
+      "lessons": [
+        "chapter-18-long-term-memory/01-save-memory/README.md",
+        "chapter-18-long-term-memory/02-propose-memory/README.md",
+        "chapter-18-long-term-memory/03-manage-memory/README.md"
+      ],
+      "exercises": "chapter-18-long-term-memory/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-19-skills",
+      "title": "第 19 章：按需加载 Skills",
+      "overview": "chapter-19-skills/README.md",
+      "lessons": [
+        "chapter-19-skills/01-discover-skills/README.md",
+        "chapter-19-skills/02-load-on-demand/README.md",
+        "chapter-19-skills/03-model-skill-tools/README.md"
+      ],
+      "exercises": "chapter-19-skills/EXERCISES.md",
+      "other": []
     }
   ],
   "pages": [
@@ -5581,6 +5605,447 @@
       "title": "第 17 章：加载项目说明与规则",
       "kind": "tutorial",
       "source": "chapter-17-project-instructions/README.md"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-cover-0dc9ef1ad6.png.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-cover-0dc9ef1ad6.png.md",
+      "title": "memory-explicit-save-cover-0dc9ef1ad6.png",
+      "kind": "image",
+      "source": "chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-cover-0dc9ef1ad6.png"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-flow-a4f2a403f1.png.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-flow-a4f2a403f1.png.md",
+      "title": "memory-explicit-save-flow-a4f2a403f1.png",
+      "kind": "image",
+      "source": "chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-flow-a4f2a403f1.png"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-storyboard-1a0e667185.jpg.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-storyboard-1a0e667185.jpg.md",
+      "title": "memory-explicit-save-storyboard-1a0e667185.jpg",
+      "kind": "image",
+      "source": "chapter-18-long-term-memory/01-save-memory/assets/memory-explicit-save-storyboard-1a0e667185.jpg"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/README.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/README.md",
+      "title": "18.1 显式保存项目记忆",
+      "kind": "tutorial",
+      "source": "chapter-18-long-term-memory/01-save-memory/README.md"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/01-save-memory/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/src/cli.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/01-save-memory/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/src/memory/commands.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/src/memory/commands.ts.md",
+      "title": "commands.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/01-save-memory/src/memory/commands.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/src/memory/store.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/src/memory/store.ts.md",
+      "title": "store.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/01-save-memory/src/memory/store.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/src/models/client.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/01-save-memory/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/01-save-memory/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/src/tools/workspace.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/src/tools/workspace.ts.md",
+      "title": "workspace.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/01-save-memory/src/tools/workspace.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/01-save-memory/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/01-save-memory/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-18-long-term-memory/01-save-memory/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/01-save-memory/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-cover-13bf012602.png.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-cover-13bf012602.png.md",
+      "title": "memory-proposal-approval-cover-13bf012602.png",
+      "kind": "image",
+      "source": "chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-cover-13bf012602.png"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-flow-a165c49d6b.png.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-flow-a165c49d6b.png.md",
+      "title": "memory-proposal-approval-flow-a165c49d6b.png",
+      "kind": "image",
+      "source": "chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-flow-a165c49d6b.png"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-storyboard-46ce8d5b2c.jpg.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-storyboard-46ce8d5b2c.jpg.md",
+      "title": "memory-proposal-approval-storyboard-46ce8d5b2c.jpg",
+      "kind": "image",
+      "source": "chapter-18-long-term-memory/02-propose-memory/assets/memory-proposal-approval-storyboard-46ce8d5b2c.jpg"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/README.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/README.md",
+      "title": "18.2 让模型提出记忆候选",
+      "kind": "tutorial",
+      "source": "chapter-18-long-term-memory/02-propose-memory/README.md"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/02-propose-memory/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/02-propose-memory/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/02-propose-memory/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/src/tools/propose-memory.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/src/tools/propose-memory.ts.md",
+      "title": "propose-memory.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/02-propose-memory/src/tools/propose-memory.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/src/tools/registry.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/02-propose-memory/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/src/tools/types.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/src/tools/types.ts.md",
+      "title": "types.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/02-propose-memory/src/tools/types.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/02-propose-memory/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/02-propose-memory/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/02-propose-memory/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-cover-83a74cc03e.png.md",
+      "route": "#/content/chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-cover-83a74cc03e.png.md",
+      "title": "memory-correct-invalidate-delete-cover-83a74cc03e.png",
+      "kind": "image",
+      "source": "chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-cover-83a74cc03e.png"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-flow-09ab34b06c.png.md",
+      "route": "#/content/chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-flow-09ab34b06c.png.md",
+      "title": "memory-correct-invalidate-delete-flow-09ab34b06c.png",
+      "kind": "image",
+      "source": "chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-flow-09ab34b06c.png"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-storyboard-ce0de955d2.jpg.md",
+      "route": "#/content/chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-storyboard-ce0de955d2.jpg.md",
+      "title": "memory-correct-invalidate-delete-storyboard-ce0de955d2.jpg",
+      "kind": "image",
+      "source": "chapter-18-long-term-memory/03-manage-memory/assets/memory-correct-invalidate-delete-storyboard-ce0de955d2.jpg"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/03-manage-memory/README.md",
+      "route": "#/content/chapter-18-long-term-memory/03-manage-memory/README.md",
+      "title": "18.3 检查与纠正记忆",
+      "kind": "tutorial",
+      "source": "chapter-18-long-term-memory/03-manage-memory/README.md"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/03-manage-memory/src/cli.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/03-manage-memory/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/03-manage-memory/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/03-manage-memory/src/memory/commands.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/03-manage-memory/src/memory/commands.ts.md",
+      "title": "commands.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/03-manage-memory/src/memory/commands.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/03-manage-memory/src/memory/store.ts.md",
+      "route": "#/content/chapter-18-long-term-memory/03-manage-memory/src/memory/store.ts.md",
+      "title": "store.ts",
+      "kind": "source",
+      "source": "chapter-18-long-term-memory/03-manage-memory/src/memory/store.ts"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/EXERCISES.md",
+      "route": "#/content/chapter-18-long-term-memory/EXERCISES.md",
+      "title": "第 18 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-18-long-term-memory/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-18-long-term-memory/README.md",
+      "route": "#/content/chapter-18-long-term-memory/README.md",
+      "title": "第 18 章：保存可检查的长期记忆",
+      "kind": "tutorial",
+      "source": "chapter-18-long-term-memory/README.md"
+    },
+    {
+      "path": "content/chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-cover-34987611d1.png.md",
+      "route": "#/content/chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-cover-34987611d1.png.md",
+      "title": "skills-discover-catalog-cover-34987611d1.png",
+      "kind": "image",
+      "source": "chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-cover-34987611d1.png"
+    },
+    {
+      "path": "content/chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-flow-8dba0fbea3.png.md",
+      "route": "#/content/chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-flow-8dba0fbea3.png.md",
+      "title": "skills-discover-catalog-flow-8dba0fbea3.png",
+      "kind": "image",
+      "source": "chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-flow-8dba0fbea3.png"
+    },
+    {
+      "path": "content/chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-storyboard-18ce45c4e8.jpg.md",
+      "route": "#/content/chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-storyboard-18ce45c4e8.jpg.md",
+      "title": "skills-discover-catalog-storyboard-18ce45c4e8.jpg",
+      "kind": "image",
+      "source": "chapter-19-skills/01-discover-skills/assets/skills-discover-catalog-storyboard-18ce45c4e8.jpg"
+    },
+    {
+      "path": "content/chapter-19-skills/01-discover-skills/README.md",
+      "route": "#/content/chapter-19-skills/01-discover-skills/README.md",
+      "title": "19.1 发现技能目录",
+      "kind": "tutorial",
+      "source": "chapter-19-skills/01-discover-skills/README.md"
+    },
+    {
+      "path": "content/chapter-19-skills/01-discover-skills/src/cli.ts.md",
+      "route": "#/content/chapter-19-skills/01-discover-skills/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/01-discover-skills/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/01-discover-skills/src/models/client.ts.md",
+      "route": "#/content/chapter-19-skills/01-discover-skills/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/01-discover-skills/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/01-discover-skills/src/skills/catalog.ts.md",
+      "route": "#/content/chapter-19-skills/01-discover-skills/src/skills/catalog.ts.md",
+      "title": "catalog.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/01-discover-skills/src/skills/catalog.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/01-discover-skills/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-19-skills/01-discover-skills/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-19-skills/01-discover-skills/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-cover-3551fcb40d.png.md",
+      "route": "#/content/chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-cover-3551fcb40d.png.md",
+      "title": "skills-explicit-load-cover-3551fcb40d.png",
+      "kind": "image",
+      "source": "chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-cover-3551fcb40d.png"
+    },
+    {
+      "path": "content/chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-flow-4f63bb24e1.png.md",
+      "route": "#/content/chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-flow-4f63bb24e1.png.md",
+      "title": "skills-explicit-load-flow-4f63bb24e1.png",
+      "kind": "image",
+      "source": "chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-flow-4f63bb24e1.png"
+    },
+    {
+      "path": "content/chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-storyboard-1c0d5e162b.jpg.md",
+      "route": "#/content/chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-storyboard-1c0d5e162b.jpg.md",
+      "title": "skills-explicit-load-storyboard-1c0d5e162b.jpg",
+      "kind": "image",
+      "source": "chapter-19-skills/02-load-on-demand/assets/skills-explicit-load-storyboard-1c0d5e162b.jpg"
+    },
+    {
+      "path": "content/chapter-19-skills/02-load-on-demand/README.md",
+      "route": "#/content/chapter-19-skills/02-load-on-demand/README.md",
+      "title": "19.2 按需加载技能正文",
+      "kind": "tutorial",
+      "source": "chapter-19-skills/02-load-on-demand/README.md"
+    },
+    {
+      "path": "content/chapter-19-skills/02-load-on-demand/src/skills/catalog.ts.md",
+      "route": "#/content/chapter-19-skills/02-load-on-demand/src/skills/catalog.ts.md",
+      "title": "catalog.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/02-load-on-demand/src/skills/catalog.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/02-load-on-demand/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-19-skills/02-load-on-demand/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/02-load-on-demand/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/02-load-on-demand/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-19-skills/02-load-on-demand/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-19-skills/02-load-on-demand/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-cover-4253f3828f.png.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-cover-4253f3828f.png.md",
+      "title": "skills-model-resource-loop-cover-4253f3828f.png",
+      "kind": "image",
+      "source": "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-cover-4253f3828f.png"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-flow-981fad57bf.png.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-flow-981fad57bf.png.md",
+      "title": "skills-model-resource-loop-flow-981fad57bf.png",
+      "kind": "image",
+      "source": "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-flow-981fad57bf.png"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-storyboard-b62dfcfe1b.jpg.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-storyboard-b62dfcfe1b.jpg.md",
+      "title": "skills-model-resource-loop-storyboard-b62dfcfe1b.jpg",
+      "kind": "image",
+      "source": "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-storyboard-b62dfcfe1b.jpg"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/README.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/README.md",
+      "title": "19.3 让模型选择技能与资源",
+      "kind": "tutorial",
+      "source": "chapter-19-skills/03-model-skill-tools/README.md"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/03-model-skill-tools/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/03-model-skill-tools/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/src/models/client.ts.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/03-model-skill-tools/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/03-model-skill-tools/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/src/skills/catalog.ts.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/src/skills/catalog.ts.md",
+      "title": "catalog.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/03-model-skill-tools/src/skills/catalog.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/src/tools/registry.ts.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/03-model-skill-tools/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/src/tools/skill-tools.ts.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/src/tools/skill-tools.ts.md",
+      "title": "skill-tools.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/03-model-skill-tools/src/tools/skill-tools.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/src/tools/types.ts.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/src/tools/types.ts.md",
+      "title": "types.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/03-model-skill-tools/src/tools/types.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/03-model-skill-tools/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-19-skills/03-model-skill-tools/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-19-skills/03-model-skill-tools/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-19-skills/EXERCISES.md",
+      "route": "#/content/chapter-19-skills/EXERCISES.md",
+      "title": "第 19 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-19-skills/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-19-skills/README.md",
+      "route": "#/content/chapter-19-skills/README.md",
+      "title": "第 19 章：按需加载 Skills",
+      "kind": "tutorial",
+      "source": "chapter-19-skills/README.md"
     },
     {
       "path": "content/docs/CODING-AGENT-GAP-REVIEW.md",

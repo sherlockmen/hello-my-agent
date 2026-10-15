@@ -8,7 +8,7 @@
 
 - **已确认完成：16 / 36 章（44.4%）。**
 - **第 01—12、14—17 章已确认完成。** 第 13 章已整理，等待阅读确认。
-- 第 14—17 章已于 2026-10-15 确认完成；第 13 章四节待确认；第 18—36 章尚未编写。
+- 第 14—17 章已于 2026-10-15 确认完成；第 13 章四节、第 18、19 章各三节待确认；第 20—36 章尚未编写。
 - 章节完成状态由你的明确通知更新；已有代码或检查通过不自动计入已完成。
 
 ## 第 02 章小节进度
@@ -190,6 +190,26 @@
 | 17.2 | [区分不同目录的适用范围](/content/chapter-17-project-instructions/02-scoped-instructions/README.md) | 49 | 已完成 |
 | 17.3 | [检查实际加载了哪些规则](/content/chapter-17-project-instructions/03-inspect-loading/README.md) | 49 | 已完成 |
 
+## 第 18 章小节进度
+
+本章从 17.3 的完整快照继续，依次实现显式保存、模型候选审批和旧记忆管理。每项任务读取固定记忆快照；来源记录、有效状态与会话历史分别管理。正文冷读、连续跟写、练习、核心与真实终端检查通过，见验证记录。本章等待用户确认。
+
+| 小节 | 内容 | 正式源码数 | 状态 |
+| --- | --- | --- | --- |
+| 18.1 | [显式保存项目记忆](/content/chapter-18-long-term-memory/01-save-memory/README.md) | 51 | 待确认 |
+| 18.2 | [让模型提出记忆候选](/content/chapter-18-long-term-memory/02-propose-memory/README.md) | 52 | 待确认 |
+| 18.3 | [检查与纠正记忆](/content/chapter-18-long-term-memory/03-manage-memory/README.md) | 52 | 待确认 |
+
+## 第 19 章小节进度
+
+本章完整继承 18.3，依次提供技能目录、用户手动加载和模型按需读取工具。元信息、正文与资源逐步取得，技能文字不能改变工具权限。正文冷读、连续跟写、练习、核心与真实终端检查通过，见验证记录。本章等待用户确认。
+
+| 小节 | 内容 | 正式源码数 | 状态 |
+| --- | --- | --- | --- |
+| 19.1 | [发现技能目录](/content/chapter-19-skills/01-discover-skills/README.md) | 53 | 待确认 |
+| 19.2 | [按需加载技能正文](/content/chapter-19-skills/02-load-on-demand/README.md) | 53 | 待确认 |
+| 19.3 | [让模型选择技能与资源](/content/chapter-19-skills/03-model-skill-tools/README.md) | 54 | 待确认 |
+
 ## 阶段总览
 
 | 部分 | 章节 | 阶段成果 | 已完成 |
@@ -234,13 +254,13 @@
 | 15 | **[计算与控制上下文预算](/content/chapter-15-context-budget/README.md)**：上下文窗口、Token 估计与实际用量、输出预留、大结果裁剪、完整日志引用和预算显示。 | 大日志不挤满上下文；原始结果可定位；区分估算、实际用量和费用估计。 | 已完成 | 2026-10-15 |
 | 16 | **[自动压缩并继续任务](/content/chapter-16-context-compaction/README.md)**：历史摘要、近期消息、任务与约束保留、工具消息配对、失败回退、取消与压缩状态。 | 压缩后继续原任务；关键约束保留；失败保留原记录且界面可操作。 | 已完成 | 2026-10-15 |
 | 17 | **[加载项目说明与规则](/content/chapter-17-project-instructions/README.md)**：项目根、目录范围、来源顺序、加载预算、固定快照与工具权限。 | 子目录启动仍加载适用规则；来源可查；项目文字不能扩大权限或自行启用脚本。 | 已完成 | 2026-10-15 |
-| 18 | **可检查、可修改的长期记忆**：显式保存、模型提出建议、来源与范围、查看、编辑、删除和失效。 | 新会话能用有效知识；过期内容可纠正；重要写入可见、受控、可追溯。 | 未开始 | — |
+| 18 | **[保存可检查的长期记忆](/content/chapter-18-long-term-memory/README.md)**：显式保存、模型提出建议、来源与范围、查看、编辑、删除和失效。 | 新会话能用有效知识；过期内容可纠正；重要写入可见、受控、可追溯。 | 待确认 | — |
 
 ## 第四部分：扩展工具、知识与模型能力（19—24）
 
 | 章 | 章节与主要内容 | 验收项 | 状态 | 完成日期 |
 | --- | --- | --- | --- | --- |
-| 19 | **按需加载 Skills**：技能发现、元信息、正文和资源按需加载、手动调用、TUI 展示来源。 | 不在启动时灌入全部正文；按任务加载；技能文字不自动获得额外权限。 | 未开始 | — |
+| 19 | **[按需加载 Skills](/content/chapter-19-skills/README.md)**：技能发现、元信息、正文和资源按需加载、手动调用、TUI 展示来源。 | 不在启动时灌入全部正文；按任务加载；技能文字不自动获得额外权限。 | 待确认 | — |
 | 20 | **用 Hooks 扩展生命周期**：执行前后与结束钩子、输入输出、阻止、超时、错误和项目脚本显式启用。 | 检查结果进入反馈；失败可诊断；超时不挂死主循环。 | 未开始 | — |
 | 21 | **接入并管理 MCP 工具**：MCP SDK、本地 stdio/远端 HTTP、命名、认证、发现、断线、关闭、工具定义按需加载和连接状态。 | 调用经过统一权限入口；同名工具不混淆；处理定义变化；认证错误明确。 | 未开始 | — |
 | 22 | **查询和引用外部资料**：Web Fetch、搜索接口或 MCP、来源信息、大小/时间/重定向限制和不可信网页指令。 | 根据真实资料修正代码并引用；失败可诊断；网页不能改变执行权限。 | 未开始 | — |
@@ -321,13 +341,15 @@
 | 第十五章正文、代码、配图与练习 | 三个独立快照、练习与三套动图／完整分镜已整理，正文通过独立冷读；已确认完成 | [章节首页](/content/chapter-15-context-budget/README.md)、[练习](/content/chapter-15-context-budget/EXERCISES.md)、验证记录 |
 | 第十六章正文、代码、配图与练习 | 三节正文、独立 TypeScript 快照、三套动图与练习已整理；已确认完成 | [章节首页](/content/chapter-16-context-compaction/README.md)、[练习](/content/chapter-16-context-compaction/EXERCISES.md)、验证记录 |
 | 第十七章正文、代码、配图与练习 | 三节正文、独立 TypeScript 快照、三套动图与练习已整理；已确认完成 | [章节首页](/content/chapter-17-project-instructions/README.md)、[练习](/content/chapter-17-project-instructions/EXERCISES.md)、验证记录 |
+| 第十八章正文、代码、练习与配图 | 三节正文、独立 TypeScript 快照与练习，以及三套动图、流程图和完整分镜已整理；正文冷读、连续跟写、工程与终端检查通过，待用户确认 | [章节首页](/content/chapter-18-long-term-memory/README.md)、[练习](/content/chapter-18-long-term-memory/EXERCISES.md)、验证记录 |
+| 第十九章正文、代码、练习与配图 | 三节正文、独立 TypeScript 快照与练习，以及三套动图、流程图和完整分镜已整理；正文冷读、连续跟写、工程与终端检查通过，待用户确认 | [章节首页](/content/chapter-19-skills/README.md)、[练习](/content/chapter-19-skills/EXERCISES.md)、验证记录 |
 | 根目录依赖、构建与测试 | 已建立 | [包配置](/content/package.json.md)、[安装验收脚本](/content/tests/verify-install.mjs.md) |
 | 原规划与验收场景 | 已保留 | 规划索引、[21 个验收场景](/content/docs/planning/CAPABILITIES.md) |
 | CLI + TUI 能力复核 | 已整理并纳入本表的章节内容 | [复核文档](/content/docs/CODING-AGENT-GAP-REVIEW.md)；相关能力仍待实现 |
 | GitHub 分支职责 | `master` 保留源码、原生 Markdown 和配图；`codex/teaching-site` 维护完整教学网站；`gh-pages` 发布生成站点 | [源码分支](https://github.com/sherlockmen/hello-my-agent/tree/master)、[网站分支](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site) |
 | 章节标签、npm 发布 | 尚未执行 | 随交付阶段更新 |
 
-默认构建入口为第十七章 17.3 检查实际加载了哪些规则 `chapter-17-project-instructions/03-inspect-loading/src/cli.ts`，安装入口仍为 `dist/cli.js`。每个小节通过自己的 `npm run lesson:章节.小节` 命令选择、编译并注册，不自动调用模型，也不再手动修改构建配置。第一章目录独立保留。本地包暂用 `@sherlockmen/hello-my-agent` 并保留 `private: true`；公开发布时核对包名与最终构建入口。两种协议的流式模型响应和工具消息，`glob`、`grep`、分段 `read_file`、执行前权限策略、终端审批、会话范围、差异预览、创建和精确编辑、受控命令执行、rg 搜索、任务中断与继续对话、整轮状态事件、异步事件交付、JSONL 输出和 React / Ink TUI 已经实现，真实模型调用尚未实测；多行编辑、历史搜索与补全、结果浏览、外部编辑器、Unicode 列宽与 resize 已进入第十一章，后续能力按章节继续实现。
+默认构建入口为第十九章 19.3 由模型选择技能与资源 `chapter-19-skills/03-model-skill-tools/src/cli.ts`，安装入口仍为 `dist/cli.js`。每个小节通过自己的 `npm run lesson:章节.小节` 命令选择、编译并注册，不自动调用模型，也不再手动修改构建配置。第一章目录独立保留。本地包暂用 `@sherlockmen/hello-my-agent` 并保留 `private: true`；公开发布时核对包名与最终构建入口。两种协议的流式模型响应和工具消息，`glob`、`grep`、分段 `read_file`、执行前权限策略、终端审批、会话范围、差异预览、创建和精确编辑、受控命令执行、rg 搜索、任务中断与继续对话、整轮状态事件、异步事件交付、JSONL 输出和 React / Ink TUI 已经实现，真实模型调用尚未实测；多行编辑、历史搜索与补全、结果浏览、外部编辑器、Unicode 列宽与 resize 已进入第十一章，后续能力按章节继续实现。
 
 2026-09-16：按你的明确要求，将 OpenAI 兼容与 Anthropic 两种接口一并放入第二章；第 23 章调整为在此基础上完善协议适配与运行中模型切换，章数保持 36。
 

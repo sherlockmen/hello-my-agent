@@ -18,7 +18,7 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 `master` 保留源码、原生 Markdown 和配图；Docsify 外壳、插件和发布工具在 [codex/teaching-site](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site) 维护，`gh-pages` 只保存生成的网站。
 
-[从第一章开始](/content/chapter-01-first-command/README.md) · [当前章节：第十七章](/content/chapter-17-project-instructions/README.md) · [课程进度](/content/docs/PROGRESS.md) · [从空目录跟写](/content/docs/SETUP.md)
+[从第一章开始](/content/chapter-01-first-command/README.md) · [当前章节：第十九章](/content/chapter-19-skills/README.md) · [课程进度](/content/docs/PROGRESS.md) · [从空目录跟写](/content/docs/SETUP.md)
 
 第一次学习，先阅读[第一章的问题与原理](/content/chapter-01-first-command/README.md)，到“动手构建”时再运行：
 
@@ -63,6 +63,8 @@ Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS 
 | [第 15 章：计算与控制上下文预算](/content/chapter-15-context-budget/README.md) | 怎样估算请求大小、保留完整日志，并在超预算时停止提交？ | 三个递进小节，已完成 |
 | [第 16 章：自动压缩并继续任务](/content/chapter-16-context-compaction/README.md) | 怎样保留完整记录，缩短下一次请求，再继续原任务？ | 三个递进小节，已完成 |
 | [第 17 章：加载项目说明与规则](/content/chapter-17-project-instructions/README.md) | 怎样找到适用的项目说明，保留来源，并带入模型请求？ | 三个递进小节，已完成 |
+| [第 18 章：保存可检查的长期记忆](/content/chapter-18-long-term-memory/README.md) | 怎样保存项目知识，确认模型建议，并纠正或移除旧记忆？ | 三个递进小节，待确认 |
+| [第 19 章：按需加载 Skills](/content/chapter-19-skills/README.md) | 怎样先发现技能，再按任务读取正文和参考资料？ | 三个递进小节，待确认 |
 
 第十二章按顺序学习：[12.1 计划与执行模式](/content/chapter-12-task-control/01-plan-mode/README.md) · [12.2 任务清单](/content/chapter-12-task-control/02-task-list/README.md) · [12.3 澄清问题](/content/chapter-12-task-control/03-clarify-questions/README.md) · [12.4 运行中补充与打断](/content/chapter-12-task-control/04-live-input/README.md) · [12.5 队列编辑与撤回](/content/chapter-12-task-control/05-manage-queue/README.md)。
 
@@ -245,6 +247,14 @@ hello-my-agent/
     01-project-root/        17.1 找到项目根并加载说明
     02-scoped-instructions/ 17.2 按目录应用项目说明
     03-inspect-loading/     17.3 检查实际加载了哪些规则
+  chapter-18-long-term-memory/ 第 18 章：保存可检查的长期记忆
+    01-save-memory/         18.1 显式保存项目记忆
+    02-propose-memory/      18.2 让模型提出记忆候选
+    03-manage-memory/       18.3 检查与纠正记忆
+  chapter-19-skills/        第 19 章：按需加载 Skills
+    01-discover-skills/     19.1 发现技能目录
+    02-load-on-demand/      19.2 按需加载技能正文
+    03-model-skill-tools/   19.3 让模型选择技能与资源
   docs/
     SETUP.md                环境与从空目录搭建
     EDITORIAL-WORKFLOW.md   主 Agent、作者子 Agent 与学习者读者的编审流程
@@ -266,13 +276,13 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](/content/chapter-07-command-feedback/03-ripgrep-search/README.md?id=%E5%85%88%E5%87%86%E5%A4%87%E7%B3%BB%E7%BB%9F-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十二章检查 Plan 限制、清单更新、问答配对、运行中补充、打断与队列编辑。第十三章检查保存顺序、同步完成、有效记录与残尾、独占锁与中断恢复、工作区、旧工具不重放、旧队列归属、本地管理和无覆盖导出。第十四章检查分支隔离、写入前检查点、恢复预览与冲突；第十五章检查请求估算、大结果日志与分段读取、请求前预算和协议输出上限。第十六章检查完整工具组、摘要候选验证、预算不足时压缩、取消与失败回退；第十七章检查项目根与目录作用范围、规则来源、读取限制及权限边界。第十至十七章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包前的 `prepack` 当前选择 `17.3`；学习时用各节自己的 `lesson` 命令选择版本。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](/content/chapter-07-command-feedback/03-ripgrep-search/README.md?id=%E5%85%88%E5%87%86%E5%A4%87%E7%B3%BB%E7%BB%9F-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十二章检查 Plan 限制、清单更新、问答配对、运行中补充、打断与队列编辑。第十三章检查保存顺序、同步完成、有效记录与残尾、独占锁与中断恢复、工作区、旧工具不重放、旧队列归属、本地管理和无覆盖导出。第十四章检查分支隔离、写入前检查点、恢复预览与冲突；第十五章检查请求估算、大结果日志与分段读取、请求前预算和协议输出上限。第十六章检查完整工具组、摘要候选验证、预算不足时压缩、取消与失败回退；第十七章检查项目根与目录作用范围、规则来源、读取限制及权限边界。第十八章检查记忆写入、项目隔离、显式确认、纠正与删除；第十九章检查技能发现、按需加载、资源路径与权限边界。第十至十九章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包前的 `prepack` 当前选择 `19.3`；学习时用各节自己的 `lesson` 命令选择版本。
 
 第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
 完成第二章 `/reset` 练习后，运行 `npm run exercise:02`。这条命令编译读者实际修改的终端文件，并用本地模拟接口检查两种协议中的历史是否真正清空。
 
-分别检查会话持久化、文件检查点、上下文预算、压缩和项目说明时，在仓库根目录运行：
+分别检查会话持久化、文件检查点、上下文预算、压缩、项目说明、记忆和 Skills 时，在仓库根目录运行：
 
 ```bash
 npm run check:13
@@ -280,6 +290,8 @@ npm run check:14
 npm run check:15
 npm run check:16
 npm run check:17
+npm run check:18
+npm run check:19
 ```
 
 完成 12.5 和[第十二章练习](/content/chapter-12-task-control/EXERCISES.md)后，运行独立状态实验：
@@ -290,11 +302,11 @@ npm run exercise:12
 
 回看第十二章时，使用 `npm run check:12` 检查任务控制实现。上述检查不调用真实模型；实际模型服务和回答按各节手动步骤观察。
 
-[第十三章练习](/content/chapter-13-session-persistence/EXERCISES.md) · [第十四章练习](/content/chapter-14-session-checkpoints/EXERCISES.md) · [第十五章练习](/content/chapter-15-context-budget/EXERCISES.md) · [第十六章练习](/content/chapter-16-context-compaction/EXERCISES.md) · [第十七章练习](/content/chapter-17-project-instructions/EXERCISES.md) · [当前进度](/content/docs/PROGRESS.md)
+[第十三章练习](/content/chapter-13-session-persistence/EXERCISES.md) · [第十四章练习](/content/chapter-14-session-checkpoints/EXERCISES.md) · [第十五章练习](/content/chapter-15-context-budget/EXERCISES.md) · [第十六章练习](/content/chapter-16-context-compaction/EXERCISES.md) · [第十七章练习](/content/chapter-17-project-instructions/EXERCISES.md) · [第十八章练习](/content/chapter-18-long-term-memory/EXERCISES.md) · [第十九章练习](/content/chapter-19-skills/EXERCISES.md) · [当前进度](/content/docs/PROGRESS.md)
 
 回看上一章：[第十二章练习](/content/chapter-12-task-control/EXERCISES.md) · 第十二章验证记录。
 
-第 01—12、14—17 章已确认完成。第十三章已整理，等待阅读确认。npm 包尚未发布。
+第 01—12、14—17 章已确认完成。第十三、十八、十九章已整理，等待阅读确认。npm 包尚未发布。
 
 ## 许可证
 
