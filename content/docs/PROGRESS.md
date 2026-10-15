@@ -1,14 +1,14 @@
 # Hello, My Agent｜课程进度
 
-更新：2026-10-14。
+更新：2026-10-15。
 
 本表根据最新确认的 **6 部分、36 章 CLI + TUI Agent 课程目录**建立，是后续章节内容与完成状态的记录入口。[初版大纲](/content/docs/planning/COURSE.md)保留原规划；本表已合入 [CLI + TUI 补充内容](/content/docs/CODING-AGENT-GAP-REVIEW.md)。
 
 ## 当前进度
 
-- **已确认完成：12 / 36 章（33.3%）。**
-- **第 01—12 章已全部确认完成。** 当前开始第 13 章“保存、查找与恢复会话”。
-- 第 12 章已于 2026-10-14 确认完成；第 13 章进行中，13.1 会话保存已整理并待确认，第 14—36 章尚未编写。
+- **已确认完成：16 / 36 章（44.4%）。**
+- **第 01—12、14—17 章已确认完成。** 第 13 章已整理，等待阅读确认。
+- 第 14—17 章已于 2026-10-15 确认完成；第 13 章四节待确认；第 18—36 章尚未编写。
 - 章节完成状态由你的明确通知更新；已有代码或检查通过不自动计入已完成。
 
 ## 第 02 章小节进度
@@ -141,11 +141,54 @@
 
 ## 第 13 章小节进度
 
-第十三章从 12.5 的完整 TypeScript 快照继续，先完成会话保存，再增加读取、恢复与管理。13.1 的正文、代码、三段动图、等待与失败对照图、退出时序图与练习已整理；正文与配图分别通过独立试读，本地实现、资产和原地播放控件检查通过，详见验证记录。本节待阅读确认，第十三章整体保持进行中；后续读取、恢复与会话锁尚未实现。
+第十三章从 12.5 的完整 TypeScript 快照继续，沿“保存 → 读取可信记录 → 恢复 → 查找与导出”串起四节。先写原理正文，再补配图；保留 13.1 已有图文，并为读取、恢复、锁与管理补充图解。实际检查证据见验证记录。本章等待阅读确认；全书已确认完成 16 / 36 章。
 
 | 小节 | 内容 | 正式源码数 | 状态 |
 | --- | --- | --- | --- |
 | 13.1 | [会话保存](/content/chapter-13-session-persistence/01-save-session/README.md) | 40 | 待确认 |
+| 13.2 | [读取可信记录](/content/chapter-13-session-persistence/02-read-records/README.md) | 41 | 待确认 |
+| 13.3 | [恢复会话](/content/chapter-13-session-persistence/03-resume-session/README.md) | 41 | 待确认 |
+| 13.4 | [查找与导出会话](/content/chapter-13-session-persistence/04-manage-sessions/README.md) | 42 | 待确认 |
+
+## 第 14 章小节进度
+
+本章从 13.4 的独立快照继续。实际检查证据见验证记录，本章已于 2026-10-15 按用户通知标记为已完成。
+
+| 小节 | 内容 | 正式源码数 | 状态 |
+| --- | --- | --- | --- |
+| 14.1 | [从已有会话创建分支](/content/chapter-14-session-checkpoints/01-fork-session/README.md) | 43 | 已完成 |
+| 14.2 | [为工具写入保存文件检查点](/content/chapter-14-session-checkpoints/02-file-checkpoints/README.md) | 44 | 已完成 |
+| 14.3 | [查看改动并按条件恢复](/content/chapter-14-session-checkpoints/03-review-and-restore/README.md) | 44 | 已完成 |
+
+## 第 15 章小节进度
+
+本章从 14.3 的独立快照继续。实际检查证据见验证记录，本章已于 2026-10-15 按用户通知标记为已完成。
+
+| 小节 | 内容 | 正式源码数 | 状态 |
+| --- | --- | --- | --- |
+| 15.1 | [估算请求大小并预留输出](/content/chapter-15-context-budget/01-estimate-tokens/README.md) | 45 | 已完成 |
+| 15.2 | [缩短工具结果并保留完整日志](/content/chapter-15-context-budget/02-bound-tool-results/README.md) | 47 | 已完成 |
+| 15.3 | [显示预算并在超限时停止](/content/chapter-15-context-budget/03-enforce-budget/README.md) | 47 | 已完成 |
+
+## 第 16 章小节进度
+
+本章从 15.3 的独立快照继续，先区分完整记录与请求视图，再生成临时摘要候选，最后在普通请求能放下时采用候选并继续原任务。检查证据见验证记录。本章已于 2026-10-15 按用户通知标记为已完成，三个小节一并更新。
+
+| 小节 | 内容 | 正式源码数 | 状态 |
+| --- | --- | --- | --- |
+| 16.1 | [选择可以压缩的历史](/content/chapter-16-context-compaction/01-select-history/README.md) | 48 | 已完成 |
+| 16.2 | [生成摘要并核对替换结果](/content/chapter-16-context-compaction/02-generate-summary/README.md) | 48 | 已完成 |
+| 16.3 | [超限时压缩，再继续原任务](/content/chapter-16-context-compaction/03-compact-and-continue/README.md) | 48 | 已完成 |
+
+## 第 17 章小节进度
+
+本章从 16.3 的独立快照继续，先找到项目根，再沿启动目录的祖先链加载说明，最后提供可核对来源与版本的本地报告。检查证据见验证记录。本章已于 2026-10-15 按用户通知标记为已完成，三个小节一并更新。
+
+| 小节 | 内容 | 正式源码数 | 状态 |
+| --- | --- | --- | --- |
+| 17.1 | [从项目根读取说明](/content/chapter-17-project-instructions/01-project-root/README.md) | 49 | 已完成 |
+| 17.2 | [区分不同目录的适用范围](/content/chapter-17-project-instructions/02-scoped-instructions/README.md) | 49 | 已完成 |
+| 17.3 | [检查实际加载了哪些规则](/content/chapter-17-project-instructions/03-inspect-loading/README.md) | 49 | 已完成 |
 
 ## 阶段总览
 
@@ -153,7 +196,7 @@
 | --- | --- | --- | --- |
 | 第一部分：先让 Agent 完成一次编码任务 | 01—08 | 普通终端中的读取、搜索、权限、修改、测试与取消。 | 8 / 8 |
 | 第二部分：把 Agent 做成真正可用的 TUI | 09—12 | 可观察执行、审批操作、补充要求与打断任务的终端界面。 | 4 / 4 |
-| 第三部分：管理会话、上下文与项目知识 | 13—18 | 查找和恢复任务，管理分支、检查点、上下文与记忆。 | 0 / 6 |
+| 第三部分：管理会话、上下文与项目知识 | 13—18 | 查找和恢复任务，管理分支、检查点、上下文与记忆。 | 4 / 6 |
 | 第四部分：扩展工具、知识与模型能力 | 19—24 | Skills、Hooks、MCP、资料查询、多模型与附件。 | 0 / 6 |
 | 第五部分：子 Agent、交互进程与任务协作 | 25—30 | 可跟进、接管、取消和整合的子任务、命令进程与协作。 | 0 / 6 |
 | 第六部分：把项目做成可以安装和长期使用的产品 | 31—36 | 扩展分发、诊断、隔离、故障恢复、评测与 npm 发布。 | 0 / 6 |
@@ -186,11 +229,11 @@
 
 | 章 | 章节与主要内容 | 验收项 | 状态 | 完成日期 |
 | --- | --- | --- | --- | --- |
-| 13 | **[保存、查找与恢复会话](/content/chapter-13-session-persistence/README.md)**：会话 ID、JSONL、格式版本、锁、中断标记、列表、命名、搜索、恢复、导出与工作区信息。 | 崩溃后读取有效记录；识别目录/工作区变化；恢复不重复执行工具。 | 进行中 | — |
-| 14 | **会话分支与文件检查点**：会话分支、文件检查点、TUI 改动查看与恢复范围、对话恢复和文件恢复的区别。 | 分支不改变原会话；外部修改导致的恢复冲突可见；说明不可撤销的副作用。 | 未开始 | — |
-| 15 | **计算与控制上下文预算**：上下文窗口、Token 估计与实际用量、输出预留、大结果裁剪、完整日志引用和预算显示。 | 大日志不挤满上下文；原始结果可定位；区分估算、实际用量和费用估计。 | 未开始 | — |
-| 16 | **自动压缩并继续任务**：历史摘要、近期消息、任务与约束保留、工具消息配对、失败回退、取消与压缩状态。 | 压缩后继续原任务；关键约束保留；失败保留原记录且界面可操作。 | 未开始 | — |
-| 17 | **加载项目说明、规则与配置**：项目根、说明文件作用范围、来源与优先级、加载预算和项目配置信任。 | 子目录启动仍加载适用规则；来源可查；项目文字不能扩大权限或自行启用脚本。 | 未开始 | — |
+| 13 | **[保存、查找与恢复会话](/content/chapter-13-session-persistence/README.md)**：会话 ID、JSONL、格式版本、锁、中断标记、列表、命名、搜索、恢复、导出与工作区信息。 | 崩溃后读取有效记录；识别目录/工作区变化；恢复不重复执行工具。 | 待确认 | — |
+| 14 | **[会话分支与文件检查点](/content/chapter-14-session-checkpoints/README.md)**：会话分支、文件检查点、TUI 改动查看与恢复范围、对话恢复和文件恢复的区别。 | 分支不改变原会话；外部修改导致的恢复冲突可见；说明不可撤销的副作用。 | 已完成 | 2026-10-15 |
+| 15 | **[计算与控制上下文预算](/content/chapter-15-context-budget/README.md)**：上下文窗口、Token 估计与实际用量、输出预留、大结果裁剪、完整日志引用和预算显示。 | 大日志不挤满上下文；原始结果可定位；区分估算、实际用量和费用估计。 | 已完成 | 2026-10-15 |
+| 16 | **[自动压缩并继续任务](/content/chapter-16-context-compaction/README.md)**：历史摘要、近期消息、任务与约束保留、工具消息配对、失败回退、取消与压缩状态。 | 压缩后继续原任务；关键约束保留；失败保留原记录且界面可操作。 | 已完成 | 2026-10-15 |
+| 17 | **[加载项目说明与规则](/content/chapter-17-project-instructions/README.md)**：项目根、目录范围、来源顺序、加载预算、固定快照与工具权限。 | 子目录启动仍加载适用规则；来源可查；项目文字不能扩大权限或自行启用脚本。 | 已完成 | 2026-10-15 |
 | 18 | **可检查、可修改的长期记忆**：显式保存、模型提出建议、来源与范围、查看、编辑、删除和失效。 | 新会话能用有效知识；过期内容可纠正；重要写入可见、受控、可追溯。 | 未开始 | — |
 
 ## 第四部分：扩展工具、知识与模型能力（19—24）
@@ -272,14 +315,19 @@
 | 第十一章正文、代码与练习 | 已确认完成 | [正文](/content/chapter-11-terminal-workbench/README.md)、[完成版源码](/content/chapter-11-terminal-workbench/05-terminal-layout/src/_index.md)、[练习](/content/chapter-11-terminal-workbench/EXERCISES.md) |
 | 第十二章正文、代码、动图与练习 | 已确认完成 | [正文](/content/chapter-12-task-control/README.md)、[完成版源码](/content/chapter-12-task-control/05-manage-queue/src/_index.md)、[练习](/content/chapter-12-task-control/EXERCISES.md) |
 | 第十二章任务控制验证与审读 | 核心、终端、双协议、安装和练习检查通过；未调用真实模型 | 验证记录 |
-| 第十三章会话保存正文、代码、配图与练习 | 正文与最终配图独立试读通过；本节待确认 | [13.1 正文](/content/chapter-13-session-persistence/01-save-session/README.md)、[保存实现](/content/chapter-13-session-persistence/01-save-session/src/sessions/save-session.ts.md)、[练习](/content/chapter-13-session-persistence/EXERCISES.md) |
-| 第十三章会话保存验证 | 类型、保存顺序与失败边界、PTY 集成及临时安装检查通过；未调用真实模型 | 验证记录 |
+| 第十三章正文、代码、配图与练习 | 四节完整快照与练习已整理，原理和新增配图通过独立冷读；待用户确认 | [章节首页](/content/chapter-13-session-persistence/README.md)、[读取](/content/chapter-13-session-persistence/02-read-records/README.md)、[恢复](/content/chapter-13-session-persistence/03-resume-session/README.md)、[管理](/content/chapter-13-session-persistence/04-manage-sessions/README.md)、[练习](/content/chapter-13-session-persistence/EXERCISES.md) |
+| 第十三章工程验证 | 类型、教程标记、保存顺序、85 项记录与锁检查、恢复和管理 CLI、真实 PTY 及临时安装检查通过；未调用真实模型 | 验证记录 |
+| 第十四章正文、代码、配图与练习 | 三个独立快照、练习与三套动图／完整分镜已整理，正文通过独立冷读；已确认完成 | [章节首页](/content/chapter-14-session-checkpoints/README.md)、[练习](/content/chapter-14-session-checkpoints/EXERCISES.md)、验证记录 |
+| 第十五章正文、代码、配图与练习 | 三个独立快照、练习与三套动图／完整分镜已整理，正文通过独立冷读；已确认完成 | [章节首页](/content/chapter-15-context-budget/README.md)、[练习](/content/chapter-15-context-budget/EXERCISES.md)、验证记录 |
+| 第十六章正文、代码、配图与练习 | 三节正文、独立 TypeScript 快照、三套动图与练习已整理；已确认完成 | [章节首页](/content/chapter-16-context-compaction/README.md)、[练习](/content/chapter-16-context-compaction/EXERCISES.md)、验证记录 |
+| 第十七章正文、代码、配图与练习 | 三节正文、独立 TypeScript 快照、三套动图与练习已整理；已确认完成 | [章节首页](/content/chapter-17-project-instructions/README.md)、[练习](/content/chapter-17-project-instructions/EXERCISES.md)、验证记录 |
 | 根目录依赖、构建与测试 | 已建立 | [包配置](/content/package.json.md)、[安装验收脚本](/content/tests/verify-install.mjs.md) |
 | 原规划与验收场景 | 已保留 | 规划索引、[21 个验收场景](/content/docs/planning/CAPABILITIES.md) |
 | CLI + TUI 能力复核 | 已整理并纳入本表的章节内容 | [复核文档](/content/docs/CODING-AGENT-GAP-REVIEW.md)；相关能力仍待实现 |
-| GitHub 推送、章节标签、npm 发布 | 尚未执行 | 随交付阶段更新 |
+| GitHub 分支职责 | `master` 保留源码、原生 Markdown 和配图；`codex/teaching-site` 维护完整教学网站；`gh-pages` 发布生成站点 | [源码分支](https://github.com/sherlockmen/hello-my-agent/tree/master)、[网站分支](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site) |
+| 章节标签、npm 发布 | 尚未执行 | 随交付阶段更新 |
 
-默认构建入口为第十三章 13.1 会话保存 `01-save-session/src/cli.ts`，安装入口仍为 `dist/cli.js`。每个小节通过自己的 `npm run lesson:章节.小节` 命令选择、编译并注册，不自动调用模型，也不再手动修改构建配置。第一章目录独立保留。本地包暂用 `@sherlockmen/hello-my-agent` 并保留 `private: true`；公开发布时核对包名与最终构建入口。两种协议的流式模型响应和工具消息，`glob`、`grep`、分段 `read_file`、执行前权限策略、终端审批、会话范围、差异预览、创建和精确编辑、受控命令执行、rg 搜索、任务中断与继续对话、整轮状态事件、异步事件交付、JSONL 输出和 React / Ink TUI 已经实现，真实模型调用尚未实测；多行编辑、历史搜索与补全、结果浏览、外部编辑器、Unicode 列宽与 resize 已进入第十一章，后续能力按章节继续实现。
+默认构建入口为第十七章 17.3 检查实际加载了哪些规则 `chapter-17-project-instructions/03-inspect-loading/src/cli.ts`，安装入口仍为 `dist/cli.js`。每个小节通过自己的 `npm run lesson:章节.小节` 命令选择、编译并注册，不自动调用模型，也不再手动修改构建配置。第一章目录独立保留。本地包暂用 `@sherlockmen/hello-my-agent` 并保留 `private: true`；公开发布时核对包名与最终构建入口。两种协议的流式模型响应和工具消息，`glob`、`grep`、分段 `read_file`、执行前权限策略、终端审批、会话范围、差异预览、创建和精确编辑、受控命令执行、rg 搜索、任务中断与继续对话、整轮状态事件、异步事件交付、JSONL 输出和 React / Ink TUI 已经实现，真实模型调用尚未实测；多行编辑、历史搜索与补全、结果浏览、外部编辑器、Unicode 列宽与 resize 已进入第十一章，后续能力按章节继续实现。
 
 2026-09-16：按你的明确要求，将 OpenAI 兼容与 Anthropic 两种接口一并放入第二章；第 23 章调整为在此基础上完善协议适配与运行中模型切换，章数保持 36。
 
@@ -314,6 +362,10 @@
 | 2026-09-24 | 第 10 章：第一个真正可用的 TUI | 用户明确要求“第十章标记已完成 开始第十一章” | 四个小节、完整代码、练习、验证与独立读者审阅已具备 |
 | 2026-10-09 | 第 11 章：把终端变成可以编辑和浏览的工作区 | 用户明确要求“将第11章标记为已完成 并开始下一章” | 五个递进小节、手绘动图、完整代码与练习已具备 |
 | 2026-10-14 | 第 12 章：计划、执行与运行中干预 | 用户明确要求“将第十二章标记为已完成 开始第十三章” | 五节正文、TypeScript 快照、动图、练习与验证记录已具备 |
+| 2026-10-15 | 第 14 章：会话分支与文件检查点 | 用户要求“将这些章节标记为已完成”，承接第 14、15 章交付 | 三节正文、独立快照、动图、练习及本地验证已具备 |
+| 2026-10-15 | 第 15 章：计算与控制上下文预算 | 同上 | 三节正文、独立快照、动图、练习及本地验证已具备 |
+| 2026-10-15 | 第 16 章：自动压缩并继续任务 | 用户要求“将这两章标记为已完成”，承接第 16、17 章交付 | 三节正文、独立 TypeScript 快照、动图、练习及本地验证已具备 |
+| 2026-10-15 | 第 17 章：加载项目说明与规则 | 同上 | 三节正文、独立 TypeScript 快照、动图、练习及本地验证已具备 |
 
 2026-09-16：第二章按配置、模型、Agent Loop、终端与错误职责拆分，入口保留第一章的命令规则。源码与教程标明沿用、新增和修改；第 03 章在同一核心上补入工具循环。此调整不改变章节完成状态。
 

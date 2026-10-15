@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "chapters": 13,
-  "tutorialPages": 76,
-  "lessonPages": 42,
-  "exercisePages": 13,
-  "sourcePages": 546,
+  "chapters": 17,
+  "tutorialPages": 99,
+  "lessonPages": 57,
+  "exercisePages": 17,
+  "sourcePages": 610,
   "sourceIndexes": 26,
-  "imagePages": 19,
-  "referencedAssets": 93,
-  "gifReferences": 31,
-  "convertedMotionPlayers": 13,
-  "assetBytes": 82811866,
+  "imagePages": 45,
+  "referencedAssets": 139,
+  "gifReferences": 45,
+  "convertedMotionPlayers": 15,
+  "assetBytes": 145482385,
   "generatedGifCovers": [
     "chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png",
     "chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png",
@@ -51,11 +51,6 @@
   "omittedLinks": [
     {
       "from": "README.md",
-      "target": "docs/verification/13-session-persistence.md",
-      "reason": "verification evidence"
-    },
-    {
-      "from": "README.md",
       "target": "docs/verification/12-task-control.md",
       "reason": "verification evidence"
     },
@@ -67,6 +62,26 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/13-session-persistence.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/14-session-checkpoints.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/15-context-budget.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/16-context-compaction.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/17-project-instructions.md",
       "reason": "verification evidence"
     },
     {
@@ -132,6 +147,26 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/13-session-persistence.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/14-session-checkpoints.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/15-context-budget.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/16-context-compaction.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/17-project-instructions.md",
       "reason": "verification evidence"
     },
     {
@@ -239,6 +274,52 @@
     "chapter-13-session-persistence/01-save-session/assets/session-file-storyboard-f954463b92.jpg",
     "chapter-13-session-persistence/01-save-session/assets/session-serial-1eb40b2ce6.gif",
     "chapter-13-session-persistence/01-save-session/assets/session-serial-cover-8c1c867db1.png",
-    "chapter-13-session-persistence/01-save-session/assets/session-serial-storyboard-dc3a143980.jpg"
+    "chapter-13-session-persistence/01-save-session/assets/session-serial-storyboard-dc3a143980.jpg",
+    "chapter-13-session-persistence/02-read-records/assets/read-records-8cfb7938de.gif",
+    "chapter-13-session-persistence/02-read-records/assets/read-records-cover-64caf2b2b9.png",
+    "chapter-13-session-persistence/02-read-records/assets/read-records-storyboard-1046c70b19.jpg",
+    "chapter-13-session-persistence/02-read-records/assets/record-boundaries-a640649262.png",
+    "chapter-13-session-persistence/03-resume-session/assets/lock-and-interruption-5d9fbccec7.png",
+    "chapter-13-session-persistence/03-resume-session/assets/restore-session-8de9f61d70.gif",
+    "chapter-13-session-persistence/03-resume-session/assets/restore-session-cover-38792f80f8.png",
+    "chapter-13-session-persistence/03-resume-session/assets/restore-session-storyboard-4da438613f.jpg",
+    "chapter-13-session-persistence/04-manage-sessions/assets/export-and-workspace-3adabe59c9.png",
+    "chapter-13-session-persistence/04-manage-sessions/assets/find-and-name-a204abd2ce.png",
+    "chapter-14-session-checkpoints/01-fork-session/assets/fork-session-78a1b6d710.gif",
+    "chapter-14-session-checkpoints/01-fork-session/assets/fork-session-cover-f14f5d69a9.png",
+    "chapter-14-session-checkpoints/01-fork-session/assets/fork-session-storyboard-daf9348b51.jpg",
+    "chapter-14-session-checkpoints/02-file-checkpoints/assets/file-checkpoint-b17db3de48.gif",
+    "chapter-14-session-checkpoints/02-file-checkpoints/assets/file-checkpoint-cover-cbc755ad21.png",
+    "chapter-14-session-checkpoints/02-file-checkpoints/assets/file-checkpoint-storyboard-425d874936.jpg",
+    "chapter-14-session-checkpoints/03-review-and-restore/assets/conditional-restore-b88422b1dd.gif",
+    "chapter-14-session-checkpoints/03-review-and-restore/assets/conditional-restore-cover-387db7b035.png",
+    "chapter-14-session-checkpoints/03-review-and-restore/assets/conditional-restore-storyboard-95e0b14c13.jpg",
+    "chapter-15-context-budget/01-estimate-tokens/assets/estimate-request-37d8237434.gif",
+    "chapter-15-context-budget/01-estimate-tokens/assets/estimate-request-cover-52017369f8.png",
+    "chapter-15-context-budget/01-estimate-tokens/assets/estimate-request-storyboard-6b90de409a.jpg",
+    "chapter-15-context-budget/02-bound-tool-results/assets/bound-tool-result-09227471fe.gif",
+    "chapter-15-context-budget/02-bound-tool-results/assets/bound-tool-result-cover-d0c70175ec.png",
+    "chapter-15-context-budget/02-bound-tool-results/assets/bound-tool-result-storyboard-c844c46802.jpg",
+    "chapter-15-context-budget/03-enforce-budget/assets/budget-gate-91556333eb.gif",
+    "chapter-15-context-budget/03-enforce-budget/assets/budget-gate-cover-851386bd66.png",
+    "chapter-15-context-budget/03-enforce-budget/assets/budget-gate-storyboard-2577a8b61f.jpg",
+    "chapter-16-context-compaction/01-select-history/assets/select-history-c5f3c483ed.gif",
+    "chapter-16-context-compaction/01-select-history/assets/select-history-cover-0f1a6c8413.png",
+    "chapter-16-context-compaction/01-select-history/assets/select-history-storyboard-62d84b5212.jpg",
+    "chapter-16-context-compaction/02-generate-summary/assets/summary-candidate-33ebdd8f9d.gif",
+    "chapter-16-context-compaction/02-generate-summary/assets/summary-candidate-cover-e752413f01.png",
+    "chapter-16-context-compaction/02-generate-summary/assets/summary-candidate-storyboard-e1eb320003.jpg",
+    "chapter-16-context-compaction/03-compact-and-continue/assets/compact-continue-1b055b2958.gif",
+    "chapter-16-context-compaction/03-compact-and-continue/assets/compact-continue-cover-3fe926da03.png",
+    "chapter-16-context-compaction/03-compact-and-continue/assets/compact-continue-storyboard-ec0054c5b0.jpg",
+    "chapter-17-project-instructions/01-project-root/assets/project-root-reference-cover-f6e27197eb.png",
+    "chapter-17-project-instructions/01-project-root/assets/project-root-reference-f0bdb12003.gif",
+    "chapter-17-project-instructions/01-project-root/assets/project-root-reference-storyboard-4a5ce8d39a.jpg",
+    "chapter-17-project-instructions/02-scoped-instructions/assets/project-scoped-chain-82faa7dc94.gif",
+    "chapter-17-project-instructions/02-scoped-instructions/assets/project-scoped-chain-cover-e2f55e6485.png",
+    "chapter-17-project-instructions/02-scoped-instructions/assets/project-scoped-chain-storyboard-ee791a35ca.jpg",
+    "chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-cover-7e1de202df.png",
+    "chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-e41035951b.gif",
+    "chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-storyboard-c3c9be6a02.jpg"
   ]
 }

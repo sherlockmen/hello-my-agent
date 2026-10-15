@@ -36,6 +36,9 @@ const currentPackageModules = [
   "ui/teaching-trace", "ui/terminal", "ui/input", "ui/jsonl", "agent/run", "agent/run-stream",
   "agent/run-options", "tools/todo-write", "tools/ask-user",
   "ui/tui/questions", "ui/tui/input-queue", "ui/tui/queue-panel", "sessions/save-session",
+  "sessions/read-session", "sessions/manage-sessions", "sessions/fork-session",
+  "sessions/file-checkpoints", "context/budget", "context/tool-results", "tools/read-tool-result",
+  "context/compaction", "project/instructions",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {

@@ -1,10 +1,10 @@
 # 13.1 会话保存
 
-[第 13 章首页](/content/chapter-13-session-persistence/README.md) · [上一节：第 12 章练习](/content/chapter-12-task-control/EXERCISES.md) · [本章练习](/content/chapter-13-session-persistence/EXERCISES.md)
+[第 13 章首页](/content/chapter-13-session-persistence/README.md) · [上一节：第 12 章练习](/content/chapter-12-task-control/EXERCISES.md) · [下一节：13.2 读取有效会话记录](/content/chapter-13-session-persistence/02-read-records/README.md) · [本章练习](/content/chapter-13-session-persistence/EXERCISES.md)
 
 ## 问题：退出以后，怎样留下已经发生的讨论
 
-我们继续检查 `add.mjs`，要求 Agent 验证两个负数相加。它读取文件、执行检查，把结果返回给模型；任务结束时，屏幕上已经有了回答。此时退出，再次启动，工作区文件仍在，新进程里的消息历史却从空数组开始。即使文件没有变化，模型也不知道刚才为什么检查负数、用了什么工具、取得了什么结果。
+我们继续检查 `src/add.ts`，要求 Agent 验证两个负数相加。它读取文件、执行检查，把结果返回给模型；任务结束时，屏幕上已经有了回答。此时退出，再次启动，工作区文件仍在，新进程里的消息历史却从空数组开始。即使文件没有变化，模型也不知道刚才为什么检查负数、用了什么工具、取得了什么结果。
 
 把终端输出重定向到一个文件，可以留下看到的文字，却不等于留下完整会话。模型消息中还有工具调用的参数、调用 ID 和对应结果；TUI 则有当前模式、任务清单以及尚未被核心收取的要求。它们分别回答不同问题，不能只保存最后一句回答。
 
@@ -57,7 +57,7 @@
 | TUI 显示条目、焦点和滚动位置 | 不保存 | 它们组织画面，不是模型上下文 |
 | 当前进程的授权集合与模型连接配置 | 不保存 | 本节不会把一次批准或 API 密钥写入会话状态 |
 
-清单中的 `completed` 仍只是模型报告的进度。保存它不会把报告变成测试证明；判断负数检查是否成功，要看对应工具返回值。保存工作区路径也只是记住当时在哪里工作，并没有为 `add.mjs` 建立文件备份。
+清单中的 `completed` 仍只是模型报告的进度。保存它不会把报告变成测试证明；判断负数检查是否成功，要看对应工具返回值。保存工作区路径也只是记住当时在哪里工作，并没有为 `src/add.ts` 建立文件备份。
 
 ### 一行一个 JSON，解决的是表示问题
 
@@ -775,15 +775,15 @@ npm run check:13
 | 失败之后停止追加并仍尝试关闭 | 分别模拟追加半行失败、同步失败；后续检查点只报失败、不再写入，关闭仍执行 |
 | 本地命令和任务使用明确保存点 | 文本入口依次执行模式切换、任务、清空历史与退出，检查 `mode → run_end → reset → exit` 的记录顺序 |
 
-接着观察自己的会话，继续使用[第 12 章演示项目](/content/chapter-12-task-control/demo-project/_index.md)。从仓库根目录进入该工作区，为演示创建临时目录并启动：
+接着观察自己的会话，继续使用[章首页的 TypeScript 小项目](/content/chapter-13-session-persistence/README.md?id=%E5%87%86%E5%A4%87%E6%9C%AC%E7%AB%A0%E7%9A%84-typescript-%E5%B0%8F%E9%A1%B9%E7%9B%AE)。从仓库根目录进入该工作区，为演示创建临时目录并启动：
 
 ```bash
-cd chapter-12-task-control/demo-project
+cd docs/.work/ch13-typescript-demo
 SESSION_DEMO_DIR=$(mktemp -d)
 hello-my-agent --output text --session-dir "$SESSION_DEMO_DIR"
 ```
 
-输入“请读取 src/add.mjs，检查两个负数相加，并说明检查依据”。任务结束后，应在 stderr 看到 `会话已保存：检查点 #...`；再输入 `/exit`，等待退出。启动时报告的路径指向本次 UUID 文件。可以用编辑器查看，也可以使用[练习二的只读脚本](/content/chapter-13-session-persistence/EXERCISES.md?id=%E7%BB%83%E4%B9%A0%E4%BA%8C%E6%9F%A5%E7%9C%8B%E6%A8%A1%E5%BC%8F%E5%88%87%E6%8D%A2%E4%B8%8E%E6%B8%85%E7%A9%BA%E5%8E%86%E5%8F%B2%E7%95%99%E4%B8%8B%E7%9A%84%E8%AE%B0%E5%BD%95)展开它。
+输入“请读取 src/add.ts，检查两个负数相加，并说明检查依据”。任务结束后，应在 stderr 看到 `会话已保存：检查点 #...`；再输入 `/exit`，等待退出。启动时报告的路径指向本次 UUID 文件，可以用编辑器查看。[练习二的只读校验脚本](/content/chapter-13-session-persistence/EXERCISES.md?id=%E7%BB%83%E4%B9%A0%E4%BA%8C%E9%AA%8C%E8%AF%81%E8%BF%9E%E7%BB%AD%E6%9C%89%E6%95%88%E5%89%8D%E7%BC%80%E4%B8%8E%E4%B8%A5%E6%A0%BC%E6%A0%A1%E9%AA%8C)会另建临时记录，验证正常记录与损坏边界的区别。
 
 第一行应为会话头，任务收尾的检查点包含 `state.messages`。检查保存的实际工具调用参数、调用 ID 与对应工具结果，以及最终回答；具体模型可能选择不同工具，不必要求它逐字重现前面的说明例子。退出检查点应保留同一会话 ID，`seq` 按保存次序增加。
 

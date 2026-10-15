@@ -155,9 +155,60 @@
       "title": "第 13 章：保存、查找与恢复会话",
       "overview": "chapter-13-session-persistence/README.md",
       "lessons": [
-        "chapter-13-session-persistence/01-save-session/README.md"
+        "chapter-13-session-persistence/01-save-session/README.md",
+        "chapter-13-session-persistence/02-read-records/README.md",
+        "chapter-13-session-persistence/03-resume-session/README.md",
+        "chapter-13-session-persistence/04-manage-sessions/README.md"
       ],
       "exercises": "chapter-13-session-persistence/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-14-session-checkpoints",
+      "title": "第 14 章：会话分支与文件检查点",
+      "overview": "chapter-14-session-checkpoints/README.md",
+      "lessons": [
+        "chapter-14-session-checkpoints/01-fork-session/README.md",
+        "chapter-14-session-checkpoints/02-file-checkpoints/README.md",
+        "chapter-14-session-checkpoints/03-review-and-restore/README.md"
+      ],
+      "exercises": "chapter-14-session-checkpoints/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-15-context-budget",
+      "title": "第 15 章：计算与控制上下文预算",
+      "overview": "chapter-15-context-budget/README.md",
+      "lessons": [
+        "chapter-15-context-budget/01-estimate-tokens/README.md",
+        "chapter-15-context-budget/02-bound-tool-results/README.md",
+        "chapter-15-context-budget/03-enforce-budget/README.md"
+      ],
+      "exercises": "chapter-15-context-budget/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-16-context-compaction",
+      "title": "第 16 章：自动压缩并继续任务",
+      "overview": "chapter-16-context-compaction/README.md",
+      "lessons": [
+        "chapter-16-context-compaction/01-select-history/README.md",
+        "chapter-16-context-compaction/02-generate-summary/README.md",
+        "chapter-16-context-compaction/03-compact-and-continue/README.md"
+      ],
+      "exercises": "chapter-16-context-compaction/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-17-project-instructions",
+      "title": "第 17 章：加载项目说明与规则",
+      "overview": "chapter-17-project-instructions/README.md",
+      "lessons": [
+        "chapter-17-project-instructions/01-project-root/README.md",
+        "chapter-17-project-instructions/02-scoped-instructions/README.md",
+        "chapter-17-project-instructions/03-inspect-loading/README.md"
+      ],
+      "exercises": "chapter-17-project-instructions/EXERCISES.md",
       "other": []
     }
   ],
@@ -4727,6 +4778,90 @@
       "source": "chapter-13-session-persistence/01-save-session/src/ui/tui/app.tsx"
     },
     {
+      "path": "content/chapter-13-session-persistence/02-read-records/assets/read-records-storyboard-1046c70b19.jpg.md",
+      "route": "#/content/chapter-13-session-persistence/02-read-records/assets/read-records-storyboard-1046c70b19.jpg.md",
+      "title": "read-records-storyboard-1046c70b19.jpg",
+      "kind": "image",
+      "source": "chapter-13-session-persistence/02-read-records/assets/read-records-storyboard-1046c70b19.jpg"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/02-read-records/README.md",
+      "route": "#/content/chapter-13-session-persistence/02-read-records/README.md",
+      "title": "13.2 读取有效会话记录",
+      "kind": "tutorial",
+      "source": "chapter-13-session-persistence/02-read-records/README.md"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/02-read-records/src/sessions/read-session.ts.md",
+      "route": "#/content/chapter-13-session-persistence/02-read-records/src/sessions/read-session.ts.md",
+      "title": "read-session.ts",
+      "kind": "source",
+      "source": "chapter-13-session-persistence/02-read-records/src/sessions/read-session.ts"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/03-resume-session/assets/restore-session-storyboard-4da438613f.jpg.md",
+      "route": "#/content/chapter-13-session-persistence/03-resume-session/assets/restore-session-storyboard-4da438613f.jpg.md",
+      "title": "restore-session-storyboard-4da438613f.jpg",
+      "kind": "image",
+      "source": "chapter-13-session-persistence/03-resume-session/assets/restore-session-storyboard-4da438613f.jpg"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/03-resume-session/README.md",
+      "route": "#/content/chapter-13-session-persistence/03-resume-session/README.md",
+      "title": "13.3 恢复会话并继续讨论",
+      "kind": "tutorial",
+      "source": "chapter-13-session-persistence/03-resume-session/README.md"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/03-resume-session/src/cli.ts.md",
+      "route": "#/content/chapter-13-session-persistence/03-resume-session/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-13-session-persistence/03-resume-session/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/03-resume-session/src/sessions/save-session.ts.md",
+      "route": "#/content/chapter-13-session-persistence/03-resume-session/src/sessions/save-session.ts.md",
+      "title": "save-session.ts",
+      "kind": "source",
+      "source": "chapter-13-session-persistence/03-resume-session/src/sessions/save-session.ts"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/03-resume-session/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-13-session-persistence/03-resume-session/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-13-session-persistence/03-resume-session/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/03-resume-session/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-13-session-persistence/03-resume-session/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-13-session-persistence/03-resume-session/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/04-manage-sessions/README.md",
+      "route": "#/content/chapter-13-session-persistence/04-manage-sessions/README.md",
+      "title": "13.4 查找、命名与导出会话",
+      "kind": "tutorial",
+      "source": "chapter-13-session-persistence/04-manage-sessions/README.md"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/04-manage-sessions/src/cli.ts.md",
+      "route": "#/content/chapter-13-session-persistence/04-manage-sessions/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-13-session-persistence/04-manage-sessions/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-13-session-persistence/04-manage-sessions/src/sessions/manage-sessions.ts.md",
+      "route": "#/content/chapter-13-session-persistence/04-manage-sessions/src/sessions/manage-sessions.ts.md",
+      "title": "manage-sessions.ts",
+      "kind": "source",
+      "source": "chapter-13-session-persistence/04-manage-sessions/src/sessions/manage-sessions.ts"
+    },
+    {
       "path": "content/chapter-13-session-persistence/EXERCISES.md",
       "route": "#/content/chapter-13-session-persistence/EXERCISES.md",
       "title": "第 13 章练习与答案",
@@ -4739,6 +4874,713 @@
       "title": "第 13 章：保存、查找与恢复会话",
       "kind": "tutorial",
       "source": "chapter-13-session-persistence/README.md"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/01-fork-session/assets/fork-session-cover-f14f5d69a9.png.md",
+      "route": "#/content/chapter-14-session-checkpoints/01-fork-session/assets/fork-session-cover-f14f5d69a9.png.md",
+      "title": "fork-session-cover-f14f5d69a9.png",
+      "kind": "image",
+      "source": "chapter-14-session-checkpoints/01-fork-session/assets/fork-session-cover-f14f5d69a9.png"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/01-fork-session/assets/fork-session-storyboard-daf9348b51.jpg.md",
+      "route": "#/content/chapter-14-session-checkpoints/01-fork-session/assets/fork-session-storyboard-daf9348b51.jpg.md",
+      "title": "fork-session-storyboard-daf9348b51.jpg",
+      "kind": "image",
+      "source": "chapter-14-session-checkpoints/01-fork-session/assets/fork-session-storyboard-daf9348b51.jpg"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/01-fork-session/README.md",
+      "route": "#/content/chapter-14-session-checkpoints/01-fork-session/README.md",
+      "title": "14.1 从已有会话创建分支",
+      "kind": "tutorial",
+      "source": "chapter-14-session-checkpoints/01-fork-session/README.md"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/01-fork-session/src/cli.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/01-fork-session/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/01-fork-session/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/01-fork-session/src/sessions/fork-session.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/01-fork-session/src/sessions/fork-session.ts.md",
+      "title": "fork-session.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/01-fork-session/src/sessions/fork-session.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/01-fork-session/src/sessions/read-session.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/01-fork-session/src/sessions/read-session.ts.md",
+      "title": "read-session.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/01-fork-session/src/sessions/read-session.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/01-fork-session/src/sessions/save-session.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/01-fork-session/src/sessions/save-session.ts.md",
+      "title": "save-session.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/01-fork-session/src/sessions/save-session.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/assets/file-checkpoint-cover-cbc755ad21.png.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/assets/file-checkpoint-cover-cbc755ad21.png.md",
+      "title": "file-checkpoint-cover-cbc755ad21.png",
+      "kind": "image",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/assets/file-checkpoint-cover-cbc755ad21.png"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/assets/file-checkpoint-storyboard-425d874936.jpg.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/assets/file-checkpoint-storyboard-425d874936.jpg.md",
+      "title": "file-checkpoint-storyboard-425d874936.jpg",
+      "kind": "image",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/assets/file-checkpoint-storyboard-425d874936.jpg"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/README.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/README.md",
+      "title": "14.2 为工具写入保存文件检查点",
+      "kind": "tutorial",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/README.md"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/src/cli.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/src/sessions/file-checkpoints.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/src/sessions/file-checkpoints.ts.md",
+      "title": "file-checkpoints.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/src/sessions/file-checkpoints.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/src/tools/edit-file.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/src/tools/edit-file.ts.md",
+      "title": "edit-file.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/src/tools/edit-file.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/src/tools/registry.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/src/tools/write-file.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/src/tools/write-file.ts.md",
+      "title": "write-file.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/src/tools/write-file.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/02-file-checkpoints/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-14-session-checkpoints/02-file-checkpoints/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/02-file-checkpoints/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/03-review-and-restore/assets/conditional-restore-cover-387db7b035.png.md",
+      "route": "#/content/chapter-14-session-checkpoints/03-review-and-restore/assets/conditional-restore-cover-387db7b035.png.md",
+      "title": "conditional-restore-cover-387db7b035.png",
+      "kind": "image",
+      "source": "chapter-14-session-checkpoints/03-review-and-restore/assets/conditional-restore-cover-387db7b035.png"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/03-review-and-restore/assets/conditional-restore-storyboard-95e0b14c13.jpg.md",
+      "route": "#/content/chapter-14-session-checkpoints/03-review-and-restore/assets/conditional-restore-storyboard-95e0b14c13.jpg.md",
+      "title": "conditional-restore-storyboard-95e0b14c13.jpg",
+      "kind": "image",
+      "source": "chapter-14-session-checkpoints/03-review-and-restore/assets/conditional-restore-storyboard-95e0b14c13.jpg"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/03-review-and-restore/README.md",
+      "route": "#/content/chapter-14-session-checkpoints/03-review-and-restore/README.md",
+      "title": "14.3 查看改动并按条件恢复",
+      "kind": "tutorial",
+      "source": "chapter-14-session-checkpoints/03-review-and-restore/README.md"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/03-review-and-restore/src/sessions/file-checkpoints.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/03-review-and-restore/src/sessions/file-checkpoints.ts.md",
+      "title": "file-checkpoints.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/03-review-and-restore/src/sessions/file-checkpoints.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/03-review-and-restore/src/sessions/read-session.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/03-review-and-restore/src/sessions/read-session.ts.md",
+      "title": "read-session.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/03-review-and-restore/src/sessions/read-session.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/03-review-and-restore/src/sessions/save-session.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/03-review-and-restore/src/sessions/save-session.ts.md",
+      "title": "save-session.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/03-review-and-restore/src/sessions/save-session.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/03-review-and-restore/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-14-session-checkpoints/03-review-and-restore/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/03-review-and-restore/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/03-review-and-restore/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-14-session-checkpoints/03-review-and-restore/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-14-session-checkpoints/03-review-and-restore/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/EXERCISES.md",
+      "route": "#/content/chapter-14-session-checkpoints/EXERCISES.md",
+      "title": "第 14 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-14-session-checkpoints/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-14-session-checkpoints/README.md",
+      "route": "#/content/chapter-14-session-checkpoints/README.md",
+      "title": "第 14 章：会话分支与文件检查点",
+      "kind": "tutorial",
+      "source": "chapter-14-session-checkpoints/README.md"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/assets/estimate-request-cover-52017369f8.png.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/assets/estimate-request-cover-52017369f8.png.md",
+      "title": "estimate-request-cover-52017369f8.png",
+      "kind": "image",
+      "source": "chapter-15-context-budget/01-estimate-tokens/assets/estimate-request-cover-52017369f8.png"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/assets/estimate-request-storyboard-6b90de409a.jpg.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/assets/estimate-request-storyboard-6b90de409a.jpg.md",
+      "title": "estimate-request-storyboard-6b90de409a.jpg",
+      "kind": "image",
+      "source": "chapter-15-context-budget/01-estimate-tokens/assets/estimate-request-storyboard-6b90de409a.jpg"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/README.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/README.md",
+      "title": "15.1 估算请求大小并预留输出",
+      "kind": "tutorial",
+      "source": "chapter-15-context-budget/01-estimate-tokens/README.md"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/01-estimate-tokens/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/src/agent/events.ts.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/src/agent/events.ts.md",
+      "title": "events.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/01-estimate-tokens/src/agent/events.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/src/config/load-config.ts.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/src/config/load-config.ts.md",
+      "title": "load-config.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/01-estimate-tokens/src/config/load-config.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/src/context/budget.ts.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/src/context/budget.ts.md",
+      "title": "budget.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/01-estimate-tokens/src/context/budget.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/src/models/client.ts.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/01-estimate-tokens/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/01-estimate-tokens/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/01-estimate-tokens/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-15-context-budget/01-estimate-tokens/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-15-context-budget/01-estimate-tokens/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-15-context-budget/01-estimate-tokens/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/01-estimate-tokens/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/02-bound-tool-results/assets/bound-tool-result-cover-d0c70175ec.png.md",
+      "route": "#/content/chapter-15-context-budget/02-bound-tool-results/assets/bound-tool-result-cover-d0c70175ec.png.md",
+      "title": "bound-tool-result-cover-d0c70175ec.png",
+      "kind": "image",
+      "source": "chapter-15-context-budget/02-bound-tool-results/assets/bound-tool-result-cover-d0c70175ec.png"
+    },
+    {
+      "path": "content/chapter-15-context-budget/02-bound-tool-results/assets/bound-tool-result-storyboard-c844c46802.jpg.md",
+      "route": "#/content/chapter-15-context-budget/02-bound-tool-results/assets/bound-tool-result-storyboard-c844c46802.jpg.md",
+      "title": "bound-tool-result-storyboard-c844c46802.jpg",
+      "kind": "image",
+      "source": "chapter-15-context-budget/02-bound-tool-results/assets/bound-tool-result-storyboard-c844c46802.jpg"
+    },
+    {
+      "path": "content/chapter-15-context-budget/02-bound-tool-results/README.md",
+      "route": "#/content/chapter-15-context-budget/02-bound-tool-results/README.md",
+      "title": "15.2 缩短工具结果并保留完整日志",
+      "kind": "tutorial",
+      "source": "chapter-15-context-budget/02-bound-tool-results/README.md"
+    },
+    {
+      "path": "content/chapter-15-context-budget/02-bound-tool-results/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-15-context-budget/02-bound-tool-results/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/02-bound-tool-results/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/02-bound-tool-results/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-15-context-budget/02-bound-tool-results/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/02-bound-tool-results/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/02-bound-tool-results/src/context/tool-results.ts.md",
+      "route": "#/content/chapter-15-context-budget/02-bound-tool-results/src/context/tool-results.ts.md",
+      "title": "tool-results.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/02-bound-tool-results/src/context/tool-results.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/02-bound-tool-results/src/models/client.ts.md",
+      "route": "#/content/chapter-15-context-budget/02-bound-tool-results/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/02-bound-tool-results/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/02-bound-tool-results/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-15-context-budget/02-bound-tool-results/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/02-bound-tool-results/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/02-bound-tool-results/src/tools/read-tool-result.ts.md",
+      "route": "#/content/chapter-15-context-budget/02-bound-tool-results/src/tools/read-tool-result.ts.md",
+      "title": "read-tool-result.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/02-bound-tool-results/src/tools/read-tool-result.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/02-bound-tool-results/src/tools/registry.ts.md",
+      "route": "#/content/chapter-15-context-budget/02-bound-tool-results/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/02-bound-tool-results/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/03-enforce-budget/assets/budget-gate-cover-851386bd66.png.md",
+      "route": "#/content/chapter-15-context-budget/03-enforce-budget/assets/budget-gate-cover-851386bd66.png.md",
+      "title": "budget-gate-cover-851386bd66.png",
+      "kind": "image",
+      "source": "chapter-15-context-budget/03-enforce-budget/assets/budget-gate-cover-851386bd66.png"
+    },
+    {
+      "path": "content/chapter-15-context-budget/03-enforce-budget/assets/budget-gate-storyboard-2577a8b61f.jpg.md",
+      "route": "#/content/chapter-15-context-budget/03-enforce-budget/assets/budget-gate-storyboard-2577a8b61f.jpg.md",
+      "title": "budget-gate-storyboard-2577a8b61f.jpg",
+      "kind": "image",
+      "source": "chapter-15-context-budget/03-enforce-budget/assets/budget-gate-storyboard-2577a8b61f.jpg"
+    },
+    {
+      "path": "content/chapter-15-context-budget/03-enforce-budget/README.md",
+      "route": "#/content/chapter-15-context-budget/03-enforce-budget/README.md",
+      "title": "15.3 显示预算并在超限时停止",
+      "kind": "tutorial",
+      "source": "chapter-15-context-budget/03-enforce-budget/README.md"
+    },
+    {
+      "path": "content/chapter-15-context-budget/03-enforce-budget/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-15-context-budget/03-enforce-budget/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/03-enforce-budget/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/03-enforce-budget/src/models/client.ts.md",
+      "route": "#/content/chapter-15-context-budget/03-enforce-budget/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-15-context-budget/03-enforce-budget/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-15-context-budget/EXERCISES.md",
+      "route": "#/content/chapter-15-context-budget/EXERCISES.md",
+      "title": "第 15 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-15-context-budget/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-15-context-budget/README.md",
+      "route": "#/content/chapter-15-context-budget/README.md",
+      "title": "第 15 章：计算与控制上下文预算",
+      "kind": "tutorial",
+      "source": "chapter-15-context-budget/README.md"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/01-select-history/assets/select-history-cover-0f1a6c8413.png.md",
+      "route": "#/content/chapter-16-context-compaction/01-select-history/assets/select-history-cover-0f1a6c8413.png.md",
+      "title": "select-history-cover-0f1a6c8413.png",
+      "kind": "image",
+      "source": "chapter-16-context-compaction/01-select-history/assets/select-history-cover-0f1a6c8413.png"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/01-select-history/assets/select-history-storyboard-62d84b5212.jpg.md",
+      "route": "#/content/chapter-16-context-compaction/01-select-history/assets/select-history-storyboard-62d84b5212.jpg.md",
+      "title": "select-history-storyboard-62d84b5212.jpg",
+      "kind": "image",
+      "source": "chapter-16-context-compaction/01-select-history/assets/select-history-storyboard-62d84b5212.jpg"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/01-select-history/README.md",
+      "route": "#/content/chapter-16-context-compaction/01-select-history/README.md",
+      "title": "16.1 选择可以压缩的历史",
+      "kind": "tutorial",
+      "source": "chapter-16-context-compaction/01-select-history/README.md"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/01-select-history/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-16-context-compaction/01-select-history/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/01-select-history/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/01-select-history/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-16-context-compaction/01-select-history/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/01-select-history/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/01-select-history/src/context/compaction.ts.md",
+      "route": "#/content/chapter-16-context-compaction/01-select-history/src/context/compaction.ts.md",
+      "title": "compaction.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/01-select-history/src/context/compaction.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/01-select-history/src/sessions/read-session.ts.md",
+      "route": "#/content/chapter-16-context-compaction/01-select-history/src/sessions/read-session.ts.md",
+      "title": "read-session.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/01-select-history/src/sessions/read-session.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/01-select-history/src/sessions/save-session.ts.md",
+      "route": "#/content/chapter-16-context-compaction/01-select-history/src/sessions/save-session.ts.md",
+      "title": "save-session.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/01-select-history/src/sessions/save-session.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/01-select-history/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-16-context-compaction/01-select-history/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/01-select-history/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/01-select-history/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-16-context-compaction/01-select-history/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/01-select-history/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/02-generate-summary/assets/summary-candidate-cover-e752413f01.png.md",
+      "route": "#/content/chapter-16-context-compaction/02-generate-summary/assets/summary-candidate-cover-e752413f01.png.md",
+      "title": "summary-candidate-cover-e752413f01.png",
+      "kind": "image",
+      "source": "chapter-16-context-compaction/02-generate-summary/assets/summary-candidate-cover-e752413f01.png"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/02-generate-summary/assets/summary-candidate-storyboard-e1eb320003.jpg.md",
+      "route": "#/content/chapter-16-context-compaction/02-generate-summary/assets/summary-candidate-storyboard-e1eb320003.jpg.md",
+      "title": "summary-candidate-storyboard-e1eb320003.jpg",
+      "kind": "image",
+      "source": "chapter-16-context-compaction/02-generate-summary/assets/summary-candidate-storyboard-e1eb320003.jpg"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/02-generate-summary/README.md",
+      "route": "#/content/chapter-16-context-compaction/02-generate-summary/README.md",
+      "title": "16.2 生成摘要并核对替换结果",
+      "kind": "tutorial",
+      "source": "chapter-16-context-compaction/02-generate-summary/README.md"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/02-generate-summary/src/context/compaction.ts.md",
+      "route": "#/content/chapter-16-context-compaction/02-generate-summary/src/context/compaction.ts.md",
+      "title": "compaction.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/02-generate-summary/src/context/compaction.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/02-generate-summary/src/models/client.ts.md",
+      "route": "#/content/chapter-16-context-compaction/02-generate-summary/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/02-generate-summary/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/03-compact-and-continue/assets/compact-continue-cover-3fe926da03.png.md",
+      "route": "#/content/chapter-16-context-compaction/03-compact-and-continue/assets/compact-continue-cover-3fe926da03.png.md",
+      "title": "compact-continue-cover-3fe926da03.png",
+      "kind": "image",
+      "source": "chapter-16-context-compaction/03-compact-and-continue/assets/compact-continue-cover-3fe926da03.png"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/03-compact-and-continue/assets/compact-continue-storyboard-ec0054c5b0.jpg.md",
+      "route": "#/content/chapter-16-context-compaction/03-compact-and-continue/assets/compact-continue-storyboard-ec0054c5b0.jpg.md",
+      "title": "compact-continue-storyboard-ec0054c5b0.jpg",
+      "kind": "image",
+      "source": "chapter-16-context-compaction/03-compact-and-continue/assets/compact-continue-storyboard-ec0054c5b0.jpg"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/03-compact-and-continue/README.md",
+      "route": "#/content/chapter-16-context-compaction/03-compact-and-continue/README.md",
+      "title": "16.3 超限时压缩，再继续原任务",
+      "kind": "tutorial",
+      "source": "chapter-16-context-compaction/03-compact-and-continue/README.md"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/03-compact-and-continue/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-16-context-compaction/03-compact-and-continue/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/03-compact-and-continue/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/03-compact-and-continue/src/agent/events.ts.md",
+      "route": "#/content/chapter-16-context-compaction/03-compact-and-continue/src/agent/events.ts.md",
+      "title": "events.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/03-compact-and-continue/src/agent/events.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/03-compact-and-continue/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-16-context-compaction/03-compact-and-continue/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/03-compact-and-continue/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/03-compact-and-continue/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-16-context-compaction/03-compact-and-continue/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/03-compact-and-continue/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/03-compact-and-continue/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-16-context-compaction/03-compact-and-continue/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-16-context-compaction/03-compact-and-continue/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/EXERCISES.md",
+      "route": "#/content/chapter-16-context-compaction/EXERCISES.md",
+      "title": "第 16 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-16-context-compaction/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-16-context-compaction/README.md",
+      "route": "#/content/chapter-16-context-compaction/README.md",
+      "title": "第 16 章：自动压缩并继续任务",
+      "kind": "tutorial",
+      "source": "chapter-16-context-compaction/README.md"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/01-project-root/assets/project-root-reference-cover-f6e27197eb.png.md",
+      "route": "#/content/chapter-17-project-instructions/01-project-root/assets/project-root-reference-cover-f6e27197eb.png.md",
+      "title": "project-root-reference-cover-f6e27197eb.png",
+      "kind": "image",
+      "source": "chapter-17-project-instructions/01-project-root/assets/project-root-reference-cover-f6e27197eb.png"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/01-project-root/assets/project-root-reference-storyboard-4a5ce8d39a.jpg.md",
+      "route": "#/content/chapter-17-project-instructions/01-project-root/assets/project-root-reference-storyboard-4a5ce8d39a.jpg.md",
+      "title": "project-root-reference-storyboard-4a5ce8d39a.jpg",
+      "kind": "image",
+      "source": "chapter-17-project-instructions/01-project-root/assets/project-root-reference-storyboard-4a5ce8d39a.jpg"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/01-project-root/README.md",
+      "route": "#/content/chapter-17-project-instructions/01-project-root/README.md",
+      "title": "17.1 从项目根读取说明",
+      "kind": "tutorial",
+      "source": "chapter-17-project-instructions/01-project-root/README.md"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/01-project-root/src/cli.ts.md",
+      "route": "#/content/chapter-17-project-instructions/01-project-root/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-17-project-instructions/01-project-root/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/01-project-root/src/models/client.ts.md",
+      "route": "#/content/chapter-17-project-instructions/01-project-root/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-17-project-instructions/01-project-root/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/01-project-root/src/project/instructions.ts.md",
+      "route": "#/content/chapter-17-project-instructions/01-project-root/src/project/instructions.ts.md",
+      "title": "instructions.ts",
+      "kind": "source",
+      "source": "chapter-17-project-instructions/01-project-root/src/project/instructions.ts"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/01-project-root/src/tools/workspace.ts.md",
+      "route": "#/content/chapter-17-project-instructions/01-project-root/src/tools/workspace.ts.md",
+      "title": "workspace.ts",
+      "kind": "source",
+      "source": "chapter-17-project-instructions/01-project-root/src/tools/workspace.ts"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/01-project-root/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-17-project-instructions/01-project-root/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-17-project-instructions/01-project-root/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/02-scoped-instructions/assets/project-scoped-chain-cover-e2f55e6485.png.md",
+      "route": "#/content/chapter-17-project-instructions/02-scoped-instructions/assets/project-scoped-chain-cover-e2f55e6485.png.md",
+      "title": "project-scoped-chain-cover-e2f55e6485.png",
+      "kind": "image",
+      "source": "chapter-17-project-instructions/02-scoped-instructions/assets/project-scoped-chain-cover-e2f55e6485.png"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/02-scoped-instructions/assets/project-scoped-chain-storyboard-ee791a35ca.jpg.md",
+      "route": "#/content/chapter-17-project-instructions/02-scoped-instructions/assets/project-scoped-chain-storyboard-ee791a35ca.jpg.md",
+      "title": "project-scoped-chain-storyboard-ee791a35ca.jpg",
+      "kind": "image",
+      "source": "chapter-17-project-instructions/02-scoped-instructions/assets/project-scoped-chain-storyboard-ee791a35ca.jpg"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/02-scoped-instructions/README.md",
+      "route": "#/content/chapter-17-project-instructions/02-scoped-instructions/README.md",
+      "title": "17.2 区分不同目录的适用范围",
+      "kind": "tutorial",
+      "source": "chapter-17-project-instructions/02-scoped-instructions/README.md"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/02-scoped-instructions/src/project/instructions.ts.md",
+      "route": "#/content/chapter-17-project-instructions/02-scoped-instructions/src/project/instructions.ts.md",
+      "title": "instructions.ts",
+      "kind": "source",
+      "source": "chapter-17-project-instructions/02-scoped-instructions/src/project/instructions.ts"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-cover-7e1de202df.png.md",
+      "route": "#/content/chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-cover-7e1de202df.png.md",
+      "title": "project-loading-inspection-cover-7e1de202df.png",
+      "kind": "image",
+      "source": "chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-cover-7e1de202df.png"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-storyboard-c3c9be6a02.jpg.md",
+      "route": "#/content/chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-storyboard-c3c9be6a02.jpg.md",
+      "title": "project-loading-inspection-storyboard-c3c9be6a02.jpg",
+      "kind": "image",
+      "source": "chapter-17-project-instructions/03-inspect-loading/assets/project-loading-inspection-storyboard-c3c9be6a02.jpg"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/03-inspect-loading/README.md",
+      "route": "#/content/chapter-17-project-instructions/03-inspect-loading/README.md",
+      "title": "17.3 检查实际加载了哪些规则",
+      "kind": "tutorial",
+      "source": "chapter-17-project-instructions/03-inspect-loading/README.md"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/03-inspect-loading/src/cli.ts.md",
+      "route": "#/content/chapter-17-project-instructions/03-inspect-loading/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-17-project-instructions/03-inspect-loading/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/03-inspect-loading/src/project/instructions.ts.md",
+      "route": "#/content/chapter-17-project-instructions/03-inspect-loading/src/project/instructions.ts.md",
+      "title": "instructions.ts",
+      "kind": "source",
+      "source": "chapter-17-project-instructions/03-inspect-loading/src/project/instructions.ts"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/EXERCISES.md",
+      "route": "#/content/chapter-17-project-instructions/EXERCISES.md",
+      "title": "第 17 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-17-project-instructions/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-17-project-instructions/README.md",
+      "route": "#/content/chapter-17-project-instructions/README.md",
+      "title": "第 17 章：加载项目说明与规则",
+      "kind": "tutorial",
+      "source": "chapter-17-project-instructions/README.md"
     },
     {
       "path": "content/docs/CODING-AGENT-GAP-REVIEW.md",

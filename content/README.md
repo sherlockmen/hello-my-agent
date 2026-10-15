@@ -14,9 +14,11 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 [在线阅读教学网站](https://sherlockmen.github.io/hello-my-agent/)：支持章节搜索、代码复制，以及动图的播放、暂停和继续。
 
-[与网站同步的配套源码](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site)包含当前全部小节和验收脚本，取得方式见[环境准备](/content/docs/SETUP.md)。
+[与网站同步的配套源码](https://github.com/sherlockmen/hello-my-agent/tree/master)包含当前全部小节和验收脚本，取得方式见[环境准备](/content/docs/SETUP.md)。
 
-[从第一章开始](/content/chapter-01-first-command/README.md) · [当前章节：第十三章](/content/chapter-13-session-persistence/README.md) · [课程进度](/content/docs/PROGRESS.md) · [从空目录跟写](/content/docs/SETUP.md)
+`master` 保留源码、原生 Markdown 和配图；Docsify 外壳、插件和发布工具在 [codex/teaching-site](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site) 维护，`gh-pages` 只保存生成的网站。
+
+[从第一章开始](/content/chapter-01-first-command/README.md) · [当前章节：第十七章](/content/chapter-17-project-instructions/README.md) · [课程进度](/content/docs/PROGRESS.md) · [从空目录跟写](/content/docs/SETUP.md)
 
 第一次学习，先阅读[第一章的问题与原理](/content/chapter-01-first-command/README.md)，到“动手构建”时再运行：
 
@@ -56,7 +58,11 @@ Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS 
 | [第 10 章：第一个真正可用的 TUI](/content/chapter-10-terminal-ui/README.md) | 怎样把输入、执行进展、审批和取消接到终端界面？ | [四个递进小节](/content/chapter-10-terminal-ui/README.md)，已确认完成 |
 | [第 11 章：把终端变成可以编辑和浏览的工作区](/content/chapter-11-terminal-workbench/README.md) | 怎样编辑长请求、找回旧输入、浏览结果，并适应终端变化？ | [五个递进小节](/content/chapter-11-terminal-workbench/README.md)，已确认完成 |
 | [第 12 章：计划、执行与运行中干预](/content/chapter-12-task-control/README.md) | 怎样先审阅修复方案，再执行、看进展、问清需求，并在运行中补充或改变要求？ | [五个递进小节](/content/chapter-12-task-control/README.md)，已完成 |
-| [第 13 章：保存、查找与恢复会话](/content/chapter-13-session-persistence/README.md) | 怎样留下可信的会话记录，并在后续接上已有讨论？ | [13.1 会话保存](/content/chapter-13-session-persistence/01-save-session/README.md)，待确认 |
+| [第 13 章：保存、查找与恢复会话](/content/chapter-13-session-persistence/README.md) | 怎样留下可信的会话记录，并在后续接上已有讨论？ | 四节正文、实现、配图与练习已整理，待确认 |
+| [第 14 章：会话分支与文件检查点](/content/chapter-14-session-checkpoints/README.md) | 怎样试另一条路线，并在看清影响后恢复文件？ | 三个递进小节，已完成 |
+| [第 15 章：计算与控制上下文预算](/content/chapter-15-context-budget/README.md) | 怎样估算请求大小、保留完整日志，并在超预算时停止提交？ | 三个递进小节，已完成 |
+| [第 16 章：自动压缩并继续任务](/content/chapter-16-context-compaction/README.md) | 怎样保留完整记录，缩短下一次请求，再继续原任务？ | 三个递进小节，已完成 |
+| [第 17 章：加载项目说明与规则](/content/chapter-17-project-instructions/README.md) | 怎样找到适用的项目说明，保留来源，并带入模型请求？ | 三个递进小节，已完成 |
 
 第十二章按顺序学习：[12.1 计划与执行模式](/content/chapter-12-task-control/01-plan-mode/README.md) · [12.2 任务清单](/content/chapter-12-task-control/02-task-list/README.md) · [12.3 澄清问题](/content/chapter-12-task-control/03-clarify-questions/README.md) · [12.4 运行中补充与打断](/content/chapter-12-task-control/04-live-input/README.md) · [12.5 队列编辑与撤回](/content/chapter-12-task-control/05-manage-queue/README.md)。
 
@@ -214,6 +220,31 @@ hello-my-agent/
     01-save-session/         13.1 会话保存
       src/sessions/
         save-session.ts     会话状态投影、串行写入与关闭
+    02-read-records/         13.2 读取可信记录
+      src/sessions/
+        read-session.ts     版本、编号、调用结果配对和残尾边界
+    03-resume-session/       13.3 恢复会话
+      src/sessions/
+        save-session.ts     独占锁、锁内重读、续写与中断标记
+    04-manage-sessions/      13.4 查找与导出会话
+      src/sessions/
+        manage-sessions.ts  列表、命名、搜索和 Markdown 导出
+  chapter-14-session-checkpoints/ 第 14 章：会话分支与文件检查点
+    01-fork-session/         14.1 复制会话，尝试另一条路线
+    02-file-checkpoints/     14.2 写入前保存文件检查点
+    03-review-and-restore/   14.3 预览并恢复文件
+  chapter-15-context-budget/ 第 15 章：计算与控制上下文预算
+    01-estimate-tokens/      15.1 估算下一次请求
+    02-bound-tool-results/   15.2 裁剪大结果并保留完整日志
+    03-enforce-budget/      15.3 在提交前检查预算
+  chapter-16-context-compaction/ 第 16 章：自动压缩并继续任务
+    01-select-history/      16.1 选择旧历史并保留完整组
+    02-generate-summary/    16.2 生成并检查摘要候选
+    03-compact-and-continue/ 16.3 压缩后继续原任务
+  chapter-17-project-instructions/ 第 17 章：加载项目说明与规则
+    01-project-root/        17.1 找到项目根并加载说明
+    02-scoped-instructions/ 17.2 按目录应用项目说明
+    03-inspect-loading/     17.3 检查实际加载了哪些规则
   docs/
     SETUP.md                环境与从空目录搭建
     EDITORIAL-WORKFLOW.md   主 Agent、作者子 Agent 与学习者读者的编审流程
@@ -235,16 +266,20 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](/content/chapter-07-command-feedback/03-ripgrep-search/README.md?id=%E5%85%88%E5%87%86%E5%A4%87%E7%B3%BB%E7%BB%9F-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十二章检查 Plan 限制、清单更新、问答配对、运行中补充、打断与队列编辑。第十三章新增会话保存、快照顺序、同步完成与存储失败检查。第十至十二章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包前的 `prepack` 当前选择 `13.1`；学习时用各节自己的 `lesson` 命令选择版本。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](/content/chapter-07-command-feedback/03-ripgrep-search/README.md?id=%E5%85%88%E5%87%86%E5%A4%87%E7%B3%BB%E7%BB%9F-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十二章检查 Plan 限制、清单更新、问答配对、运行中补充、打断与队列编辑。第十三章检查保存顺序、同步完成、有效记录与残尾、独占锁与中断恢复、工作区、旧工具不重放、旧队列归属、本地管理和无覆盖导出。第十四章检查分支隔离、写入前检查点、恢复预览与冲突；第十五章检查请求估算、大结果日志与分段读取、请求前预算和协议输出上限。第十六章检查完整工具组、摘要候选验证、预算不足时压缩、取消与失败回退；第十七章检查项目根与目录作用范围、规则来源、读取限制及权限边界。第十至十七章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包前的 `prepack` 当前选择 `17.3`；学习时用各节自己的 `lesson` 命令选择版本。
 
 第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
 完成第二章 `/reset` 练习后，运行 `npm run exercise:02`。这条命令编译读者实际修改的终端文件，并用本地模拟接口检查两种协议中的历史是否真正清空。
 
-只检查当前的会话保存实现时，在仓库根目录运行：
+分别检查会话持久化、文件检查点、上下文预算、压缩和项目说明时，在仓库根目录运行：
 
 ```bash
 npm run check:13
+npm run check:14
+npm run check:15
+npm run check:16
+npm run check:17
 ```
 
 完成 12.5 和[第十二章练习](/content/chapter-12-task-control/EXERCISES.md)后，运行独立状态实验：
@@ -255,11 +290,11 @@ npm run exercise:12
 
 回看第十二章时，使用 `npm run check:12` 检查任务控制实现。上述检查不调用真实模型；实际模型服务和回答按各节手动步骤观察。
 
-[第十三章练习](/content/chapter-13-session-persistence/EXERCISES.md) · 第十三章验证记录 · [当前进度](/content/docs/PROGRESS.md)
+[第十三章练习](/content/chapter-13-session-persistence/EXERCISES.md) · [第十四章练习](/content/chapter-14-session-checkpoints/EXERCISES.md) · [第十五章练习](/content/chapter-15-context-budget/EXERCISES.md) · [第十六章练习](/content/chapter-16-context-compaction/EXERCISES.md) · [第十七章练习](/content/chapter-17-project-instructions/EXERCISES.md) · [当前进度](/content/docs/PROGRESS.md)
 
 回看上一章：[第十二章练习](/content/chapter-12-task-control/EXERCISES.md) · 第十二章验证记录。
 
-第一章到第十二章已确认完成。第十三章进行中，13.1 会话保存的正文、TypeScript 实现、配图与练习已整理，等待阅读确认；后续继续增加读取、恢复与管理。npm 包尚未发布。
+第 01—12、14—17 章已确认完成。第十三章已整理，等待阅读确认。npm 包尚未发布。
 
 ## 许可证
 
