@@ -324,7 +324,7 @@ npm run exercise:12
 
 回看第十二章：[第十二章练习](chapter-12-task-control/EXERCISES.md) · [第十二章验证记录](docs/verification/12-task-control.md)。
 
-第 01—12、14—17 章已确认完成。第十三、十八至二十二章已整理，等待阅读确认。npm 包尚未发布。
+第 01—12、14—17、20—22 章已确认完成。第十三、十八、十九章已整理，等待阅读确认。npm 包尚未发布。
 
 ## 许可证
 
