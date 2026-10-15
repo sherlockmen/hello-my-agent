@@ -234,6 +234,42 @@
       ],
       "exercises": "chapter-19-skills/EXERCISES.md",
       "other": []
+    },
+    {
+      "directory": "chapter-20-hooks",
+      "title": "第 20 章：把项目检查接入生命周期",
+      "overview": "chapter-20-hooks/README.md",
+      "lessons": [
+        "chapter-20-hooks/01-before-tool/README.md",
+        "chapter-20-hooks/02-after-tool/README.md",
+        "chapter-20-hooks/03-stop-hooks/README.md"
+      ],
+      "exercises": "chapter-20-hooks/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-21-mcp",
+      "title": "第 21 章：通过 MCP 接入独立工具服务",
+      "overview": "chapter-21-mcp/README.md",
+      "lessons": [
+        "chapter-21-mcp/01-stdio-tools/README.md",
+        "chapter-21-mcp/02-streamable-http/README.md",
+        "chapter-21-mcp/03-connection-lifecycle/README.md"
+      ],
+      "exercises": "chapter-21-mcp/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-22-web",
+      "title": "第 22 章：取得外部资料，再依据来源完成任务",
+      "overview": "chapter-22-web/README.md",
+      "lessons": [
+        "chapter-22-web/01-fetch-page/README.md",
+        "chapter-22-web/02-search-sources/README.md",
+        "chapter-22-web/03-grounded-answers/README.md"
+      ],
+      "exercises": "chapter-22-web/EXERCISES.md",
+      "other": []
     }
   ],
   "pages": [
@@ -6046,6 +6082,622 @@
       "title": "第 19 章：按需加载 Skills",
       "kind": "tutorial",
       "source": "chapter-19-skills/README.md"
+    },
+    {
+      "path": "content/chapter-20-hooks/01-before-tool/assets/before-tool-flow-e9d498b95a.png.md",
+      "route": "#/content/chapter-20-hooks/01-before-tool/assets/before-tool-flow-e9d498b95a.png.md",
+      "title": "before-tool-flow-e9d498b95a.png",
+      "kind": "image",
+      "source": "chapter-20-hooks/01-before-tool/assets/before-tool-flow-e9d498b95a.png"
+    },
+    {
+      "path": "content/chapter-20-hooks/01-before-tool/assets/hooks-before-gate-cover-e1cc590e75.png.md",
+      "route": "#/content/chapter-20-hooks/01-before-tool/assets/hooks-before-gate-cover-e1cc590e75.png.md",
+      "title": "hooks-before-gate-cover-e1cc590e75.png",
+      "kind": "image",
+      "source": "chapter-20-hooks/01-before-tool/assets/hooks-before-gate-cover-e1cc590e75.png"
+    },
+    {
+      "path": "content/chapter-20-hooks/01-before-tool/assets/hooks-before-gate-storyboard-f67a29edca.jpg.md",
+      "route": "#/content/chapter-20-hooks/01-before-tool/assets/hooks-before-gate-storyboard-f67a29edca.jpg.md",
+      "title": "hooks-before-gate-storyboard-f67a29edca.jpg",
+      "kind": "image",
+      "source": "chapter-20-hooks/01-before-tool/assets/hooks-before-gate-storyboard-f67a29edca.jpg"
+    },
+    {
+      "path": "content/chapter-20-hooks/01-before-tool/README.md",
+      "route": "#/content/chapter-20-hooks/01-before-tool/README.md",
+      "title": "20.1 执行前钩子：在工具启动前检查项目规则",
+      "kind": "tutorial",
+      "source": "chapter-20-hooks/01-before-tool/README.md"
+    },
+    {
+      "path": "content/chapter-20-hooks/01-before-tool/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-20-hooks/01-before-tool/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/01-before-tool/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/01-before-tool/src/cli.ts.md",
+      "route": "#/content/chapter-20-hooks/01-before-tool/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/01-before-tool/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/01-before-tool/src/hooks/lifecycle.ts.md",
+      "route": "#/content/chapter-20-hooks/01-before-tool/src/hooks/lifecycle.ts.md",
+      "title": "lifecycle.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/01-before-tool/src/hooks/lifecycle.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/01-before-tool/src/models/client.ts.md",
+      "route": "#/content/chapter-20-hooks/01-before-tool/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/01-before-tool/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/01-before-tool/src/processes/run-process.ts.md",
+      "route": "#/content/chapter-20-hooks/01-before-tool/src/processes/run-process.ts.md",
+      "title": "run-process.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/01-before-tool/src/processes/run-process.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/02-after-tool/assets/after-tool-flow-49d8727083.png.md",
+      "route": "#/content/chapter-20-hooks/02-after-tool/assets/after-tool-flow-49d8727083.png.md",
+      "title": "after-tool-flow-49d8727083.png",
+      "kind": "image",
+      "source": "chapter-20-hooks/02-after-tool/assets/after-tool-flow-49d8727083.png"
+    },
+    {
+      "path": "content/chapter-20-hooks/02-after-tool/assets/hooks-after-feedback-cover-5c079abc6a.png.md",
+      "route": "#/content/chapter-20-hooks/02-after-tool/assets/hooks-after-feedback-cover-5c079abc6a.png.md",
+      "title": "hooks-after-feedback-cover-5c079abc6a.png",
+      "kind": "image",
+      "source": "chapter-20-hooks/02-after-tool/assets/hooks-after-feedback-cover-5c079abc6a.png"
+    },
+    {
+      "path": "content/chapter-20-hooks/02-after-tool/assets/hooks-after-feedback-storyboard-2546111be9.jpg.md",
+      "route": "#/content/chapter-20-hooks/02-after-tool/assets/hooks-after-feedback-storyboard-2546111be9.jpg.md",
+      "title": "hooks-after-feedback-storyboard-2546111be9.jpg",
+      "kind": "image",
+      "source": "chapter-20-hooks/02-after-tool/assets/hooks-after-feedback-storyboard-2546111be9.jpg"
+    },
+    {
+      "path": "content/chapter-20-hooks/02-after-tool/README.md",
+      "route": "#/content/chapter-20-hooks/02-after-tool/README.md",
+      "title": "20.2 执行后钩子：让检查结果进入下一次模型请求",
+      "kind": "tutorial",
+      "source": "chapter-20-hooks/02-after-tool/README.md"
+    },
+    {
+      "path": "content/chapter-20-hooks/02-after-tool/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-20-hooks/02-after-tool/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/02-after-tool/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/02-after-tool/src/hooks/lifecycle.ts.md",
+      "route": "#/content/chapter-20-hooks/02-after-tool/src/hooks/lifecycle.ts.md",
+      "title": "lifecycle.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/02-after-tool/src/hooks/lifecycle.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/03-stop-hooks/assets/hooks-stop-once-cover-0c97006a59.png.md",
+      "route": "#/content/chapter-20-hooks/03-stop-hooks/assets/hooks-stop-once-cover-0c97006a59.png.md",
+      "title": "hooks-stop-once-cover-0c97006a59.png",
+      "kind": "image",
+      "source": "chapter-20-hooks/03-stop-hooks/assets/hooks-stop-once-cover-0c97006a59.png"
+    },
+    {
+      "path": "content/chapter-20-hooks/03-stop-hooks/assets/hooks-stop-once-storyboard-882174ad6e.jpg.md",
+      "route": "#/content/chapter-20-hooks/03-stop-hooks/assets/hooks-stop-once-storyboard-882174ad6e.jpg.md",
+      "title": "hooks-stop-once-storyboard-882174ad6e.jpg",
+      "kind": "image",
+      "source": "chapter-20-hooks/03-stop-hooks/assets/hooks-stop-once-storyboard-882174ad6e.jpg"
+    },
+    {
+      "path": "content/chapter-20-hooks/03-stop-hooks/assets/stop-hook-flow-1b85eea196.png.md",
+      "route": "#/content/chapter-20-hooks/03-stop-hooks/assets/stop-hook-flow-1b85eea196.png.md",
+      "title": "stop-hook-flow-1b85eea196.png",
+      "kind": "image",
+      "source": "chapter-20-hooks/03-stop-hooks/assets/stop-hook-flow-1b85eea196.png"
+    },
+    {
+      "path": "content/chapter-20-hooks/03-stop-hooks/README.md",
+      "route": "#/content/chapter-20-hooks/03-stop-hooks/README.md",
+      "title": "20.3 结束钩子：区分任务收尾与模型继续执行",
+      "kind": "tutorial",
+      "source": "chapter-20-hooks/03-stop-hooks/README.md"
+    },
+    {
+      "path": "content/chapter-20-hooks/03-stop-hooks/src/agent/run.ts.md",
+      "route": "#/content/chapter-20-hooks/03-stop-hooks/src/agent/run.ts.md",
+      "title": "run.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/03-stop-hooks/src/agent/run.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/03-stop-hooks/src/hooks/lifecycle.ts.md",
+      "route": "#/content/chapter-20-hooks/03-stop-hooks/src/hooks/lifecycle.ts.md",
+      "title": "lifecycle.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/03-stop-hooks/src/hooks/lifecycle.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/03-stop-hooks/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-20-hooks/03-stop-hooks/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/03-stop-hooks/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/03-stop-hooks/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-20-hooks/03-stop-hooks/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/03-stop-hooks/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/examples/after-tool.ts.md",
+      "route": "#/content/chapter-20-hooks/examples/after-tool.ts.md",
+      "title": "after-tool.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/examples/after-tool.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/examples/before-tool.ts.md",
+      "route": "#/content/chapter-20-hooks/examples/before-tool.ts.md",
+      "title": "before-tool.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/examples/before-tool.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/examples/stop.ts.md",
+      "route": "#/content/chapter-20-hooks/examples/stop.ts.md",
+      "title": "stop.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/examples/stop.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/examples/verify-hooks.ts.md",
+      "route": "#/content/chapter-20-hooks/examples/verify-hooks.ts.md",
+      "title": "verify-hooks.ts",
+      "kind": "source",
+      "source": "chapter-20-hooks/examples/verify-hooks.ts"
+    },
+    {
+      "path": "content/chapter-20-hooks/EXERCISES.md",
+      "route": "#/content/chapter-20-hooks/EXERCISES.md",
+      "title": "第 20 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-20-hooks/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-20-hooks/README.md",
+      "route": "#/content/chapter-20-hooks/README.md",
+      "title": "第 20 章：把项目检查接入生命周期",
+      "kind": "tutorial",
+      "source": "chapter-20-hooks/README.md"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-cover-107cb4bf9f.png.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-cover-107cb4bf9f.png.md",
+      "title": "mcp-stdio-roundtrip-cover-107cb4bf9f.png",
+      "kind": "image",
+      "source": "chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-cover-107cb4bf9f.png"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-flow-fa261f7de8.png.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-flow-fa261f7de8.png.md",
+      "title": "mcp-stdio-roundtrip-flow-fa261f7de8.png",
+      "kind": "image",
+      "source": "chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-flow-fa261f7de8.png"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-storyboard-47b791762e.jpg.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-storyboard-47b791762e.jpg.md",
+      "title": "mcp-stdio-roundtrip-storyboard-47b791762e.jpg",
+      "kind": "image",
+      "source": "chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-storyboard-47b791762e.jpg"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/README.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/README.md",
+      "title": "21.1 stdio MCP：让独立服务提供模型工具",
+      "kind": "tutorial",
+      "source": "chapter-21-mcp/01-stdio-tools/README.md"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/01-stdio-tools/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/01-stdio-tools/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/src/cli.ts.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/01-stdio-tools/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/src/mcp/client.ts.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/src/mcp/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/01-stdio-tools/src/mcp/client.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/src/models/client.ts.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/01-stdio-tools/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/01-stdio-tools/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/src/tools/registry.ts.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/01-stdio-tools/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/src/tools/types.ts.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/src/tools/types.ts.md",
+      "title": "types.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/01-stdio-tools/src/tools/types.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/01-stdio-tools/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-21-mcp/01-stdio-tools/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/01-stdio-tools/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-cover-02b4fa5b80.png.md",
+      "route": "#/content/chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-cover-02b4fa5b80.png.md",
+      "title": "mcp-http-credentials-cover-02b4fa5b80.png",
+      "kind": "image",
+      "source": "chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-cover-02b4fa5b80.png"
+    },
+    {
+      "path": "content/chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-flow-a27b3ceb02.png.md",
+      "route": "#/content/chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-flow-a27b3ceb02.png.md",
+      "title": "mcp-http-credentials-flow-a27b3ceb02.png",
+      "kind": "image",
+      "source": "chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-flow-a27b3ceb02.png"
+    },
+    {
+      "path": "content/chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-storyboard-060c23a042.jpg.md",
+      "route": "#/content/chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-storyboard-060c23a042.jpg.md",
+      "title": "mcp-http-credentials-storyboard-060c23a042.jpg",
+      "kind": "image",
+      "source": "chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-storyboard-060c23a042.jpg"
+    },
+    {
+      "path": "content/chapter-21-mcp/02-streamable-http/README.md",
+      "route": "#/content/chapter-21-mcp/02-streamable-http/README.md",
+      "title": "21.2 Streamable HTTP：连接远端 MCP 服务",
+      "kind": "tutorial",
+      "source": "chapter-21-mcp/02-streamable-http/README.md"
+    },
+    {
+      "path": "content/chapter-21-mcp/02-streamable-http/src/mcp/client.ts.md",
+      "route": "#/content/chapter-21-mcp/02-streamable-http/src/mcp/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/02-streamable-http/src/mcp/client.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-cover-bd19e94938.png.md",
+      "route": "#/content/chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-cover-bd19e94938.png.md",
+      "title": "mcp-state-close-cover-bd19e94938.png",
+      "kind": "image",
+      "source": "chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-cover-bd19e94938.png"
+    },
+    {
+      "path": "content/chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-flow-ebf22f91ae.png.md",
+      "route": "#/content/chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-flow-ebf22f91ae.png.md",
+      "title": "mcp-state-close-flow-ebf22f91ae.png",
+      "kind": "image",
+      "source": "chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-flow-ebf22f91ae.png"
+    },
+    {
+      "path": "content/chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-storyboard-2293371da8.jpg.md",
+      "route": "#/content/chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-storyboard-2293371da8.jpg.md",
+      "title": "mcp-state-close-storyboard-2293371da8.jpg",
+      "kind": "image",
+      "source": "chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-storyboard-2293371da8.jpg"
+    },
+    {
+      "path": "content/chapter-21-mcp/03-connection-lifecycle/README.md",
+      "route": "#/content/chapter-21-mcp/03-connection-lifecycle/README.md",
+      "title": "21.3 连接生命周期：让工具目录反映当前连接",
+      "kind": "tutorial",
+      "source": "chapter-21-mcp/03-connection-lifecycle/README.md"
+    },
+    {
+      "path": "content/chapter-21-mcp/03-connection-lifecycle/src/mcp/client.ts.md",
+      "route": "#/content/chapter-21-mcp/03-connection-lifecycle/src/mcp/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/03-connection-lifecycle/src/mcp/client.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/examples/docs-http.ts.md",
+      "route": "#/content/chapter-21-mcp/examples/docs-http.ts.md",
+      "title": "docs-http.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/examples/docs-http.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/examples/docs-stdio.ts.md",
+      "route": "#/content/chapter-21-mcp/examples/docs-stdio.ts.md",
+      "title": "docs-stdio.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/examples/docs-stdio.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/examples/verify-mcp.ts.md",
+      "route": "#/content/chapter-21-mcp/examples/verify-mcp.ts.md",
+      "title": "verify-mcp.ts",
+      "kind": "source",
+      "source": "chapter-21-mcp/examples/verify-mcp.ts"
+    },
+    {
+      "path": "content/chapter-21-mcp/EXERCISES.md",
+      "route": "#/content/chapter-21-mcp/EXERCISES.md",
+      "title": "第 21 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-21-mcp/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-21-mcp/README.md",
+      "route": "#/content/chapter-21-mcp/README.md",
+      "title": "第 21 章：通过 MCP 接入独立工具服务",
+      "kind": "tutorial",
+      "source": "chapter-21-mcp/README.md"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/assets/web-fetch-bounds-cover-750859500c.png.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/assets/web-fetch-bounds-cover-750859500c.png.md",
+      "title": "web-fetch-bounds-cover-750859500c.png",
+      "kind": "image",
+      "source": "chapter-22-web/01-fetch-page/assets/web-fetch-bounds-cover-750859500c.png"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/assets/web-fetch-bounds-flow-4373738d22.png.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/assets/web-fetch-bounds-flow-4373738d22.png.md",
+      "title": "web-fetch-bounds-flow-4373738d22.png",
+      "kind": "image",
+      "source": "chapter-22-web/01-fetch-page/assets/web-fetch-bounds-flow-4373738d22.png"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/assets/web-fetch-bounds-storyboard-a20a0bcff6.jpg.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/assets/web-fetch-bounds-storyboard-a20a0bcff6.jpg.md",
+      "title": "web-fetch-bounds-storyboard-a20a0bcff6.jpg",
+      "kind": "image",
+      "source": "chapter-22-web/01-fetch-page/assets/web-fetch-bounds-storyboard-a20a0bcff6.jpg"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/README.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/README.md",
+      "title": "22.1 抓取页面：把一个 URL 变成有边界的工具资料",
+      "kind": "tutorial",
+      "source": "chapter-22-web/01-fetch-page/README.md"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-22-web/01-fetch-page/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-22-web/01-fetch-page/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/src/cli.ts.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-22-web/01-fetch-page/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/src/models/client.ts.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-22-web/01-fetch-page/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-22-web/01-fetch-page/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/src/tools/registry.ts.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-22-web/01-fetch-page/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/src/tools/types.ts.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/src/tools/types.ts.md",
+      "title": "types.ts",
+      "kind": "source",
+      "source": "chapter-22-web/01-fetch-page/src/tools/types.ts"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-22-web/01-fetch-page/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-22-web/01-fetch-page/src/web/client.ts.md",
+      "route": "#/content/chapter-22-web/01-fetch-page/src/web/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-22-web/01-fetch-page/src/web/client.ts"
+    },
+    {
+      "path": "content/chapter-22-web/02-search-sources/assets/web-search-then-fetch-cover-72996f9510.png.md",
+      "route": "#/content/chapter-22-web/02-search-sources/assets/web-search-then-fetch-cover-72996f9510.png.md",
+      "title": "web-search-then-fetch-cover-72996f9510.png",
+      "kind": "image",
+      "source": "chapter-22-web/02-search-sources/assets/web-search-then-fetch-cover-72996f9510.png"
+    },
+    {
+      "path": "content/chapter-22-web/02-search-sources/assets/web-search-then-fetch-flow-776483cc0b.png.md",
+      "route": "#/content/chapter-22-web/02-search-sources/assets/web-search-then-fetch-flow-776483cc0b.png.md",
+      "title": "web-search-then-fetch-flow-776483cc0b.png",
+      "kind": "image",
+      "source": "chapter-22-web/02-search-sources/assets/web-search-then-fetch-flow-776483cc0b.png"
+    },
+    {
+      "path": "content/chapter-22-web/02-search-sources/assets/web-search-then-fetch-storyboard-189d8eb579.jpg.md",
+      "route": "#/content/chapter-22-web/02-search-sources/assets/web-search-then-fetch-storyboard-189d8eb579.jpg.md",
+      "title": "web-search-then-fetch-storyboard-189d8eb579.jpg",
+      "kind": "image",
+      "source": "chapter-22-web/02-search-sources/assets/web-search-then-fetch-storyboard-189d8eb579.jpg"
+    },
+    {
+      "path": "content/chapter-22-web/02-search-sources/README.md",
+      "route": "#/content/chapter-22-web/02-search-sources/README.md",
+      "title": "22.2 搜索资料：先取得候选来源，再决定读取什么",
+      "kind": "tutorial",
+      "source": "chapter-22-web/02-search-sources/README.md"
+    },
+    {
+      "path": "content/chapter-22-web/02-search-sources/src/cli.ts.md",
+      "route": "#/content/chapter-22-web/02-search-sources/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-22-web/02-search-sources/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-22-web/02-search-sources/src/tools/registry.ts.md",
+      "route": "#/content/chapter-22-web/02-search-sources/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-22-web/02-search-sources/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-22-web/02-search-sources/src/web/client.ts.md",
+      "route": "#/content/chapter-22-web/02-search-sources/src/web/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-22-web/02-search-sources/src/web/client.ts"
+    },
+    {
+      "path": "content/chapter-22-web/03-grounded-answers/assets/web-source-ledger-cover-cba5b644ea.png.md",
+      "route": "#/content/chapter-22-web/03-grounded-answers/assets/web-source-ledger-cover-cba5b644ea.png.md",
+      "title": "web-source-ledger-cover-cba5b644ea.png",
+      "kind": "image",
+      "source": "chapter-22-web/03-grounded-answers/assets/web-source-ledger-cover-cba5b644ea.png"
+    },
+    {
+      "path": "content/chapter-22-web/03-grounded-answers/assets/web-source-ledger-flow-246263cbd3.png.md",
+      "route": "#/content/chapter-22-web/03-grounded-answers/assets/web-source-ledger-flow-246263cbd3.png.md",
+      "title": "web-source-ledger-flow-246263cbd3.png",
+      "kind": "image",
+      "source": "chapter-22-web/03-grounded-answers/assets/web-source-ledger-flow-246263cbd3.png"
+    },
+    {
+      "path": "content/chapter-22-web/03-grounded-answers/assets/web-source-ledger-storyboard-da024370bd.jpg.md",
+      "route": "#/content/chapter-22-web/03-grounded-answers/assets/web-source-ledger-storyboard-da024370bd.jpg.md",
+      "title": "web-source-ledger-storyboard-da024370bd.jpg",
+      "kind": "image",
+      "source": "chapter-22-web/03-grounded-answers/assets/web-source-ledger-storyboard-da024370bd.jpg"
+    },
+    {
+      "path": "content/chapter-22-web/03-grounded-answers/README.md",
+      "route": "#/content/chapter-22-web/03-grounded-answers/README.md",
+      "title": "22.3 依据来源作答：来源台账、引用要求与本地核验",
+      "kind": "tutorial",
+      "source": "chapter-22-web/03-grounded-answers/README.md"
+    },
+    {
+      "path": "content/chapter-22-web/03-grounded-answers/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-22-web/03-grounded-answers/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-22-web/03-grounded-answers/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-22-web/03-grounded-answers/src/models/client.ts.md",
+      "route": "#/content/chapter-22-web/03-grounded-answers/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-22-web/03-grounded-answers/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-22-web/03-grounded-answers/src/web/client.ts.md",
+      "route": "#/content/chapter-22-web/03-grounded-answers/src/web/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-22-web/03-grounded-answers/src/web/client.ts"
+    },
+    {
+      "path": "content/chapter-22-web/examples/verify-web.ts.md",
+      "route": "#/content/chapter-22-web/examples/verify-web.ts.md",
+      "title": "verify-web.ts",
+      "kind": "source",
+      "source": "chapter-22-web/examples/verify-web.ts"
+    },
+    {
+      "path": "content/chapter-22-web/examples/web-provider.ts.md",
+      "route": "#/content/chapter-22-web/examples/web-provider.ts.md",
+      "title": "web-provider.ts",
+      "kind": "source",
+      "source": "chapter-22-web/examples/web-provider.ts"
+    },
+    {
+      "path": "content/chapter-22-web/EXERCISES.md",
+      "route": "#/content/chapter-22-web/EXERCISES.md",
+      "title": "第 22 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-22-web/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-22-web/README.md",
+      "route": "#/content/chapter-22-web/README.md",
+      "title": "第 22 章：取得外部资料，再依据来源完成任务",
+      "kind": "tutorial",
+      "source": "chapter-22-web/README.md"
     },
     {
       "path": "content/docs/CODING-AGENT-GAP-REVIEW.md",

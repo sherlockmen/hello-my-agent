@@ -22,7 +22,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node scripts/compile.mjs 19.3 --prepare",
+    "build": "node scripts/compile.mjs 22.3 --prepare",
     "lesson:01": "node scripts/compile.mjs 01 --prepare",
     "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare",
     "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare",
@@ -80,8 +80,8 @@
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/compile.mjs 19.3",
-    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 19.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && node scripts/compile.mjs 19.3 && node -e \"if (!require('node:fs').existsSync('dist/skills/catalog.js')) throw new Error('默认构建未恢复到 19.3')\"",
+    "prepack": "node scripts/compile.mjs 22.3",
+    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 22.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && npm run check:20 && npm run check:21 && npm run check:22 && node scripts/compile.mjs 22.3 && node -e \"if (!require('node:fs').existsSync('dist/web/client.js')) throw new Error('默认构建未恢复到 22.3')\"",
     "check:11": "node tests/verify-chapter-11.mjs && python3 tests/verify-terminal-11.py",
     "exercise:11": "node tests/verify-exercise-11.mjs",
     "lesson:12.1": "node scripts/compile.mjs 12.1 --prepare",
@@ -120,14 +120,22 @@
     "lesson:19.2": "node scripts/compile.mjs 19.2 --prepare",
     "lesson:19.3": "node scripts/compile.mjs 19.3 --prepare",
     "check:19": "node tests/verify-chapter-19.mjs && python3 tests/verify-terminal-19.py",
-    "site:build": "node scripts/build-site.mjs",
-    "site:check": "node tests/verify-site-build.mjs",
-    "site:serve": "node scripts/serve-site.mjs",
-    "site:source": "npm run site:build && node scripts/publish-site-source.mjs",
-    "site:deploy": "npm run site:build && npm run site:check && node scripts/publish-site-source.mjs && node scripts/deploy-site.mjs"
+    "lesson:20.1": "node scripts/compile.mjs 20.1 --prepare",
+    "lesson:20.2": "node scripts/compile.mjs 20.2 --prepare",
+    "lesson:20.3": "node scripts/compile.mjs 20.3 --prepare",
+    "check:20": "node tests/verify-chapter-20.mjs && python3 tests/verify-terminal-20.py",
+    "lesson:21.1": "node scripts/compile.mjs 21.1 --prepare",
+    "lesson:21.2": "node scripts/compile.mjs 21.2 --prepare",
+    "lesson:21.3": "node scripts/compile.mjs 21.3 --prepare",
+    "check:21": "node tests/verify-chapter-21.mjs && python3 tests/verify-terminal-21.py",
+    "lesson:22.1": "node scripts/compile.mjs 22.1 --prepare",
+    "lesson:22.2": "node scripts/compile.mjs 22.2 --prepare",
+    "lesson:22.3": "node scripts/compile.mjs 22.3 --prepare",
+    "check:22": "node tests/verify-chapter-22.mjs && python3 tests/verify-terminal-22.py"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.126.0",
+    "@modelcontextprotocol/sdk": "1.32.1",
     "commander": "14.0.3",
     "ignore": "7.0.9",
     "ink": "7.1.1",
@@ -135,7 +143,8 @@
     "openai": "7.15.0",
     "react": "19.3.0",
     "string-width": "8.2.2",
-    "wrap-ansi": "9.0.2"
+    "wrap-ansi": "9.0.2",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/node": "22.20.3",

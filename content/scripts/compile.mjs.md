@@ -88,9 +88,18 @@ const targets = {
   "19.1": "chapter-19-skills/01-discover-skills/src",
   "19.2": "chapter-19-skills/02-load-on-demand/src",
   "19.3": "chapter-19-skills/03-model-skill-tools/src",
+  "20.1": "chapter-20-hooks/01-before-tool/src",
+  "20.2": "chapter-20-hooks/02-after-tool/src",
+  "20.3": "chapter-20-hooks/03-stop-hooks/src",
+  "21.1": "chapter-21-mcp/01-stdio-tools/src",
+  "21.2": "chapter-21-mcp/02-streamable-http/src",
+  "21.3": "chapter-21-mcp/03-connection-lifecycle/src",
+  "22.1": "chapter-22-web/01-fetch-page/src",
+  "22.2": "chapter-22-web/02-search-sources/src",
+  "22.3": "chapter-22-web/03-grounded-answers/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "19.3";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "22.3";
 const source = targets[target];
 
 if (!source) {

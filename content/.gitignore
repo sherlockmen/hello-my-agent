@@ -19,3 +19,13 @@ docs/planning/*
 !docs/planning/CAPABILITIES.md
 !docs/planning/REFERENCE-NOTES.md
 site-dist/
+
+# Docsify belongs to codex/teaching-site; master keeps native course files.
+/website/
+/scripts/build-site.mjs
+/scripts/deploy-site.mjs
+/scripts/publish-site-source.mjs
+/scripts/serve-site.mjs
+/scripts/vendor-gifcontrol.mjs
+/scripts/vendor-site.mjs
+/tests/verify-site-build.mjs

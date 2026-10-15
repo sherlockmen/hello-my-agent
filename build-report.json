@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "chapters": 19,
-  "tutorialPages": 109,
-  "lessonPages": 63,
-  "exercisePages": 19,
-  "sourcePages": 645,
+  "chapters": 22,
+  "tutorialPages": 124,
+  "lessonPages": 72,
+  "exercisePages": 22,
+  "sourcePages": 691,
   "sourceIndexes": 26,
-  "imagePages": 63,
-  "referencedAssets": 163,
-  "gifReferences": 51,
+  "imagePages": 90,
+  "referencedAssets": 199,
+  "gifReferences": 60,
   "convertedMotionPlayers": 15,
-  "assetBytes": 189829265,
+  "assetBytes": 245097102,
   "generatedGifCovers": [
     "chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png",
     "chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png",
@@ -92,6 +92,21 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/19-skills.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/20-hooks.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/21-mcp.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/22-web.md",
       "reason": "verification evidence"
     },
     {
@@ -187,6 +202,21 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/19-skills.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/20-hooks.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/21-mcp.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/22-web.md",
       "reason": "verification evidence"
     },
     {
@@ -364,6 +394,42 @@
     "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-1ed2e847e9.gif",
     "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-cover-4253f3828f.png",
     "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-flow-981fad57bf.png",
-    "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-storyboard-b62dfcfe1b.jpg"
+    "chapter-19-skills/03-model-skill-tools/assets/skills-model-resource-loop-storyboard-b62dfcfe1b.jpg",
+    "chapter-20-hooks/01-before-tool/assets/before-tool-flow-e9d498b95a.png",
+    "chapter-20-hooks/01-before-tool/assets/hooks-before-gate-61992333f4.gif",
+    "chapter-20-hooks/01-before-tool/assets/hooks-before-gate-cover-e1cc590e75.png",
+    "chapter-20-hooks/01-before-tool/assets/hooks-before-gate-storyboard-f67a29edca.jpg",
+    "chapter-20-hooks/02-after-tool/assets/after-tool-flow-49d8727083.png",
+    "chapter-20-hooks/02-after-tool/assets/hooks-after-feedback-21181031b9.gif",
+    "chapter-20-hooks/02-after-tool/assets/hooks-after-feedback-cover-5c079abc6a.png",
+    "chapter-20-hooks/02-after-tool/assets/hooks-after-feedback-storyboard-2546111be9.jpg",
+    "chapter-20-hooks/03-stop-hooks/assets/hooks-stop-once-26bf2aad88.gif",
+    "chapter-20-hooks/03-stop-hooks/assets/hooks-stop-once-cover-0c97006a59.png",
+    "chapter-20-hooks/03-stop-hooks/assets/hooks-stop-once-storyboard-882174ad6e.jpg",
+    "chapter-20-hooks/03-stop-hooks/assets/stop-hook-flow-1b85eea196.png",
+    "chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-cover-107cb4bf9f.png",
+    "chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-d9a94e327b.gif",
+    "chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-flow-fa261f7de8.png",
+    "chapter-21-mcp/01-stdio-tools/assets/mcp-stdio-roundtrip-storyboard-47b791762e.jpg",
+    "chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-23e6fcd1dc.gif",
+    "chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-cover-02b4fa5b80.png",
+    "chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-flow-a27b3ceb02.png",
+    "chapter-21-mcp/02-streamable-http/assets/mcp-http-credentials-storyboard-060c23a042.jpg",
+    "chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-2278885442.gif",
+    "chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-cover-bd19e94938.png",
+    "chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-flow-ebf22f91ae.png",
+    "chapter-21-mcp/03-connection-lifecycle/assets/mcp-state-close-storyboard-2293371da8.jpg",
+    "chapter-22-web/01-fetch-page/assets/web-fetch-bounds-3a0e9af4fe.gif",
+    "chapter-22-web/01-fetch-page/assets/web-fetch-bounds-cover-750859500c.png",
+    "chapter-22-web/01-fetch-page/assets/web-fetch-bounds-flow-4373738d22.png",
+    "chapter-22-web/01-fetch-page/assets/web-fetch-bounds-storyboard-a20a0bcff6.jpg",
+    "chapter-22-web/02-search-sources/assets/web-search-then-fetch-2b938fa571.gif",
+    "chapter-22-web/02-search-sources/assets/web-search-then-fetch-cover-72996f9510.png",
+    "chapter-22-web/02-search-sources/assets/web-search-then-fetch-flow-776483cc0b.png",
+    "chapter-22-web/02-search-sources/assets/web-search-then-fetch-storyboard-189d8eb579.jpg",
+    "chapter-22-web/03-grounded-answers/assets/web-source-ledger-576f2f5985.gif",
+    "chapter-22-web/03-grounded-answers/assets/web-source-ledger-cover-cba5b644ea.png",
+    "chapter-22-web/03-grounded-answers/assets/web-source-ledger-flow-246263cbd3.png",
+    "chapter-22-web/03-grounded-answers/assets/web-source-ledger-storyboard-da024370bd.jpg"
   ]
 }
