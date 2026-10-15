@@ -1,6 +1,14 @@
 # 教程网站的维护
 
-正文继续在各章节的 Markdown 中编辑。网站构建时自动收集章节、练习、引用图片和源码页，无需复制正文到另一份目录。公开的配套源码和网站维护文件保存在 [codex/teaching-site 分支](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site)，新电脑可按环境准备页的命令取得完整版本。
+正文继续在各章节的 Markdown 中编辑。网站构建时自动收集章节、练习、引用图片和源码页，无需复制正文到另一份目录。可运行的配套源码、原生 Markdown 与配图保存在 [master 分支](https://github.com/sherlockmen/hello-my-agent/tree/master)，读者按环境准备页取得。Docsify 外壳、插件、发布脚本与完整教学内容另存于 [codex/teaching-site 分支](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site)；生成的公开网站由 `gh-pages` 发布。
+
+先在网站分支的独立工作区操作，下面的 `site:*` 命令只存在于该分支。不要在已有源码工作区直接切换分支覆盖文件。
+
+```bash
+git clone --branch codex/teaching-site --single-branch https://github.com/sherlockmen/hello-my-agent.git hello-my-agent-site
+cd hello-my-agent-site
+npm ci
+```
 
 ```bash
 npm run site:build
@@ -18,7 +26,7 @@ npm run site:deploy
 
 发布命令先把经过筛选的完整教学源码同步到 `codex/teaching-site`，再把生成的网站发布到 `gh-pages`。操作在临时目录中完成，不切换当前工作区，也不提交或推送 `master`；需要现有 GitHub 登录有此仓库的推送权限。首次发布也会启用 Pages，使用 `gh-pages` 根目录。线上地址为 <https://sherlockmen.github.io/hello-my-agent/>。
 
-只同步配套源码时可运行 `npm run site:source`。网站和源码都由当前工作区的文件生成，因此发布前先确认正文与代码已经完成。
+只同步配套源码时可运行 `npm run site:source`。网站和配套快照都由当前网站工作区生成，因此发布前先同步已确认的正文和代码。同步 `master` 的章节目录、验收脚本、`scripts/compile.mjs` 和公开文档；`package.json` 只同步课程命令和依赖，保留网站分支的 `site:*` 命令。两分支的 `.gitignore` 分别维护，不用整分支合并来同步课程。
 
 `website/` 是网站外壳和固定版本插件，`scripts/build-site.mjs` 生成 `site-dist/`。`site-dist/` 不加入当前分支；部署时仅发布生成目录中的公开教学内容。私有编审记录、`.work`、环境变量、未引用的图片候选稿和依赖目录不会发布。
 

@@ -60,9 +60,24 @@ const targets = {
   "12.4": "chapter-12-task-control/04-live-input/src",
   "12.5": "chapter-12-task-control/05-manage-queue/src",
   "13.1": "chapter-13-session-persistence/01-save-session/src",
+  "13.2": "chapter-13-session-persistence/02-read-records/src",
+  "13.3": "chapter-13-session-persistence/03-resume-session/src",
+  "13.4": "chapter-13-session-persistence/04-manage-sessions/src",
+  "14.1": "chapter-14-session-checkpoints/01-fork-session/src",
+  "14.2": "chapter-14-session-checkpoints/02-file-checkpoints/src",
+  "14.3": "chapter-14-session-checkpoints/03-review-and-restore/src",
+  "15.1": "chapter-15-context-budget/01-estimate-tokens/src",
+  "15.2": "chapter-15-context-budget/02-bound-tool-results/src",
+  "15.3": "chapter-15-context-budget/03-enforce-budget/src",
+  "16.1": "chapter-16-context-compaction/01-select-history/src",
+  "16.2": "chapter-16-context-compaction/02-generate-summary/src",
+  "16.3": "chapter-16-context-compaction/03-compact-and-continue/src",
+  "17.1": "chapter-17-project-instructions/01-project-root/src",
+  "17.2": "chapter-17-project-instructions/02-scoped-instructions/src",
+  "17.3": "chapter-17-project-instructions/03-inspect-loading/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "13.1";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "17.3";
 const source = targets[target];
 
 if (!source) {
@@ -98,7 +113,7 @@ if (!source) {
         outDir: join(root, "dist"),
         typeRoots: [join(root, "node_modules/@types")],
       },
-      include: [join(sourceDir, "cli.ts")],
+      include: [join(sourceDir, "cli.ts"), ...(target === "13.2" ? [join(sourceDir, "sessions/read-session.ts")] : [])],
     }));
     rmSync(join(root, "dist"), { recursive: true, force: true });
     status = run(process.execPath, [join(root, "node_modules/typescript/bin/tsc"), "-p", config]);

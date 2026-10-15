@@ -73,7 +73,13 @@ function selectSource(report) {
     if (path.startsWith('docs/')) assert.ok(publicDocs.includes(path), `文档不在公开清单：${path}`);
     if (path.startsWith('chapter-') && (path.includes('/assets/') || imagePattern.test(path))) assert.ok(assets.has(path), `图片未被网站引用：${path}`);
   }
-  assert.ok(files.includes('tests/verify-chapter-13.mjs') && files.includes('tui-approval-demo.txt'));
+  for (const chapter of [13, 14, 15, 16, 17]) assert.ok(files.includes(`tests/verify-chapter-${chapter}.mjs`));
+  assert.ok(files.includes('tests/verify-terminal-14.py'));
+  assert.ok(files.includes('tests/verify-terminal-15.py'));
+  assert.ok(files.includes('tests/verify-terminal-16.py'));
+  assert.ok(files.includes('tests/verify-terminal-17.py'));
+  assert.ok(files.includes('tests/verify-terminal-13.py'));
+  assert.ok(files.includes('tui-approval-demo.txt'));
   assert.ok(files.some(path => path.startsWith('tests/') && path.endsWith('.py')));
   assert.ok(files.includes('scripts/publish-site-source.mjs'));
   return files;
@@ -82,10 +88,15 @@ function selectSource(report) {
 function verifySnapshot(snapshot, expected) {
   const pkg = JSON.parse(readFileSync(join(snapshot, 'package.json'), 'utf8'));
   const lock = JSON.parse(readFileSync(join(snapshot, 'package-lock.json'), 'utf8'));
-  assert.ok(pkg.scripts['lesson:13.1'] && pkg.scripts['check:13'], '配套源码缺少 13.1 的运行或验收命令');
+  assert.ok(pkg.scripts['lesson:13.4'] && pkg.scripts['check:13'], '配套源码缺少 13.4 的运行或验收命令');
+  assert.ok(pkg.scripts['lesson:15.3'] && pkg.scripts['check:14'] && pkg.scripts['check:15'], '配套源码缺少第十四、十五章的运行或验收命令');
+  assert.ok(pkg.scripts['lesson:17.3'] && pkg.scripts['check:16'] && pkg.scripts['check:17'], '配套源码缺少第十六、十七章的运行或验收命令');
   assert.deepEqual(lock.packages[''].dependencies, pkg.dependencies, '依赖与锁文件不一致');
   assert.deepEqual(lock.packages[''].devDependencies, pkg.devDependencies, '开发依赖与锁文件不一致');
-  assert.ok(existsSync(join(snapshot, 'chapter-13-session-persistence/01-save-session/src/cli.ts')));
+  assert.ok(existsSync(join(snapshot, 'chapter-13-session-persistence/04-manage-sessions/src/cli.ts')));
+  assert.ok(existsSync(join(snapshot, 'chapter-15-context-budget/03-enforce-budget/src/cli.ts')));
+  assert.ok(existsSync(join(snapshot, 'chapter-16-context-compaction/03-compact-and-continue/src/cli.ts')));
+  assert.ok(existsSync(join(snapshot, 'chapter-17-project-instructions/03-inspect-loading/src/cli.ts')));
   for (const command of Object.values(pkg.scripts)) {
     for (const match of command.matchAll(/(?:node|python3?)\s+([\w./-]+\.(?:mjs|py))/g)) {
       assert.ok(existsSync(join(snapshot, match[1])), `构建或验收脚本缺失：${match[1]}`);
@@ -104,13 +115,13 @@ function verifySnapshot(snapshot, expected) {
   symlinkSync(dependencies, join(snapshot, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir');
   try {
     run(process.execPath, ['node_modules/typescript/bin/tsc', '--noEmit'], snapshot);
-    run(process.execPath, ['tests/verify-chapter-13.mjs'], snapshot);
+    for (const chapter of [13, 14, 15, 16, 17]) run(process.execPath, [`tests/verify-chapter-${chapter}.mjs`], snapshot);
   } finally {
     rmSync(join(snapshot, 'node_modules'), { force: true });
     rmSync(join(snapshot, 'dist'), { recursive: true, force: true });
     rmSync(join(snapshot, 'site-dist'), { recursive: true, force: true });
   }
-  return { websiteRebuild: true, websiteFixtures: true, typecheck: true, chapter13: true };
+  return { websiteRebuild: true, websiteFixtures: true, typecheck: true, chapter13: true, chapter14: true, chapter15: true, chapter16: true, chapter17: true };
 }
 
 let temporary;
@@ -156,7 +167,7 @@ try {
     repository: 'sherlockmen/hello-my-agent', branch, commit, checkOnly, checkedAt: new Date().toISOString(),
     checks, files: manifest,
   }, null, 2) + '\n');
-  console.log(`✓ ${files.length} 份公开源码通过网站重建、TypeScript 和第十三章验收${checkOnly ? '（未推送）' : `，已发布到 ${branch} ${commit.slice(0, 8)}`}。`);
+  console.log(`✓ ${files.length} 份公开源码通过网站重建、TypeScript 和第十三至十七章验收${checkOnly ? '（未推送）' : `，已发布到 ${branch} ${commit.slice(0, 8)}`}。`);
 } catch (error) {
   console.error(`源码发布失败：${error.message}`);
   process.exitCode = 1;
