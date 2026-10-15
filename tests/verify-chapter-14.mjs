@@ -1,0 +1,110 @@
+/** 第14章：临时编译三个快照，实际文件/锁/CLI验证，不调用真实模型。 */
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { createServer } from 'node:http';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync, renameSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { runCli } from './verify-chat.mjs';
+const root = fileURLToPath(new URL('../', import.meta.url)), temp = mkdtempSync(join(tmpdir(), 'hello-agent-checkpoint-'));
+const previous = process.cwd(), workspace = join(temp, 'workspace'), directory = join(temp, 'sessions');
+let server;
+try {
+  mkdirSync(workspace); mkdirSync(directory);
+  writeFileSync(join(temp, 'package.json'), '{"type":"module","version":"0.0.0"}');
+  writeFileSync(join(workspace, 'package.json'), '{}');
+  symlinkSync(join(root, 'node_modules'), join(temp, 'node_modules'));
+  let dist;
+  for (const lesson of ['01-fork-session', '02-file-checkpoints', '03-review-and-restore']) {
+    const src = join(root, 'chapter-14-session-checkpoints', lesson, 'src'); dist = join(temp, lesson);
+    writeFileSync(join(temp, 'tsconfig.json'), JSON.stringify({ extends: join(root, 'tsconfig.json'), compilerOptions: { noEmit: false, noEmitOnError: true, rootDir: src, outDir: dist, typeRoots: [join(root, 'node_modules/@types')] }, include: [join(src, 'cli.ts')] }));
+    execFileSync(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(temp, 'tsconfig.json')], { stdio: 'inherit' });
+    console.log(`✓ 14.${['01-fork-session', '02-file-checkpoints', '03-review-and-restore'].indexOf(lesson) + 1} 独立快照编译`);
+  }
+  const load = f => import(pathToFileURL(join(dist, f)).href);
+  const { createSessionWriter, resumeSessionWriter } = await load('sessions/save-session.js');
+  const { readSession } = await load('sessions/read-session.js');
+  const { forkSessionWriter } = await load('sessions/fork-session.js');
+  const { createFileCheckpointStore, prepareFileRestore, createFileCheckpointCommands } = await load('sessions/file-checkpoints.js');
+  const { prepareWriteFile } = await load('tools/write-file.js'), { prepareEditFile } = await load('tools/edit-file.js');
+  process.chdir(workspace);
+  const state = { messages: [{ role: 'user', content: '研究加法' }, { role: 'assistant', content: '旧工具已完成' }], mode: 'execute', tasks: [{ id: 'check', text: '负数测试', status: 'pending' }], pendingInputs: [{ id: 2, text: '未交付', run: 1 }], run: 1, nextInputId: 3 };
+  const writer = await createSessionWriter(directory), id = writer.id;
+  await writer.save(state, 'run_end');
+  await assert.rejects(forkSessionWriter(id, directory), /占用/);
+  await writer.close();
+  const original = readFileSync(writer.path);
+  const child = await forkSessionWriter(id, directory);
+  assert.notEqual(child.id, id); assert.deepEqual(child.restored.state, state);
+  assert.deepEqual(child.restored.header.parent, { sessionId: id, seq: 1 });
+  await child.save({ ...state, messages: [...state.messages, { role: 'user', content: '探索另一方案' }] }, 'run_end');
+  await child.close(); assert.deepEqual(readFileSync(writer.path), original);
+  const held = await resumeSessionWriter(id, directory), store = createFileCheckpointStore(id, directory);
+  const signal = new AbortController().signal;
+  writeFileSync('add.ts', '\uFEFFexport const add = (a: number, b: number) => a + b;\n');
+  const before = readFileSync('add.ts');
+  let edit = await prepareEditFile(JSON.stringify({ path: 'add.ts', old_text: 'a + b', new_text: 'Number(a) + Number(b)' }), workspace, signal, store);
+  assert.equal((await store.list()).length, 0); assert.deepEqual(readFileSync('add.ts'), before);
+  await edit.execute(signal);
+  let points = await store.list(); assert.equal(points.length, 1); const first = points[0]; assert.equal(first.before.charCodeAt(0), 0xfeff);
+  assert.equal(first.after, readFileSync('add.ts', 'utf8')); assert.equal(first.sessionId, id);
+  const commands = createFileCheckpointCommands(store);
+  assert.match((await commands(`/restore ${first.id} confirm`)).message, /先执行/);
+  let preview = await commands(`/restore ${first.id}`); assert.match(preview.message, /Number\(a\)/); assert.equal(readFileSync('add.ts', 'utf8'), first.after);
+  writeFileSync('add.ts', '外部编辑');
+  assert.match((await commands(`/restore ${first.id} confirm`)).message, /冲突/); assert.equal(readFileSync('add.ts', 'utf8'), '外部编辑');
+  writeFileSync('add.ts', first.after);
+  await commands(`/restore ${first.id}`); assert.equal((await commands(`/restore ${first.id} confirm`)).restored.id, first.id);
+  assert.deepEqual(readFileSync('add.ts'), before);
+  await assert.rejects(prepareFileRestore(store, first.id), /已是/);
+  // 同一路径按预期内容倒序恢复，不能跳过更新的修改。
+  await (await prepareEditFile(JSON.stringify({ path: 'add.ts', old_text: 'a + b', new_text: 'a - b' }), workspace, signal, store)).execute(signal);
+  points = await store.list(); const second = points.find(x => x.after.includes('a - b'));
+  await (await prepareEditFile(JSON.stringify({ path: 'add.ts', old_text: 'a - b', new_text: 'a * b' }), workspace, signal, store)).execute(signal);
+  points = await store.list(); const third = points.find(x => x.after.includes('a * b'));
+  await assert.rejects(prepareFileRestore(store, second.id), /冲突/);
+  await (await prepareFileRestore(store, third.id)).execute(); await (await prepareFileRestore(store, second.id)).execute(); assert.deepEqual(readFileSync('add.ts'), before);
+  // 新文件恢复为删除，已变成外部内容时不能删除。
+  await (await prepareWriteFile('{"path":"new.ts","content":"export {};\\n"}', workspace, signal, store)).execute(signal);
+  const created = (await store.list()).find(x => x.path === 'new.ts'); assert.equal(created.before, null);
+  const deletion = await prepareFileRestore(store, created.id); assert.match(deletion.preview, /删除/);
+  writeFileSync('new.ts', '保留外部文件'); await assert.rejects(deletion.execute(), /冲突/); assert.equal(readFileSync('new.ts', 'utf8'), '保留外部文件');
+  writeFileSync('new.ts', created.after); await (await prepareFileRestore(store, created.id)).execute(); assert.equal(existsSync('new.ts'), false);
+  // 替换inode，即使内容相同，也不能沿用先前的预览。
+  writeFileSync('add.ts', first.after); const stale = await prepareFileRestore(store, first.id);
+  renameSync('add.ts', 'old-add.ts'); writeFileSync('add.ts', first.after); await assert.rejects(stale.execute(), /身份|路径/);
+  mkdirSync('other'); await assert.rejects(prepareFileRestore(store, first.id, join(workspace, 'other')), /另一个/);
+  for (const path of ['../outside.ts', '/absolute.ts', '.env', '.env.local', '.git/config', '.agents/instruction', './add.ts']) await assert.rejects(store.record(path, null, 'x', workspace));
+  symlinkSync(join(workspace, 'add.ts'), 'alias.ts'); await assert.rejects(store.record('alias.ts', first.after, 'x', workspace), /链接/);
+  symlinkSync(workspace, 'alias-dir'); await assert.rejects(store.record('alias-dir/add.ts', first.after, 'x', workspace), /链接/);
+  writeFileSync('binary.ts', Buffer.from([0xff, 0xfe])); await assert.rejects(store.record('binary.ts', '��', 'x', workspace), /UTF-8/);
+  writeFileSync('nul.ts', 'a\0b'); await assert.rejects(store.record('nul.ts', 'a\0b', 'x', workspace), /二进制/);
+  writeFileSync('large.ts', 'a'.repeat(1024 * 1024 + 1)); await assert.rejects(store.record('large.ts', 'a', 'x', workspace), /1 MiB/);
+  const denied = { ...store, record: async () => { throw new Error('fixture disk error'); } };
+  await assert.rejects((await prepareWriteFile('{"path":"no.ts","content":"x"}', workspace, signal, denied)).execute(signal)); assert.equal(existsSync('no.ts'), false);
+  writeFileSync('safe.ts', 'old'); await assert.rejects((await prepareEditFile('{"path":"safe.ts","old_text":"old","new_text":"new"}', workspace, signal, denied)).execute(signal)); assert.equal(readFileSync('safe.ts', 'utf8'), 'old');
+  const cancelled = new AbortController(); cancelled.abort(); await assert.rejects((await prepareWriteFile('{"path":"cancelled.ts","content":"x"}', workspace, signal, store)).execute(cancelled.signal)); assert.equal(existsSync('cancelled.ts'), false);
+  assert.equal((await createFileCheckpointStore(child.id, directory).list()).length, 0);
+  await assert.rejects(store.read('../bad')); console.log('✓ 分支不改来源、检查点写前保存、BOM字节、倒序恢复、冲突、路径与失败边界');
+  await held.close(); process.chdir(previous);
+  // 真正CLI：恢复旧会话后只执行本地文件命令，不发送模型请求；新输入才请求一次。
+  const requests = [];
+  server = createServer(async (request, response) => {
+    let raw = ''; for await (const chunk of request) raw += chunk;
+    requests.push(JSON.parse(raw)); response.setHeader('content-type', 'text/event-stream');
+    const base = { id: 'fixture', object: 'chat.completion.chunk', created: 1, model: 'fixture-model' };
+    response.end(`data: ${JSON.stringify({ ...base, choices: [{ index: 0, delta: { role: 'assistant', content: '请重新读取当前文件' }, finish_reason: null }] })}\n\ndata: ${JSON.stringify({ ...base, choices: [{ index: 0, delta: {}, finish_reason: 'stop' }] })}\n\ndata: [DONE]\n\n`);
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const env = { HOME: temp, OPENAI_API_KEY: 'fixture-only', OPENAI_MODEL: 'fixture-model', OPENAI_BASE_URL: `http://127.0.0.1:${server.address().port}/v1` };
+  const cli = join(dist, 'cli.js');
+  let result = await runCli(process.execPath, [cli, '--resume', id, '--output', 'text', '--session-dir', directory], workspace, env, `/changes\n/restore ${first.id}\n/restore ${first.id} confirm\n检查当前文件\n/exit\n`);
+  assert.equal(result.status, 0, result.stderr); assert.match(result.stderr, /已恢复文件/); assert.equal(requests.length, 1);
+  assert(requests[0].messages.some(x => x.role === 'user' && x.content.includes('[本地文件恢复通知]')));
+  const restored = await readSession(id, directory); assert(restored.state.messages.some(x => x.content.includes('[本地文件恢复通知]')));
+  result = await runCli(process.execPath, [cli, '--fork', id, '--resume', id, '--output', 'text', '--session-dir', directory], workspace, env);
+  assert.equal(result.status, 1); assert.match(result.stderr, /--fork/); assert.equal(requests.length, 1);
+  result = await runCli(process.execPath, [cli, '--fork', id, '--output', 'text', '--session-dir', directory], workspace, env, '/exit\n'); assert.equal(result.status, 0, result.stderr); assert.equal(requests.length, 1);
+  console.log('✓ 真实CLI本地预览/确认、通知进入下一请求、分支不自动请求与组合校验');
+} finally { process.chdir(previous); await new Promise(resolve => server ? server.close(resolve) : resolve()); rmSync(temp, { recursive: true, force: true }); }

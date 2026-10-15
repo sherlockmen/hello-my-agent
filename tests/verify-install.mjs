@@ -35,7 +35,10 @@ const currentPackageModules = [
   "ui/tui/editor", "ui/tui/input-assist", "ui/tui/transcript", "ui/tui/system-actions", "ui/tui/layout",
   "ui/teaching-trace", "ui/terminal", "ui/input", "ui/jsonl", "agent/run", "agent/run-stream",
   "agent/run-options", "tools/todo-write", "tools/ask-user",
-  "ui/tui/questions", "ui/tui/input-queue", "ui/tui/queue-panel",
+  "ui/tui/questions", "ui/tui/input-queue", "ui/tui/queue-panel", "sessions/save-session",
+  "sessions/read-session", "sessions/manage-sessions", "sessions/fork-session",
+  "sessions/file-checkpoints", "context/budget", "context/tool-results", "tools/read-tool-result",
+  "context/compaction", "project/instructions",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {
@@ -117,7 +120,8 @@ async function verifyPackage(project, step, label, moduleOverride) {
   if (step === 0) assert.match(run(cli, [], cwd).stdout, /Hello，My Agent！/);
   else if (step === 6) {
     await verifyAgentLoop(join(installed, "dist/agent/agent-loop.js"), { interruptedHistory: Boolean(moduleOverride) });
-    await verifyChat(cli, cwd, { streaming: Boolean(moduleOverride), reset: Boolean(moduleOverride), splitOutput: Boolean(moduleOverride) });
+    await verifyChat(cli, cwd, { streaming: Boolean(moduleOverride), reset: Boolean(moduleOverride), splitOutput: Boolean(moduleOverride),
+      sessionDirectory: moduleOverride ? join(destination, "sessions") : undefined });
   } else await verifyLesson(cli, cwd, step);
   console.log(`✓ ${label}：包内容、临时安装、源码之外运行与退出状态通过`);
 }

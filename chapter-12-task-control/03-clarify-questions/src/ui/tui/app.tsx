@@ -214,7 +214,7 @@ function TuiApp({ model, session, quit, interrupt }: { model: Model; session: Se
 
     // [KEEP 来自 12.1] 一轮取启动模式快照，后续重绘不改变它。
     const options = { mode: session.mode, tasks: session.tasks,
-      // [CHANGED 12.3] 问答工具等待这次 Promise，面板 key 让旧请求回调失效。
+      // [CHANGED 12.3] 问答工具等待独立 Promise；waitForAnswer 检查结束标记和取消信号，拒绝旧答案。
       askUser: (request: import("../../agent/run-options.js").UserQuestion, signal: AbortSignal) => waitForAnswer(request, signal, (pending) => {
         if (!session.closing) setQuestion(pending);
       }),
@@ -255,7 +255,7 @@ function TuiApp({ model, session, quit, interrupt }: { model: Model; session: Se
   const display = busy ? [...entries, ...runEntries(view, session.run)] : entries;
   // [KEEP 来自 11.5] 尺寸不足时隐藏工作区并停用输入；放大后沿用原草稿与浏览状态。
   // [KEEP 来自 12.2] 下方清单区域从会话读取进度，显示报告不等于测试通过。
-  // [CHANGED 12.3] 下方澄清面板用独立 key 挂载，占用时隐藏普通区但保留草稿。
+  // [CHANGED 12.3] key 变化时重建问答面板；占用时隐藏普通区但保留草稿。
   return <Box flexDirection="column">
     <Text bold={useColor} wrap="truncate">Hello, My Agent · Ctrl+O 切换草稿 / 历史</Text>
     {tooSmall && <Text wrap="truncate">请放大到 40 列、16 行；Ctrl+C 取消任务 · Ctrl+D 退出。</Text>}

@@ -1,7 +1,7 @@
 /**
  * 12.5 队列编辑与撤回 | [CHANGED] ui/tui/app.tsx
  *
- * 学习目标：查看、编辑和撤回尚未送给模型的补充，让界面操作和本轮执行有清楚的先后关系。
+ * 学习目标：查看、编辑和撤回尚未被核心收取的补充，让界面操作和当前任务有清楚的先后关系。
  * 输入：模型、键盘、终端尺寸与执行事件；普通任务只在用户提交后启动。
  * 输出：草稿、历史、模式、运行状态和审批面板。
  * 状态：Session 持有会话数据和当前任务；React state 保存草稿、焦点与显示内容。
@@ -291,7 +291,7 @@ function TuiApp({ model, session, quit, interrupt }: { model: Model; session: Se
 
     // [KEEP 来自 12.1] 一轮取启动模式快照，后续重绘不改变它。
     const options = { mode: session.mode, tasks: session.tasks,
-      // [KEEP 来自 12.3] 问答工具等待这次 Promise，面板 key 让旧请求回调失效。
+      // [KEEP 来自 12.3] 问答工具等待这次 Promise；key 重建面板，settled 与取消检查拒绝旧回调。
       askUser: (request: import("../../agent/run-options.js").UserQuestion, signal: AbortSignal) => waitForAnswer(request, signal, (pending) => {
         if (!session.closing) setQuestion(pending);
       }),

@@ -39,7 +39,7 @@ export function runCli(cli, args, cwd, env = {}, input = "", onStart = () => {})
   });
 }
 
-export async function verifyChat(cli, cwd, { reset = false, progress = false, streaming = false, splitOutput = false } = {}) {
+export async function verifyChat(cli, cwd, { reset = false, progress = false, streaming = false, splitOutput = false, sessionDirectory } = {}) {
   const secret = "fixture-api-secret-MUST-NOT-LOG";
   const requests = [];
   let pendingChild;
@@ -106,16 +106,20 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
     // 即使用户打开 SDK 调试日志，本章也不能把原始错误或密钥打印出来。
     OPENAI_LOG: "debug", ANTHROPIC_LOG: "debug", ANTHROPIC_AUTH_TOKEN: "wrong-ambient-token",
   };
-  const invoke = (args, input = "", extra = {}) => runCli(cli, args, cwd, { ...env, ...extra }, input);
+  // 当前版本保存会话；测试显式选择临时目录，旧快照仍按原参数运行。
+  const invokeCli = (args, workdir, childEnv = {}, input = "", onStart) =>
+    runCli(cli, sessionDirectory ? [...args, "--session-dir", sessionDirectory] : args,
+      workdir, childEnv, input, onStart);
+  const invoke = (args, input = "", extra = {}) => invokeCli(args, cwd, { ...env, ...extra }, input);
   try {
     // 1. 帮助和版本不依赖密钥；缺配置应在发送 HTTP 之前失败。
-    const help = await runCli(cli, ["--help"], cwd);
+    const help = await invokeCli(["--help"], cwd);
     assert.equal(help.status, 0);
     assert.match(help.stdout, /--provider/);
-    const missing = await runCli(cli, [], cwd);
+    const missing = await invokeCli([], cwd);
     assert.equal(missing.status, 1);
     assert.match(missing.stderr, /缺少 OPENAI_API_KEY/);
-    const modelMissing = await runCli(cli, [], cwd, { OPENAI_API_KEY: secret });
+    const modelMissing = await invokeCli([], cwd, { OPENAI_API_KEY: secret });
     assert.match(modelMissing.stderr, /缺少 OPENAI_MODEL/);
     assert.equal(requests.length, 0);
 
@@ -198,7 +202,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
     // 3. .env 的配置要来自运行目录，并按环境变量、命令行依次覆盖。
     writeFileSync(join(cwd, ".env"), `AGENT_PROVIDER=anthropic\nOPENAI_API_KEY=${secret}\nOPENAI_MODEL=file-model\nOPENAI_BASE_URL=${origin}/file/v1\n`);
     requests.length = 0;
-    const fileOnly = await runCli(cli, ["--provider", "openai"], cwd, {}, "文件配置\n");
+    const fileOnly = await invokeCli(["--provider", "openai"], cwd, {}, "文件配置\n");
     assert.equal(fileOnly.status, 0, fileOnly.stderr);
     assert.equal(requests[0].body.model, "file-model");
     assert.equal(requests[0].url, "/file/v1/chat/completions");
@@ -216,14 +220,14 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
     assert.equal(invalidURL.status, 1);
     assert.ok(!invalidURL.stderr.includes(secret));
     // 切到 Anthropic 时必须使用它自己的 Key，不能退回到已有的 OpenAI Key。
-    const wrongFamily = await runCli(cli, ["--provider", "anthropic"], cwd, { OPENAI_API_KEY: secret });
+    const wrongFamily = await invokeCli(["--provider", "anthropic"], cwd, { OPENAI_API_KEY: secret });
     assert.match(wrongFamily.stderr, /缺少 ANTHROPIC_API_KEY/);
 
     // 4. 输入结束和 /exit 不调用模型；SIGINT 在请求等待期间也能结束进程。
     requests.length = 0;
     assert.equal((await invoke([], "\n/exit\n")).status, 0);
     assert.equal(requests.length, 0);
-    const cancelled = await runCli(cli, [], cwd, env, "[wait]\n", (child) => { pendingChild = child; });
+    const cancelled = await invokeCli([], cwd, env, "[wait]\n", (child) => { pendingChild = child; });
     assert.equal(cancelled.status, streaming ? 0 : 130, cancelled.stderr);
     console.log(`✓ ${reset ? "第二章练习" : "第二章"}：双接口、多轮历史、配置优先级、错误脱敏、用量与退出均通过`);
   } finally {

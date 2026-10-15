@@ -283,7 +283,7 @@ function TuiApp({ model, session, quit, interrupt }: { model: Model; session: Se
 
     // [KEEP 来自 12.1] 一轮取启动模式快照，后续重绘不改变它。
     const options = { mode: session.mode, tasks: session.tasks,
-      // [KEEP 来自 12.3] 问答工具等待这次 Promise，面板 key 让旧请求回调失效。
+      // [KEEP 来自 12.3] key 重建问答面板；waitForAnswer 的 settled 与 signal.aborted 拒绝旧回调。
       askUser: (request: import("../../agent/run-options.js").UserQuestion, signal: AbortSignal) => waitForAnswer(request, signal, (pending) => {
         if (!session.closing) setQuestion(pending);
       }),
