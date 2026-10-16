@@ -99,9 +99,18 @@ const targets = {
   "25.1": "chapter-25-subagents/01-child-sessions/src",
   "25.2": "chapter-25-subagents/02-readonly-roles/src",
   "25.3": "chapter-25-subagents/03-child-observation/src",
+  "26.1": "chapter-26-interactive-jobs/01-background-jobs/src",
+  "26.2": "chapter-26-interactive-jobs/02-pty-takeover/src",
+  "26.3": "chapter-26-interactive-jobs/03-job-lifecycle/src",
+  "27.1": "chapter-27-tool-concurrency/01-bounded-reads/src",
+  "27.2": "chapter-27-tool-concurrency/02-cancel-and-cleanup/src",
+  "27.3": "chapter-27-tool-concurrency/03-batch-results/src",
+  "28.1": "chapter-28-isolated-workspaces/01-worktree-base/src",
+  "28.2": "chapter-28-isolated-workspaces/02-versioned-review/src",
+  "28.3": "chapter-28-isolated-workspaces/03-integrate-and-cleanup/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "25.3";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "28.3";
 const source = targets[target];
 
 if (!source) {
@@ -109,10 +118,11 @@ if (!source) {
   process.exitCode = 1;
 } else {
   const npm = process.platform === "win32" ? "npm.cmd" : "npm";
-  const run = (command, commandArgs) => {
+  const run = (command, commandArgs, env = process.env) => {
     const result = spawnSync(command, commandArgs, {
       cwd: root,
       stdio: "inherit",
+      env,
       shell: process.platform === "win32" && command === npm,
     });
     if (result.error) throw result.error;
@@ -122,6 +132,12 @@ if (!source) {
   let status = 0;
   if (args.includes("--prepare")) {
     status = run(npm, ["ci", "--include=dev", "--ignore-scripts", "--no-audit", "--no-fund"]);
+    if (status === 0 && Number(target) >= 26.2) {
+      status = run(npm, ["rebuild", "node-pty", "--foreground-scripts"], {
+        ...process.env,
+        npm_config_build_from_source: "true",
+      });
+    }
   }
 
   if (status === 0) {
