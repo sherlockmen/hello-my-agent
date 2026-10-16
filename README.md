@@ -362,7 +362,7 @@ npm run exercise:12
 
 新章练习：[第二十六章](chapter-26-interactive-jobs/EXERCISES.md) · [第二十七章](chapter-27-tool-concurrency/EXERCISES.md) · [第二十八章](chapter-28-isolated-workspaces/EXERCISES.md)。
 
-第 01—12、14—17、20—25 章已确认完成。第十三、十八、十九及二十六至二十八章待确认。npm 包尚未发布。
+第 01—12、14—17、20—28 章已确认完成。第十三、十八、十九章待确认。npm 包尚未发布。
 
 ## 许可证
 
