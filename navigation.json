@@ -342,6 +342,42 @@
       ],
       "exercises": "chapter-28-isolated-workspaces/EXERCISES.md",
       "other": []
+    },
+    {
+      "directory": "chapter-29-shared-tasks",
+      "title": "第 29 章：共享任务与 Agent 消息",
+      "overview": "chapter-29-shared-tasks/README.md",
+      "lessons": [
+        "chapter-29-shared-tasks/01-claim-and-lease/README.md",
+        "chapter-29-shared-tasks/02-dependencies-reclaim/README.md",
+        "chapter-29-shared-tasks/03-agent-messages/README.md"
+      ],
+      "exercises": "chapter-29-shared-tasks/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-30-scheduled-tasks",
+      "title": "第 30 章：定时任务——保存规则，让运行中的程序按时调查",
+      "overview": "chapter-30-scheduled-tasks/README.md",
+      "lessons": [
+        "chapter-30-scheduled-tasks/01-persistent-schedules/README.md",
+        "chapter-30-scheduled-tasks/02-runtime-dispatch/README.md",
+        "chapter-30-scheduled-tasks/03-stop-and-recover/README.md"
+      ],
+      "exercises": "chapter-30-scheduled-tasks/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-31-extension-packages",
+      "title": "第 31 章：本地扩展包",
+      "overview": "chapter-31-extension-packages/README.md",
+      "lessons": [
+        "chapter-31-extension-packages/01-install-local-package/README.md",
+        "chapter-31-extension-packages/02-enable-capabilities/README.md",
+        "chapter-31-extension-packages/03-disable-and-diagnose/README.md"
+      ],
+      "exercises": "chapter-31-extension-packages/EXERCISES.md",
+      "other": []
     }
   ],
   "pages": [
@@ -8100,6 +8136,720 @@
       "title": "第 28 章：让修改拥有独立工作区与可核对的版本",
       "kind": "tutorial",
       "source": "chapter-28-isolated-workspaces/README.md"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-cover-b44670992b.png.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-cover-b44670992b.png.md",
+      "title": "shared-claim-lease-cover-b44670992b.png",
+      "kind": "image",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-cover-b44670992b.png"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-flow-858e5d56cb.png.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-flow-858e5d56cb.png.md",
+      "title": "shared-claim-lease-flow-858e5d56cb.png",
+      "kind": "image",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-flow-858e5d56cb.png"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-storyboard-b3a3701997.jpg.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-storyboard-b3a3701997.jpg.md",
+      "title": "shared-claim-lease-storyboard-b3a3701997.jpg",
+      "kind": "image",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-storyboard-b3a3701997.jpg"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/README.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/README.md",
+      "title": "29.1 认领与租约：同一项调查只能交给当前持有者",
+      "kind": "tutorial",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/README.md"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/agent/events.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/agent/events.ts.md",
+      "title": "events.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/agent/events.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/collaboration/coordinator.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/collaboration/coordinator.ts.md",
+      "title": "coordinator.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/collaboration/coordinator.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/collaboration/runner.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/collaboration/runner.ts.md",
+      "title": "runner.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/collaboration/runner.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/models/client.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/tools/registry.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/tools/shared-task-tools.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/tools/shared-task-tools.ts.md",
+      "title": "shared-task-tools.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/tools/shared-task-tools.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/tools/types.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/tools/types.ts.md",
+      "title": "types.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/tools/types.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/01-claim-and-lease/src/ui/tui/transcript.tsx.md",
+      "route": "#/content/chapter-29-shared-tasks/01-claim-and-lease/src/ui/tui/transcript.tsx.md",
+      "title": "transcript.tsx",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/01-claim-and-lease/src/ui/tui/transcript.tsx"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-cover-53f851d66b.png.md",
+      "route": "#/content/chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-cover-53f851d66b.png.md",
+      "title": "shared-dependencies-reclaim-cover-53f851d66b.png",
+      "kind": "image",
+      "source": "chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-cover-53f851d66b.png"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-flow-1140d4fd04.png.md",
+      "route": "#/content/chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-flow-1140d4fd04.png.md",
+      "title": "shared-dependencies-reclaim-flow-1140d4fd04.png",
+      "kind": "image",
+      "source": "chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-flow-1140d4fd04.png"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-storyboard-856b42b26b.jpg.md",
+      "route": "#/content/chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-storyboard-856b42b26b.jpg.md",
+      "title": "shared-dependencies-reclaim-storyboard-856b42b26b.jpg",
+      "kind": "image",
+      "source": "chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-storyboard-856b42b26b.jpg"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/02-dependencies-reclaim/README.md",
+      "route": "#/content/chapter-29-shared-tasks/02-dependencies-reclaim/README.md",
+      "title": "29.2 依赖与失联回收：前置完成后再接下一项",
+      "kind": "tutorial",
+      "source": "chapter-29-shared-tasks/02-dependencies-reclaim/README.md"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/02-dependencies-reclaim/src/collaboration/coordinator.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/02-dependencies-reclaim/src/collaboration/coordinator.ts.md",
+      "title": "coordinator.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/02-dependencies-reclaim/src/collaboration/coordinator.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/02-dependencies-reclaim/src/collaboration/runner.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/02-dependencies-reclaim/src/collaboration/runner.ts.md",
+      "title": "runner.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/02-dependencies-reclaim/src/collaboration/runner.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-cover-052bb314e4.png.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-cover-052bb314e4.png.md",
+      "title": "shared-agent-messages-cover-052bb314e4.png",
+      "kind": "image",
+      "source": "chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-cover-052bb314e4.png"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-flow-7e87d54e9f.png.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-flow-7e87d54e9f.png.md",
+      "title": "shared-agent-messages-flow-7e87d54e9f.png",
+      "kind": "image",
+      "source": "chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-flow-7e87d54e9f.png"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-storyboard-e70fee16fb.jpg.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-storyboard-e70fee16fb.jpg.md",
+      "title": "shared-agent-messages-storyboard-e70fee16fb.jpg",
+      "kind": "image",
+      "source": "chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-storyboard-e70fee16fb.jpg"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/README.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/README.md",
+      "title": "29.3 Agent 消息与确认：读到一条消息不等于任务完成",
+      "kind": "tutorial",
+      "source": "chapter-29-shared-tasks/03-agent-messages/README.md"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/03-agent-messages/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/src/collaboration/coordinator.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/src/collaboration/coordinator.ts.md",
+      "title": "coordinator.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/03-agent-messages/src/collaboration/coordinator.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/src/collaboration/runner.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/src/collaboration/runner.ts.md",
+      "title": "runner.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/03-agent-messages/src/collaboration/runner.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/src/subagents/runner.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/src/subagents/runner.ts.md",
+      "title": "runner.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/03-agent-messages/src/subagents/runner.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/src/tools/shared-task-tools.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/src/tools/shared-task-tools.ts.md",
+      "title": "shared-task-tools.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/03-agent-messages/src/tools/shared-task-tools.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/src/tools/types.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/src/tools/types.ts.md",
+      "title": "types.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/03-agent-messages/src/tools/types.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/03-agent-messages/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/03-agent-messages/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/03-agent-messages/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/examples/verify-shared-tasks.ts.md",
+      "route": "#/content/chapter-29-shared-tasks/examples/verify-shared-tasks.ts.md",
+      "title": "verify-shared-tasks.ts",
+      "kind": "source",
+      "source": "chapter-29-shared-tasks/examples/verify-shared-tasks.ts"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/EXERCISES.md",
+      "route": "#/content/chapter-29-shared-tasks/EXERCISES.md",
+      "title": "第29章练习：归属、依赖与消息分别证明什么",
+      "kind": "tutorial",
+      "source": "chapter-29-shared-tasks/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-29-shared-tasks/README.md",
+      "route": "#/content/chapter-29-shared-tasks/README.md",
+      "title": "第 29 章：共享任务与 Agent 消息",
+      "kind": "tutorial",
+      "source": "chapter-29-shared-tasks/README.md"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-cover-79489dcb22.png.md",
+      "route": "#/content/chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-cover-79489dcb22.png.md",
+      "title": "schedule-persistent-definition-cover-79489dcb22.png",
+      "kind": "image",
+      "source": "chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-cover-79489dcb22.png"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-flow-d295698051.png.md",
+      "route": "#/content/chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-flow-d295698051.png.md",
+      "title": "schedule-persistent-definition-flow-d295698051.png",
+      "kind": "image",
+      "source": "chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-flow-d295698051.png"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-storyboard-6ffc4e51ae.jpg.md",
+      "route": "#/content/chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-storyboard-6ffc4e51ae.jpg.md",
+      "title": "schedule-persistent-definition-storyboard-6ffc4e51ae.jpg",
+      "kind": "image",
+      "source": "chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-storyboard-6ffc4e51ae.jpg"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/01-persistent-schedules/README.md",
+      "route": "#/content/chapter-30-scheduled-tasks/01-persistent-schedules/README.md",
+      "title": "30.1 持久任务定义：先保存规则，再谈按时运行",
+      "kind": "tutorial",
+      "source": "chapter-30-scheduled-tasks/01-persistent-schedules/README.md"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/01-persistent-schedules/src/cli.ts.md",
+      "route": "#/content/chapter-30-scheduled-tasks/01-persistent-schedules/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-30-scheduled-tasks/01-persistent-schedules/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/01-persistent-schedules/src/schedules/commands.ts.md",
+      "route": "#/content/chapter-30-scheduled-tasks/01-persistent-schedules/src/schedules/commands.ts.md",
+      "title": "commands.ts",
+      "kind": "source",
+      "source": "chapter-30-scheduled-tasks/01-persistent-schedules/src/schedules/commands.ts"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/01-persistent-schedules/src/schedules/store.ts.md",
+      "route": "#/content/chapter-30-scheduled-tasks/01-persistent-schedules/src/schedules/store.ts.md",
+      "title": "store.ts",
+      "kind": "source",
+      "source": "chapter-30-scheduled-tasks/01-persistent-schedules/src/schedules/store.ts"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-cover-96dca061f8.png.md",
+      "route": "#/content/chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-cover-96dca061f8.png.md",
+      "title": "schedule-runtime-dispatch-cover-96dca061f8.png",
+      "kind": "image",
+      "source": "chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-cover-96dca061f8.png"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-flow-3d0a98ecdb.png.md",
+      "route": "#/content/chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-flow-3d0a98ecdb.png.md",
+      "title": "schedule-runtime-dispatch-flow-3d0a98ecdb.png",
+      "kind": "image",
+      "source": "chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-flow-3d0a98ecdb.png"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-storyboard-d256dc726b.jpg.md",
+      "route": "#/content/chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-storyboard-d256dc726b.jpg.md",
+      "title": "schedule-runtime-dispatch-storyboard-d256dc726b.jpg",
+      "kind": "image",
+      "source": "chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-storyboard-d256dc726b.jpg"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/02-runtime-dispatch/README.md",
+      "route": "#/content/chapter-30-scheduled-tasks/02-runtime-dispatch/README.md",
+      "title": "30.2 到期与真实执行：先预留预算，再启动只读子任务",
+      "kind": "tutorial",
+      "source": "chapter-30-scheduled-tasks/02-runtime-dispatch/README.md"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/02-runtime-dispatch/src/schedules/commands.ts.md",
+      "route": "#/content/chapter-30-scheduled-tasks/02-runtime-dispatch/src/schedules/commands.ts.md",
+      "title": "commands.ts",
+      "kind": "source",
+      "source": "chapter-30-scheduled-tasks/02-runtime-dispatch/src/schedules/commands.ts"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/02-runtime-dispatch/src/schedules/runtime.ts.md",
+      "route": "#/content/chapter-30-scheduled-tasks/02-runtime-dispatch/src/schedules/runtime.ts.md",
+      "title": "runtime.ts",
+      "kind": "source",
+      "source": "chapter-30-scheduled-tasks/02-runtime-dispatch/src/schedules/runtime.ts"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/02-runtime-dispatch/src/schedules/store.ts.md",
+      "route": "#/content/chapter-30-scheduled-tasks/02-runtime-dispatch/src/schedules/store.ts.md",
+      "title": "store.ts",
+      "kind": "source",
+      "source": "chapter-30-scheduled-tasks/02-runtime-dispatch/src/schedules/store.ts"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-cover-a5709eab1b.png.md",
+      "route": "#/content/chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-cover-a5709eab1b.png.md",
+      "title": "schedule-stop-recover-cover-a5709eab1b.png",
+      "kind": "image",
+      "source": "chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-cover-a5709eab1b.png"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-flow-e1d77bcf86.png.md",
+      "route": "#/content/chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-flow-e1d77bcf86.png.md",
+      "title": "schedule-stop-recover-flow-e1d77bcf86.png",
+      "kind": "image",
+      "source": "chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-flow-e1d77bcf86.png"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-storyboard-e92dce1cf3.jpg.md",
+      "route": "#/content/chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-storyboard-e92dce1cf3.jpg.md",
+      "title": "schedule-stop-recover-storyboard-e92dce1cf3.jpg",
+      "kind": "image",
+      "source": "chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-storyboard-e92dce1cf3.jpg"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/03-stop-and-recover/README.md",
+      "route": "#/content/chapter-30-scheduled-tasks/03-stop-and-recover/README.md",
+      "title": "30.3 停止与恢复：等到真正结束，未知结局也要留下记录",
+      "kind": "tutorial",
+      "source": "chapter-30-scheduled-tasks/03-stop-and-recover/README.md"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/03-stop-and-recover/src/schedules/commands.ts.md",
+      "route": "#/content/chapter-30-scheduled-tasks/03-stop-and-recover/src/schedules/commands.ts.md",
+      "title": "commands.ts",
+      "kind": "source",
+      "source": "chapter-30-scheduled-tasks/03-stop-and-recover/src/schedules/commands.ts"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/03-stop-and-recover/src/schedules/runtime.ts.md",
+      "route": "#/content/chapter-30-scheduled-tasks/03-stop-and-recover/src/schedules/runtime.ts.md",
+      "title": "runtime.ts",
+      "kind": "source",
+      "source": "chapter-30-scheduled-tasks/03-stop-and-recover/src/schedules/runtime.ts"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/examples/budget-answer/commands.ts.md",
+      "route": "#/content/chapter-30-scheduled-tasks/examples/budget-answer/commands.ts.md",
+      "title": "commands.ts",
+      "kind": "source",
+      "source": "chapter-30-scheduled-tasks/examples/budget-answer/commands.ts"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/examples/budget-answer/report.ts.md",
+      "route": "#/content/chapter-30-scheduled-tasks/examples/budget-answer/report.ts.md",
+      "title": "report.ts",
+      "kind": "source",
+      "source": "chapter-30-scheduled-tasks/examples/budget-answer/report.ts"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/examples/README.md",
+      "route": "#/content/chapter-30-scheduled-tasks/examples/README.md",
+      "title": "第 30 章命令示例",
+      "kind": "tutorial",
+      "source": "chapter-30-scheduled-tasks/examples/README.md"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/EXERCISES.md",
+      "route": "#/content/chapter-30-scheduled-tasks/EXERCISES.md",
+      "title": "第 30 章练习：给定时管理增加余额报告",
+      "kind": "tutorial",
+      "source": "chapter-30-scheduled-tasks/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-30-scheduled-tasks/README.md",
+      "route": "#/content/chapter-30-scheduled-tasks/README.md",
+      "title": "第 30 章：定时任务——保存规则，让运行中的程序按时调查",
+      "kind": "tutorial",
+      "source": "chapter-30-scheduled-tasks/README.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/assets/extension-install-cover-eb7096d832.png.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/assets/extension-install-cover-eb7096d832.png.md",
+      "title": "extension-install-cover-eb7096d832.png",
+      "kind": "image",
+      "source": "chapter-31-extension-packages/01-install-local-package/assets/extension-install-cover-eb7096d832.png"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/assets/extension-install-flow-5ddafd427a.png.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/assets/extension-install-flow-5ddafd427a.png.md",
+      "title": "extension-install-flow-5ddafd427a.png",
+      "kind": "image",
+      "source": "chapter-31-extension-packages/01-install-local-package/assets/extension-install-flow-5ddafd427a.png"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/assets/extension-install-storyboard-6aa82c1345.jpg.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/assets/extension-install-storyboard-6aa82c1345.jpg.md",
+      "title": "extension-install-storyboard-6aa82c1345.jpg",
+      "kind": "image",
+      "source": "chapter-31-extension-packages/01-install-local-package/assets/extension-install-storyboard-6aa82c1345.jpg"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/examples/review-kit/skills/review/notes.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/examples/review-kit/skills/review/notes.md",
+      "title": "notes.md",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/01-install-local-package/examples/review-kit/skills/review/notes.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/examples/review-kit/skills/review/SKILL.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/examples/review-kit/skills/review/SKILL.md",
+      "title": "SKILL.md",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/01-install-local-package/examples/review-kit/skills/review/SKILL.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/README.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/README.md",
+      "title": "31.1 安装本地扩展包：先保存，再决定是否运行",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/01-install-local-package/README.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/src/cli.ts.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/01-install-local-package/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/src/extensions/commands.ts.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/src/extensions/commands.ts.md",
+      "title": "commands.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/01-install-local-package/src/extensions/commands.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/src/extensions/manager.ts.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/src/extensions/manager.ts.md",
+      "title": "manager.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/01-install-local-package/src/extensions/manager.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/src/extensions/manifest.ts.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/src/extensions/manifest.ts.md",
+      "title": "manifest.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/01-install-local-package/src/extensions/manifest.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/src/hooks/lifecycle.ts.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/src/hooks/lifecycle.ts.md",
+      "title": "lifecycle.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/01-install-local-package/src/hooks/lifecycle.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/src/mcp/client.ts.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/src/mcp/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/01-install-local-package/src/mcp/client.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/01-install-local-package/src/skills/catalog.ts.md",
+      "route": "#/content/chapter-31-extension-packages/01-install-local-package/src/skills/catalog.ts.md",
+      "title": "catalog.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/01-install-local-package/src/skills/catalog.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-cover-ee1f1a4ca2.png.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-cover-ee1f1a4ca2.png.md",
+      "title": "extension-enable-cover-ee1f1a4ca2.png",
+      "kind": "image",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-cover-ee1f1a4ca2.png"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-flow-88cea4df0e.png.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-flow-88cea4df0e.png.md",
+      "title": "extension-enable-flow-88cea4df0e.png",
+      "kind": "image",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-flow-88cea4df0e.png"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-storyboard-4b3d528b9d.jpg.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-storyboard-4b3d528b9d.jpg.md",
+      "title": "extension-enable-storyboard-4b3d528b9d.jpg",
+      "kind": "image",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-storyboard-4b3d528b9d.jpg"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/examples/review-kit/skills/review/notes.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/examples/review-kit/skills/review/notes.md",
+      "title": "notes.md",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/examples/review-kit/skills/review/notes.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/examples/review-kit/skills/review/SKILL.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/examples/review-kit/skills/review/SKILL.md",
+      "title": "SKILL.md",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/examples/review-kit/skills/review/SKILL.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/README.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/README.md",
+      "title": "31.2 显式启用扩展能力：让同一个运行中的 Agent 看见变化",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/README.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/src/cli.ts.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/src/extensions/commands.ts.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/src/extensions/commands.ts.md",
+      "title": "commands.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/src/extensions/commands.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/src/extensions/manager.ts.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/src/extensions/manager.ts.md",
+      "title": "manager.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/src/extensions/manager.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/src/mcp/client.ts.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/src/mcp/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/src/mcp/client.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/src/models/client.ts.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/src/tools/skill-tools.ts.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/src/tools/skill-tools.ts.md",
+      "title": "skill-tools.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/src/tools/skill-tools.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/02-enable-capabilities/src/ui/tui/input-assist.ts.md",
+      "route": "#/content/chapter-31-extension-packages/02-enable-capabilities/src/ui/tui/input-assist.ts.md",
+      "title": "input-assist.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/02-enable-capabilities/src/ui/tui/input-assist.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-cover-b7fe5368fb.png.md",
+      "route": "#/content/chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-cover-b7fe5368fb.png.md",
+      "title": "extension-disable-cover-b7fe5368fb.png",
+      "kind": "image",
+      "source": "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-cover-b7fe5368fb.png"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-flow-76dc58fbb9.png.md",
+      "route": "#/content/chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-flow-76dc58fbb9.png.md",
+      "title": "extension-disable-flow-76dc58fbb9.png",
+      "kind": "image",
+      "source": "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-flow-76dc58fbb9.png"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-storyboard-652edd7444.jpg.md",
+      "route": "#/content/chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-storyboard-652edd7444.jpg.md",
+      "title": "extension-disable-storyboard-652edd7444.jpg",
+      "kind": "image",
+      "source": "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-storyboard-652edd7444.jpg"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/03-disable-and-diagnose/examples/review-kit/skills/review/notes.md",
+      "route": "#/content/chapter-31-extension-packages/03-disable-and-diagnose/examples/review-kit/skills/review/notes.md",
+      "title": "notes.md",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/03-disable-and-diagnose/examples/review-kit/skills/review/notes.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/03-disable-and-diagnose/examples/review-kit/skills/review/SKILL.md",
+      "route": "#/content/chapter-31-extension-packages/03-disable-and-diagnose/examples/review-kit/skills/review/SKILL.md",
+      "title": "SKILL.md",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/03-disable-and-diagnose/examples/review-kit/skills/review/SKILL.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/03-disable-and-diagnose/README.md",
+      "route": "#/content/chapter-31-extension-packages/03-disable-and-diagnose/README.md",
+      "title": "31.3 停用、卸载与诊断：先确认资源结束，再删除包",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/03-disable-and-diagnose/README.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/03-disable-and-diagnose/src/cli.ts.md",
+      "route": "#/content/chapter-31-extension-packages/03-disable-and-diagnose/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/03-disable-and-diagnose/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/03-disable-and-diagnose/src/extensions/commands.ts.md",
+      "route": "#/content/chapter-31-extension-packages/03-disable-and-diagnose/src/extensions/commands.ts.md",
+      "title": "commands.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/03-disable-and-diagnose/src/extensions/commands.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/03-disable-and-diagnose/src/extensions/manager.ts.md",
+      "route": "#/content/chapter-31-extension-packages/03-disable-and-diagnose/src/extensions/manager.ts.md",
+      "title": "manager.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/03-disable-and-diagnose/src/extensions/manager.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/03-disable-and-diagnose/src/ui/tui/input-assist.ts.md",
+      "route": "#/content/chapter-31-extension-packages/03-disable-and-diagnose/src/ui/tui/input-assist.ts.md",
+      "title": "input-assist.ts",
+      "kind": "source",
+      "source": "chapter-31-extension-packages/03-disable-and-diagnose/src/ui/tui/input-assist.ts"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/EXERCISES.md",
+      "route": "#/content/chapter-31-extension-packages/EXERCISES.md",
+      "title": "第 31 章练习与完整答案",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-31-extension-packages/README.md",
+      "route": "#/content/chapter-31-extension-packages/README.md",
+      "title": "第 31 章：本地扩展包",
+      "kind": "tutorial",
+      "source": "chapter-31-extension-packages/README.md"
     },
     {
       "path": "content/docs/CODING-AGENT-GAP-REVIEW.md",

@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "chapters": 28,
-  "tutorialPages": 154,
-  "lessonPages": 90,
-  "exercisePages": 28,
-  "sourcePages": 797,
+  "chapters": 31,
+  "tutorialPages": 176,
+  "lessonPages": 99,
+  "exercisePages": 31,
+  "sourcePages": 850,
   "sourceIndexes": 26,
-  "imagePages": 144,
-  "referencedAssets": 271,
-  "gifReferences": 78,
+  "imagePages": 171,
+  "referencedAssets": 307,
+  "gifReferences": 87,
   "convertedMotionPlayers": 15,
-  "assetBytes": 365036787,
+  "assetBytes": 445093490,
   "generatedGifCovers": [
     "chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png",
     "chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png",
@@ -137,6 +137,21 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/28-isolated-workspaces.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/29-shared-tasks.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/30-scheduled-tasks.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/31-extension-packages.md",
       "reason": "verification evidence"
     },
     {
@@ -277,6 +292,21 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/28-isolated-workspaces.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/29-shared-tasks.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/30-scheduled-tasks.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/31-extension-packages.md",
       "reason": "verification evidence"
     },
     {
@@ -562,6 +592,42 @@
     "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-495de70b7a.gif",
     "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-cover-c4a892f583.png",
     "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-flow-c09116dd27.png",
-    "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-storyboard-2dc40ea40b.jpg"
+    "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-storyboard-2dc40ea40b.jpg",
+    "chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-ae5eec77c1.gif",
+    "chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-cover-b44670992b.png",
+    "chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-flow-858e5d56cb.png",
+    "chapter-29-shared-tasks/01-claim-and-lease/assets/shared-claim-lease-storyboard-b3a3701997.jpg",
+    "chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-cbd809967f.gif",
+    "chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-cover-53f851d66b.png",
+    "chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-flow-1140d4fd04.png",
+    "chapter-29-shared-tasks/02-dependencies-reclaim/assets/shared-dependencies-reclaim-storyboard-856b42b26b.jpg",
+    "chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-cover-052bb314e4.png",
+    "chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-fe048755cf.gif",
+    "chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-flow-7e87d54e9f.png",
+    "chapter-29-shared-tasks/03-agent-messages/assets/shared-agent-messages-storyboard-e70fee16fb.jpg",
+    "chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-50d3f2a735.gif",
+    "chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-cover-79489dcb22.png",
+    "chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-flow-d295698051.png",
+    "chapter-30-scheduled-tasks/01-persistent-schedules/assets/schedule-persistent-definition-storyboard-6ffc4e51ae.jpg",
+    "chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-99d8457f18.gif",
+    "chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-cover-96dca061f8.png",
+    "chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-flow-3d0a98ecdb.png",
+    "chapter-30-scheduled-tasks/02-runtime-dispatch/assets/schedule-runtime-dispatch-storyboard-d256dc726b.jpg",
+    "chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-cover-a5709eab1b.png",
+    "chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-fdf952c2f1.gif",
+    "chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-flow-e1d77bcf86.png",
+    "chapter-30-scheduled-tasks/03-stop-and-recover/assets/schedule-stop-recover-storyboard-e92dce1cf3.jpg",
+    "chapter-31-extension-packages/01-install-local-package/assets/extension-install-cover-eb7096d832.png",
+    "chapter-31-extension-packages/01-install-local-package/assets/extension-install-dd2f9b1e22.gif",
+    "chapter-31-extension-packages/01-install-local-package/assets/extension-install-flow-5ddafd427a.png",
+    "chapter-31-extension-packages/01-install-local-package/assets/extension-install-storyboard-6aa82c1345.jpg",
+    "chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-4a133c9a99.gif",
+    "chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-cover-ee1f1a4ca2.png",
+    "chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-flow-88cea4df0e.png",
+    "chapter-31-extension-packages/02-enable-capabilities/assets/extension-enable-storyboard-4b3d528b9d.jpg",
+    "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-cover-b7fe5368fb.png",
+    "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-fcbd043d34.gif",
+    "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-flow-76dc58fbb9.png",
+    "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-storyboard-652edd7444.jpg"
   ]
 }
