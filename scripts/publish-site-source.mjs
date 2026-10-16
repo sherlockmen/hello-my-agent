@@ -88,7 +88,7 @@ function selectSource(report) {
     if (path.startsWith('docs/')) assert.ok(publicDocs.includes(path), `文档不在公开清单：${path}`);
     if (path.startsWith('chapter-') && (path.includes('/assets/') || imagePattern.test(path))) assert.ok(assets.has(path), `图片未被网站引用：${path}`);
   }
-  for (const chapter of [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]) assert.ok(files.includes(`tests/verify-chapter-${chapter}.mjs`));
+  for (const chapter of [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34]) assert.ok(files.includes(`tests/verify-chapter-${chapter}.mjs`));
   assert.ok(files.includes('tests/verify-terminal-14.py'));
   assert.ok(files.includes('tests/verify-terminal-15.py'));
   assert.ok(files.includes('tests/verify-terminal-16.py'));
@@ -109,6 +109,7 @@ function verifySnapshot(snapshot, expected) {
   assert.ok(pkg.scripts['lesson:17.3'] && pkg.scripts['check:16'] && pkg.scripts['check:17'], '配套源码缺少第十六、十七章的运行或验收命令');
   assert.ok(pkg.scripts['lesson:22.3'] && pkg.scripts['check:20'] && pkg.scripts['check:21'] && pkg.scripts['check:22'], '配套源码缺少第二十至二十二章的运行或验收命令');
   assert.ok(pkg.scripts['lesson:25.3'] && pkg.scripts['check:23'] && pkg.scripts['check:24'] && pkg.scripts['check:25'], '配套源码缺少第二十三至二十五章的运行或验收命令');
+  assert.ok(pkg.scripts['lesson:34.3'] && pkg.scripts['check:32'] && pkg.scripts['check:33'] && pkg.scripts['check:34'], '配套源码缺少第三十二至三十四章的运行或验收命令');
   assert.deepEqual(lock.packages[''].dependencies, pkg.dependencies, '依赖与锁文件不一致');
   assert.deepEqual(lock.packages[''].devDependencies, pkg.devDependencies, '开发依赖与锁文件不一致');
   assert.ok(existsSync(join(snapshot, 'chapter-13-session-persistence/04-manage-sessions/src/cli.ts')));
@@ -136,13 +137,13 @@ function verifySnapshot(snapshot, expected) {
   symlinkSync(dependencies, join(snapshot, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir');
   try {
     run(process.execPath, ['node_modules/typescript/bin/tsc', '--noEmit'], snapshot);
-    for (const chapter of [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]) run(process.execPath, [`tests/verify-chapter-${chapter}.mjs`], snapshot);
+    for (const chapter of [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34]) run(process.execPath, [`tests/verify-chapter-${chapter}.mjs`], snapshot);
   } finally {
     rmSync(join(snapshot, 'node_modules'), { force: true });
     rmSync(join(snapshot, 'dist'), { recursive: true, force: true });
     rmSync(join(snapshot, 'site-dist'), { recursive: true, force: true });
   }
-  return { websiteRebuild: true, websiteFixtures: true, typecheck: true, chapter13: true, chapter14: true, chapter15: true, chapter16: true, chapter17: true, chapter18: true, chapter19: true, chapter20: true, chapter21: true, chapter22: true, chapter23: true, chapter24: true, chapter25: true, chapter26: true, chapter27: true, chapter28: true };
+  return { websiteRebuild: true, websiteFixtures: true, typecheck: true, chapter13: true, chapter14: true, chapter15: true, chapter16: true, chapter17: true, chapter18: true, chapter19: true, chapter20: true, chapter21: true, chapter22: true, chapter23: true, chapter24: true, chapter25: true, chapter26: true, chapter27: true, chapter28: true, chapter29: true, chapter30: true, chapter31: true, chapter32: true, chapter33: true, chapter34: true };
 }
 
 let temporary;

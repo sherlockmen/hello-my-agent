@@ -46,7 +46,7 @@ export function runCli(cli, args, cwd, env = {}, input = "", onStart = () => {})
   });
 }
 
-export async function verifyChat(cli, cwd, { reset = false, progress = false, streaming = false, splitOutput = false, sessionDirectory } = {}) {
+export async function verifyChat(cli, cwd, { reset = false, progress = false, streaming = false, splitOutput = false, sessionDirectory, homeDirectory, retryableStatusAttempts = 1 } = {}) {
   const secret = "fixture-api-secret-MUST-NOT-LOG";
   const requests = [];
   let pendingChild;
@@ -116,7 +116,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
   // 当前版本保存会话；测试显式选择临时目录，旧快照仍按原参数运行。
   const invokeCli = (args, workdir, childEnv = {}, input = "", onStart) =>
     runCli(cli, sessionDirectory ? [...args, "--session-dir", sessionDirectory] : args,
-      workdir, childEnv, input, onStart);
+      workdir, { ...(homeDirectory ? { HOME: homeDirectory } : {}), ...childEnv }, input, onStart);
   const invoke = (args, input = "", extra = {}) => invokeCli(args, cwd, { ...env, ...extra }, input);
   try {
     // 1. 帮助和版本不依赖密钥；缺配置应在发送 HTTP 之前失败。
@@ -167,7 +167,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
       assert.equal(requests.length, 1);
       assert.equal((await invoke(["--provider", provider, "--prompt", "   "])).status, 1);
 
-      // 请求失败后不污染历史；关闭自动重试，401/429/500 等均只发送一次。
+      // 认证失败不重试；429/500 的请求次数由快照是否实现本地重试决定。
       requests.length = 0;
       const retry = await invoke(["--provider", provider], "[401]\n恢复了\n/exit\n");
       assert.equal(retry.status, 0);
@@ -181,11 +181,11 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
         assert.equal(recovered.at(-1).content, "恢复了");
       } else assert.deepEqual(recovered, [{ role: "user", content: "恢复了" }]);
       assert.ok(!(retry.stdout + retry.stderr).includes(secret));
-      for (const status of [403, 404, 429, 500]) {
+      for (const [status, expectedAttempts] of [[403, 1], [404, 1], [429, retryableStatusAttempts], [500, retryableStatusAttempts]]) {
         requests.length = 0;
         const error = await invoke(["--provider", provider], `[${status}]\n/exit\n`);
         assert.equal(error.status, 1);
-        assert.equal(requests.length, 1);
+        assert.equal(requests.length, expectedAttempts, `${provider} HTTP ${status} 模型请求次数`);
         assert.ok(!(error.stdout + error.stderr).includes(secret));
       }
       assert.match((await invoke(["--provider", provider, "--model", "no-usage"], "你好\n"))[splitOutput ? "stderr" : "stdout"], /输入 未知，输出 未知/);

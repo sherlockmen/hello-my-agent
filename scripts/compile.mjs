@@ -117,9 +117,18 @@ const targets = {
   "31.1": "chapter-31-extension-packages/01-install-local-package/src",
   "31.2": "chapter-31-extension-packages/02-enable-capabilities/src",
   "31.3": "chapter-31-extension-packages/03-disable-and-diagnose/src",
+  "32.1": "chapter-32-code-intelligence/01-project-checks/src",
+  "32.2": "chapter-32-code-intelligence/02-lsp-navigation/src",
+  "32.3": "chapter-32-code-intelligence/03-current-diagnostics/src",
+  "33.1": "chapter-33-execution-sandbox/01-sandbox-runtime/src",
+  "33.2": "chapter-33-execution-sandbox/02-connect-execution/src",
+  "33.3": "chapter-33-execution-sandbox/03-diagnose-boundaries/src",
+  "34.1": "chapter-34-reliability/01-correlated-logs/src",
+  "34.2": "chapter-34-reliability/02-safe-retries/src",
+  "34.3": "chapter-34-reliability/03-stop-and-diagnose/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "31.3";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "34.3";
 const source = targets[target];
 
 if (!source) {
