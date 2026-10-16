@@ -49,6 +49,9 @@ const currentPackageModules = [
   "collaboration/coordinator", "collaboration/runner", "tools/shared-task-tools",
   "schedules/store", "schedules/runtime", "schedules/commands",
   "extensions/manifest", "extensions/manager", "extensions/commands",
+  "language-service/client", "code-command", "tools/check-project", "tools/code-intelligence",
+  "sandbox/policy", "sandbox/runtime", "sandbox/diagnostics",
+  "diagnostics/logger", "diagnostics/watchdog", "diagnostics/config", "models/retry",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {
@@ -58,11 +61,13 @@ const sandbox = mkdtempSync(join(tmpdir(), "hello-my-agent-install-"));
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 const cwd = join(sandbox, "unrelated project");
 mkdirSync(cwd);
+const homeDirectory = join(sandbox, "home");
+mkdirSync(homeDirectory);
 
 // 同步命令只用于编译/安装；调用模型的检查使用异步子进程，避免阻塞本地 HTTP 服务。
 function run(command, args, workdir, expectedStatus = 0, environment = {}) {
   const result = spawnSync(command, args, {
-    cwd: workdir, env: isolatedEnv(environment), encoding: "utf8", timeout: 120_000,
+    cwd: workdir, env: isolatedEnv({ HOME: homeDirectory, ...environment }), encoding: "utf8", timeout: 120_000,
     shell: process.platform === "win32",
   });
   if (result.error) throw result.error;
@@ -138,11 +143,29 @@ async function verifyPackage(project, step, label, moduleOverride) {
     `], cwd);
   }
   for (const name of ["chapter-01-first-command", chapter]) assert.ok(!existsSync(join(installed, name)));
-  for (const dep of ["typescript", "@types/node"]) assert.ok(!existsSync(join(installed, "node_modules", dep)));
+  assert.ok(!existsSync(join(installed, "node_modules/@types/node")));
+  if (moduleOverride) {
+    // 语言服务实际加载 tsserver，不能只在开发机的 devDependencies 中碰巧找到它。
+    assert.equal(JSON.parse(readFileSync(join(installed, "node_modules/typescript/package.json"), "utf8")).version,
+      pkg.dependencies.typescript);
+  }
   // 动态加载的 TUI 也必须只靠安装包的运行依赖载入；文本模式不会触发这条 import。
   if (moduleOverride) run(process.execPath, ["--input-type=module", "-e",
     `await import(${JSON.stringify(join(installed, "dist/ui/tui/app.js"))})`], cwd);
   const cli = resolve(prefix, process.platform === "win32" ? "hello-my-agent.cmd" : "bin/hello-my-agent");
+  if (moduleOverride) {
+    const codeProject = join(destination, "code-project");
+    mkdirSync(codeProject);
+    writeFileSync(join(codeProject, "package.json"), '{"type":"module"}');
+    writeFileSync(join(codeProject, "tsconfig.json"), '{"compilerOptions":{"strict":true,"module":"NodeNext","moduleResolution":"NodeNext"}}');
+    writeFileSync(join(codeProject, "lib.ts"), 'export const amount: number = "one";\n');
+    writeFileSync(join(codeProject, "main.ts"), 'import { amount } from "./lib.js";\nconsole.log(amount);\n');
+    const definition = JSON.parse(run(cli, ["code", "definition", "main.ts", "2", "13"], codeProject).stdout);
+    assert.equal(definition.locations[0]?.path, "lib.ts");
+    const diagnostics = JSON.parse(run(cli, ["code", "diagnostics", "lib.ts"], codeProject).stdout);
+    assert.ok(diagnostics.diagnostics.some(item => item.code === 2322));
+    console.log("✓ 安装包脱离源码和开发依赖后，真实定义查询及 2322 诊断通过");
+  }
   assert.match(run(cli, ["--help"], cwd).stdout, /--help/);
   assert.equal(run(cli, ["--version"], cwd).stdout.trim(), pkg.version);
   assert.equal(run(cli, ["-v"], cwd).stdout.trim(), pkg.version);
@@ -153,7 +176,8 @@ async function verifyPackage(project, step, label, moduleOverride) {
   else if (step === 6) {
     await verifyAgentLoop(join(installed, "dist/agent/agent-loop.js"), { interruptedHistory: Boolean(moduleOverride) });
     await verifyChat(cli, cwd, { streaming: Boolean(moduleOverride), reset: Boolean(moduleOverride), splitOutput: Boolean(moduleOverride),
-      sessionDirectory: moduleOverride ? join(destination, "sessions") : undefined });
+      sessionDirectory: moduleOverride ? join(destination, "sessions") : undefined, homeDirectory,
+      retryableStatusAttempts: moduleOverride ? 3 : 1 });
   } else await verifyLesson(cli, cwd, step);
   console.log(`✓ ${label}：包内容、临时安装、源码之外运行与退出状态通过`);
 }

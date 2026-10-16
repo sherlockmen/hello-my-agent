@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "chapters": 31,
-  "tutorialPages": 176,
-  "lessonPages": 99,
-  "exercisePages": 31,
-  "sourcePages": 850,
+  "chapters": 34,
+  "tutorialPages": 191,
+  "lessonPages": 108,
+  "exercisePages": 34,
+  "sourcePages": 896,
   "sourceIndexes": 26,
-  "imagePages": 171,
-  "referencedAssets": 307,
-  "gifReferences": 87,
+  "imagePages": 198,
+  "referencedAssets": 343,
+  "gifReferences": 96,
   "convertedMotionPlayers": 15,
-  "assetBytes": 445093490,
+  "assetBytes": 495914925,
   "generatedGifCovers": [
     "chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png",
     "chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png",
@@ -152,6 +152,21 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/31-extension-packages.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/32-code-intelligence.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/33-execution-sandbox.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/34-reliability.md",
       "reason": "verification evidence"
     },
     {
@@ -313,6 +328,21 @@
       "from": "docs/PROGRESS.md",
       "target": "docs/planning/README.md",
       "reason": "authoring or planning workspace"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/32-code-intelligence.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/33-execution-sandbox.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/34-reliability.md",
+      "reason": "verification evidence"
     },
     {
       "from": "docs/CODING-AGENT-GAP-REVIEW.md",
@@ -628,6 +658,42 @@
     "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-cover-b7fe5368fb.png",
     "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-fcbd043d34.gif",
     "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-flow-76dc58fbb9.png",
-    "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-storyboard-652edd7444.jpg"
+    "chapter-31-extension-packages/03-disable-and-diagnose/assets/extension-disable-storyboard-652edd7444.jpg",
+    "chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-42e51a511a.gif",
+    "chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-cover-b05314fc7a.png",
+    "chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-flow-e4d13708cf.png",
+    "chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-storyboard-f4a4e2c8db.jpg",
+    "chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-cover-0aece0bcef.png",
+    "chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-d9581e6574.gif",
+    "chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-flow-21d2e3b037.png",
+    "chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-storyboard-d51f6098d5.jpg",
+    "chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-2079cc9efa.gif",
+    "chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-cover-dbac334ce5.png",
+    "chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-flow-c746e20060.png",
+    "chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-storyboard-23d3c200ce.jpg",
+    "chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-6476b8d12c.gif",
+    "chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-cover-0d36a3e65f.png",
+    "chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-flow-bae626a74c.png",
+    "chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-storyboard-77a8e30941.jpg",
+    "chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-28d94bd2f3.gif",
+    "chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-cover-c348c44634.png",
+    "chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-flow-514213df7b.png",
+    "chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-storyboard-3ef3cdbe7a.jpg",
+    "chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-01a4c7cf1a.gif",
+    "chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-cover-404f28a862.png",
+    "chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-flow-8f1ddec02f.png",
+    "chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-storyboard-84f70f314e.jpg",
+    "chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-bb1c986348.gif",
+    "chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-cover-200dcb67a1.png",
+    "chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-flow-46083fb0a2.png",
+    "chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-storyboard-9275dad066.jpg",
+    "chapter-34-reliability/02-safe-retries/assets/model-only-retries-cb520e3c0e.gif",
+    "chapter-34-reliability/02-safe-retries/assets/model-only-retries-cover-b0dfa9748d.png",
+    "chapter-34-reliability/02-safe-retries/assets/model-only-retries-flow-8cdaa2a0d1.png",
+    "chapter-34-reliability/02-safe-retries/assets/model-only-retries-storyboard-9471837daf.jpg",
+    "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-6d1986971d.gif",
+    "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-cover-6079330069.png",
+    "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-flow-ffe339c5af.png",
+    "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-storyboard-786215e5dd.jpg"
   ]
 }

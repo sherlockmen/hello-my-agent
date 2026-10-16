@@ -378,6 +378,42 @@
       ],
       "exercises": "chapter-31-extension-packages/EXERCISES.md",
       "other": []
+    },
+    {
+      "directory": "chapter-32-code-intelligence",
+      "title": "第 32 章：接入代码诊断与语言服务",
+      "overview": "chapter-32-code-intelligence/README.md",
+      "lessons": [
+        "chapter-32-code-intelligence/01-project-checks/README.md",
+        "chapter-32-code-intelligence/02-lsp-navigation/README.md",
+        "chapter-32-code-intelligence/03-current-diagnostics/README.md"
+      ],
+      "exercises": "chapter-32-code-intelligence/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-33-execution-sandbox",
+      "title": "第 33 章：接入真实执行隔离",
+      "overview": "chapter-33-execution-sandbox/README.md",
+      "lessons": [
+        "chapter-33-execution-sandbox/01-sandbox-runtime/README.md",
+        "chapter-33-execution-sandbox/02-connect-execution/README.md",
+        "chapter-33-execution-sandbox/03-diagnose-boundaries/README.md"
+      ],
+      "exercises": "chapter-33-execution-sandbox/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-34-reliability",
+      "title": "第 34 章：让故障可定位、可恢复",
+      "overview": "chapter-34-reliability/README.md",
+      "lessons": [
+        "chapter-34-reliability/01-correlated-logs/README.md",
+        "chapter-34-reliability/02-safe-retries/README.md",
+        "chapter-34-reliability/03-stop-and-diagnose/README.md"
+      ],
+      "exercises": "chapter-34-reliability/EXERCISES.md",
+      "other": []
     }
   ],
   "pages": [
@@ -8850,6 +8886,622 @@
       "title": "第 31 章：本地扩展包",
       "kind": "tutorial",
       "source": "chapter-31-extension-packages/README.md"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-cover-b05314fc7a.png.md",
+      "route": "#/content/chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-cover-b05314fc7a.png.md",
+      "title": "project-check-feedback-cover-b05314fc7a.png",
+      "kind": "image",
+      "source": "chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-cover-b05314fc7a.png"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-flow-e4d13708cf.png.md",
+      "route": "#/content/chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-flow-e4d13708cf.png.md",
+      "title": "project-check-feedback-flow-e4d13708cf.png",
+      "kind": "image",
+      "source": "chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-flow-e4d13708cf.png"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-storyboard-f4a4e2c8db.jpg.md",
+      "route": "#/content/chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-storyboard-f4a4e2c8db.jpg.md",
+      "title": "project-check-feedback-storyboard-f4a4e2c8db.jpg",
+      "kind": "image",
+      "source": "chapter-32-code-intelligence/01-project-checks/assets/project-check-feedback-storyboard-f4a4e2c8db.jpg"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/01-project-checks/README.md",
+      "route": "#/content/chapter-32-code-intelligence/01-project-checks/README.md",
+      "title": "32.1 把检查结果交回模型",
+      "kind": "tutorial",
+      "source": "chapter-32-code-intelligence/01-project-checks/README.md"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/01-project-checks/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/01-project-checks/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/01-project-checks/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/01-project-checks/src/tools/check-project.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/01-project-checks/src/tools/check-project.ts.md",
+      "title": "check-project.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/01-project-checks/src/tools/check-project.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/01-project-checks/src/tools/registry.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/01-project-checks/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/01-project-checks/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-cover-0aece0bcef.png.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-cover-0aece0bcef.png.md",
+      "title": "lsp-location-roundtrip-cover-0aece0bcef.png",
+      "kind": "image",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-cover-0aece0bcef.png"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-flow-21d2e3b037.png.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-flow-21d2e3b037.png.md",
+      "title": "lsp-location-roundtrip-flow-21d2e3b037.png",
+      "kind": "image",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-flow-21d2e3b037.png"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-storyboard-d51f6098d5.jpg.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-storyboard-d51f6098d5.jpg.md",
+      "title": "lsp-location-roundtrip-storyboard-d51f6098d5.jpg",
+      "kind": "image",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/assets/lsp-location-roundtrip-storyboard-d51f6098d5.jpg"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/README.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/README.md",
+      "title": "32.2 用语言服务定位符号",
+      "kind": "tutorial",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/README.md"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/src/cli.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/src/code-command.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/src/code-command.ts.md",
+      "title": "code-command.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/src/code-command.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/src/language-service/client.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/src/language-service/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/src/language-service/client.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/src/models/client.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/src/tools/code-intelligence.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/src/tools/code-intelligence.ts.md",
+      "title": "code-intelligence.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/src/tools/code-intelligence.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/src/tools/registry.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/02-lsp-navigation/src/tools/types.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/02-lsp-navigation/src/tools/types.ts.md",
+      "title": "types.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/02-lsp-navigation/src/tools/types.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-cover-dbac334ce5.png.md",
+      "route": "#/content/chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-cover-dbac334ce5.png.md",
+      "title": "diagnostics-freshness-cover-dbac334ce5.png",
+      "kind": "image",
+      "source": "chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-cover-dbac334ce5.png"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-flow-c746e20060.png.md",
+      "route": "#/content/chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-flow-c746e20060.png.md",
+      "title": "diagnostics-freshness-flow-c746e20060.png",
+      "kind": "image",
+      "source": "chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-flow-c746e20060.png"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-storyboard-23d3c200ce.jpg.md",
+      "route": "#/content/chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-storyboard-23d3c200ce.jpg.md",
+      "title": "diagnostics-freshness-storyboard-23d3c200ce.jpg",
+      "kind": "image",
+      "source": "chapter-32-code-intelligence/03-current-diagnostics/assets/diagnostics-freshness-storyboard-23d3c200ce.jpg"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/03-current-diagnostics/README.md",
+      "route": "#/content/chapter-32-code-intelligence/03-current-diagnostics/README.md",
+      "title": "32.3 只报告当前文件的诊断",
+      "kind": "tutorial",
+      "source": "chapter-32-code-intelligence/03-current-diagnostics/README.md"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/03-current-diagnostics/src/code-command.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/03-current-diagnostics/src/code-command.ts.md",
+      "title": "code-command.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/03-current-diagnostics/src/code-command.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/03-current-diagnostics/src/language-service/client.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/03-current-diagnostics/src/language-service/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/03-current-diagnostics/src/language-service/client.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/03-current-diagnostics/src/tools/code-intelligence.ts.md",
+      "route": "#/content/chapter-32-code-intelligence/03-current-diagnostics/src/tools/code-intelligence.ts.md",
+      "title": "code-intelligence.ts",
+      "kind": "source",
+      "source": "chapter-32-code-intelligence/03-current-diagnostics/src/tools/code-intelligence.ts"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/EXERCISES.md",
+      "route": "#/content/chapter-32-code-intelligence/EXERCISES.md",
+      "title": "第 32 章练习与完整答案",
+      "kind": "tutorial",
+      "source": "chapter-32-code-intelligence/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-32-code-intelligence/README.md",
+      "route": "#/content/chapter-32-code-intelligence/README.md",
+      "title": "第 32 章：接入代码诊断与语言服务",
+      "kind": "tutorial",
+      "source": "chapter-32-code-intelligence/README.md"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-cover-0d36a3e65f.png.md",
+      "route": "#/content/chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-cover-0d36a3e65f.png.md",
+      "title": "sandbox-shell-boundary-cover-0d36a3e65f.png",
+      "kind": "image",
+      "source": "chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-cover-0d36a3e65f.png"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-flow-bae626a74c.png.md",
+      "route": "#/content/chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-flow-bae626a74c.png.md",
+      "title": "sandbox-shell-boundary-flow-bae626a74c.png",
+      "kind": "image",
+      "source": "chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-flow-bae626a74c.png"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-storyboard-77a8e30941.jpg.md",
+      "route": "#/content/chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-storyboard-77a8e30941.jpg.md",
+      "title": "sandbox-shell-boundary-storyboard-77a8e30941.jpg",
+      "kind": "image",
+      "source": "chapter-33-execution-sandbox/01-sandbox-runtime/assets/sandbox-shell-boundary-storyboard-77a8e30941.jpg"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/01-sandbox-runtime/README.md",
+      "route": "#/content/chapter-33-execution-sandbox/01-sandbox-runtime/README.md",
+      "title": "33.1 让命令真正进入沙箱",
+      "kind": "tutorial",
+      "source": "chapter-33-execution-sandbox/01-sandbox-runtime/README.md"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/01-sandbox-runtime/src/cli.ts.md",
+      "route": "#/content/chapter-33-execution-sandbox/01-sandbox-runtime/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-33-execution-sandbox/01-sandbox-runtime/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/01-sandbox-runtime/src/sandbox/policy.ts.md",
+      "route": "#/content/chapter-33-execution-sandbox/01-sandbox-runtime/src/sandbox/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-33-execution-sandbox/01-sandbox-runtime/src/sandbox/policy.ts"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/01-sandbox-runtime/src/sandbox/runtime.ts.md",
+      "route": "#/content/chapter-33-execution-sandbox/01-sandbox-runtime/src/sandbox/runtime.ts.md",
+      "title": "runtime.ts",
+      "kind": "source",
+      "source": "chapter-33-execution-sandbox/01-sandbox-runtime/src/sandbox/runtime.ts"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/01-sandbox-runtime/src/tools/run-command.ts.md",
+      "route": "#/content/chapter-33-execution-sandbox/01-sandbox-runtime/src/tools/run-command.ts.md",
+      "title": "run-command.ts",
+      "kind": "source",
+      "source": "chapter-33-execution-sandbox/01-sandbox-runtime/src/tools/run-command.ts"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-cover-c348c44634.png.md",
+      "route": "#/content/chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-cover-c348c44634.png.md",
+      "title": "sandbox-job-transports-cover-c348c44634.png",
+      "kind": "image",
+      "source": "chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-cover-c348c44634.png"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-flow-514213df7b.png.md",
+      "route": "#/content/chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-flow-514213df7b.png.md",
+      "title": "sandbox-job-transports-flow-514213df7b.png",
+      "kind": "image",
+      "source": "chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-flow-514213df7b.png"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-storyboard-3ef3cdbe7a.jpg.md",
+      "route": "#/content/chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-storyboard-3ef3cdbe7a.jpg.md",
+      "title": "sandbox-job-transports-storyboard-3ef3cdbe7a.jpg",
+      "kind": "image",
+      "source": "chapter-33-execution-sandbox/02-connect-execution/assets/sandbox-job-transports-storyboard-3ef3cdbe7a.jpg"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/02-connect-execution/README.md",
+      "route": "#/content/chapter-33-execution-sandbox/02-connect-execution/README.md",
+      "title": "33.2 把隔离接到审批、工作区与后台任务",
+      "kind": "tutorial",
+      "source": "chapter-33-execution-sandbox/02-connect-execution/README.md"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/02-connect-execution/src/processes/jobs.ts.md",
+      "route": "#/content/chapter-33-execution-sandbox/02-connect-execution/src/processes/jobs.ts.md",
+      "title": "jobs.ts",
+      "kind": "source",
+      "source": "chapter-33-execution-sandbox/02-connect-execution/src/processes/jobs.ts"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/02-connect-execution/src/tools/job-tools.ts.md",
+      "route": "#/content/chapter-33-execution-sandbox/02-connect-execution/src/tools/job-tools.ts.md",
+      "title": "job-tools.ts",
+      "kind": "source",
+      "source": "chapter-33-execution-sandbox/02-connect-execution/src/tools/job-tools.ts"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-cover-404f28a862.png.md",
+      "route": "#/content/chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-cover-404f28a862.png.md",
+      "title": "sandbox-local-proof-cover-404f28a862.png",
+      "kind": "image",
+      "source": "chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-cover-404f28a862.png"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-flow-8f1ddec02f.png.md",
+      "route": "#/content/chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-flow-8f1ddec02f.png.md",
+      "title": "sandbox-local-proof-flow-8f1ddec02f.png",
+      "kind": "image",
+      "source": "chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-flow-8f1ddec02f.png"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-storyboard-84f70f314e.jpg.md",
+      "route": "#/content/chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-storyboard-84f70f314e.jpg.md",
+      "title": "sandbox-local-proof-storyboard-84f70f314e.jpg",
+      "kind": "image",
+      "source": "chapter-33-execution-sandbox/03-diagnose-boundaries/assets/sandbox-local-proof-storyboard-84f70f314e.jpg"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/03-diagnose-boundaries/README.md",
+      "route": "#/content/chapter-33-execution-sandbox/03-diagnose-boundaries/README.md",
+      "title": "33.3 诊断隔离状态并验证不同通道",
+      "kind": "tutorial",
+      "source": "chapter-33-execution-sandbox/03-diagnose-boundaries/README.md"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/03-diagnose-boundaries/src/cli.ts.md",
+      "route": "#/content/chapter-33-execution-sandbox/03-diagnose-boundaries/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-33-execution-sandbox/03-diagnose-boundaries/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/03-diagnose-boundaries/src/sandbox/diagnostics.ts.md",
+      "route": "#/content/chapter-33-execution-sandbox/03-diagnose-boundaries/src/sandbox/diagnostics.ts.md",
+      "title": "diagnostics.ts",
+      "kind": "source",
+      "source": "chapter-33-execution-sandbox/03-diagnose-boundaries/src/sandbox/diagnostics.ts"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/EXERCISES.md",
+      "route": "#/content/chapter-33-execution-sandbox/EXERCISES.md",
+      "title": "第 33 章练习与完整答案",
+      "kind": "tutorial",
+      "source": "chapter-33-execution-sandbox/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-33-execution-sandbox/README.md",
+      "route": "#/content/chapter-33-execution-sandbox/README.md",
+      "title": "第 33 章：接入真实执行隔离",
+      "kind": "tutorial",
+      "source": "chapter-33-execution-sandbox/README.md"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-cover-200dcb67a1.png.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-cover-200dcb67a1.png.md",
+      "title": "run-log-correlation-cover-200dcb67a1.png",
+      "kind": "image",
+      "source": "chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-cover-200dcb67a1.png"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-flow-46083fb0a2.png.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-flow-46083fb0a2.png.md",
+      "title": "run-log-correlation-flow-46083fb0a2.png",
+      "kind": "image",
+      "source": "chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-flow-46083fb0a2.png"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-storyboard-9275dad066.jpg.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-storyboard-9275dad066.jpg.md",
+      "title": "run-log-correlation-storyboard-9275dad066.jpg",
+      "kind": "image",
+      "source": "chapter-34-reliability/01-correlated-logs/assets/run-log-correlation-storyboard-9275dad066.jpg"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/README.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/README.md",
+      "title": "34.1 关联一次运行的日志",
+      "kind": "tutorial",
+      "source": "chapter-34-reliability/01-correlated-logs/README.md"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/src/agent/events.ts.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/src/agent/events.ts.md",
+      "title": "events.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/01-correlated-logs/src/agent/events.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/01-correlated-logs/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/src/agent/run-stream.ts.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/src/agent/run-stream.ts.md",
+      "title": "run-stream.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/01-correlated-logs/src/agent/run-stream.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/src/agent/run.ts.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/src/agent/run.ts.md",
+      "title": "run.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/01-correlated-logs/src/agent/run.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/src/diagnostics/logger.ts.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/src/diagnostics/logger.ts.md",
+      "title": "logger.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/01-correlated-logs/src/diagnostics/logger.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/01-correlated-logs/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/01-correlated-logs/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-34-reliability/01-correlated-logs/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/01-correlated-logs/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/assets/model-only-retries-cover-b0dfa9748d.png.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/assets/model-only-retries-cover-b0dfa9748d.png.md",
+      "title": "model-only-retries-cover-b0dfa9748d.png",
+      "kind": "image",
+      "source": "chapter-34-reliability/02-safe-retries/assets/model-only-retries-cover-b0dfa9748d.png"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/assets/model-only-retries-flow-8cdaa2a0d1.png.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/assets/model-only-retries-flow-8cdaa2a0d1.png.md",
+      "title": "model-only-retries-flow-8cdaa2a0d1.png",
+      "kind": "image",
+      "source": "chapter-34-reliability/02-safe-retries/assets/model-only-retries-flow-8cdaa2a0d1.png"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/assets/model-only-retries-storyboard-9471837daf.jpg.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/assets/model-only-retries-storyboard-9471837daf.jpg.md",
+      "title": "model-only-retries-storyboard-9471837daf.jpg",
+      "kind": "image",
+      "source": "chapter-34-reliability/02-safe-retries/assets/model-only-retries-storyboard-9471837daf.jpg"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/README.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/README.md",
+      "title": "34.2 只重试可以安全重发的请求",
+      "kind": "tutorial",
+      "source": "chapter-34-reliability/02-safe-retries/README.md"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/02-safe-retries/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/src/agent/events.ts.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/src/agent/events.ts.md",
+      "title": "events.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/02-safe-retries/src/agent/events.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/src/diagnostics/logger.ts.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/src/diagnostics/logger.ts.md",
+      "title": "logger.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/02-safe-retries/src/diagnostics/logger.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/src/models/client.ts.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/02-safe-retries/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/src/models/model-errors.ts.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/src/models/model-errors.ts.md",
+      "title": "model-errors.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/02-safe-retries/src/models/model-errors.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/src/models/retry.ts.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/src/models/retry.ts.md",
+      "title": "retry.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/02-safe-retries/src/models/retry.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/02-safe-retries/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/02-safe-retries/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-34-reliability/02-safe-retries/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/02-safe-retries/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-cover-6079330069.png.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-cover-6079330069.png.md",
+      "title": "watchdog-stop-wait-cover-6079330069.png",
+      "kind": "image",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-cover-6079330069.png"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-flow-ffe339c5af.png.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-flow-ffe339c5af.png.md",
+      "title": "watchdog-stop-wait-flow-ffe339c5af.png",
+      "kind": "image",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-flow-ffe339c5af.png"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-storyboard-786215e5dd.jpg.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-storyboard-786215e5dd.jpg.md",
+      "title": "watchdog-stop-wait-storyboard-786215e5dd.jpg",
+      "kind": "image",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-storyboard-786215e5dd.jpg"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/README.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/README.md",
+      "title": "34.3 停止无进展任务并保留成果",
+      "kind": "tutorial",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/README.md"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/src/agent/run.ts.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/src/agent/run.ts.md",
+      "title": "run.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/src/agent/run.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/src/cli.ts.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/src/diagnostics/config.ts.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/src/diagnostics/config.ts.md",
+      "title": "config.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/src/diagnostics/config.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/src/diagnostics/watchdog.ts.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/src/diagnostics/watchdog.ts.md",
+      "title": "watchdog.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/src/diagnostics/watchdog.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-34-reliability/03-stop-and-diagnose/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-34-reliability/03-stop-and-diagnose/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-34-reliability/03-stop-and-diagnose/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-34-reliability/EXERCISES.md",
+      "route": "#/content/chapter-34-reliability/EXERCISES.md",
+      "title": "第 34 章练习：从诊断中判断下一步",
+      "kind": "tutorial",
+      "source": "chapter-34-reliability/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-34-reliability/README.md",
+      "route": "#/content/chapter-34-reliability/README.md",
+      "title": "第 34 章：让故障可定位、可恢复",
+      "kind": "tutorial",
+      "source": "chapter-34-reliability/README.md"
     },
     {
       "path": "content/docs/CODING-AGENT-GAP-REVIEW.md",
