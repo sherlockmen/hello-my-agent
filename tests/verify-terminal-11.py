@@ -29,6 +29,17 @@ class Terminal:
             if text in clean: return
             self.read()
         raise AssertionError('未出现：' + text + '\n' + ansi.sub('', self.output[-8000:].decode(errors='replace')))
+    def until_idle(self, text, start=0, timeout=8):
+        # 历史会随当前画面重绘；只能把最新一帧的结束状态当作本轮已收尾。
+        until = time.time() + timeout
+        while time.time() < until:
+            clean = ansi.sub('', self.output[start:].decode(errors='replace'))
+            frame = clean.rsplit('Hello, My Agent ·', 1)[-1]
+            if (text in frame and re.search(r'(?m)^状态：已完成\r?$', frame)
+                    and re.search(r'│ 草稿 \[焦点\]\s+│', frame)):
+                return
+            self.read()
+        raise AssertionError('本轮未收尾：' + text + '\n' + ansi.sub('', self.output[-8000:].decode(errors='replace')))
     def send(self, text):
         start = len(self.output)
         os.write(self.master, text.encode()); self.read(.07); os.write(self.master, b'\r'); self.read(.08)
@@ -133,7 +144,8 @@ try:
     s=t.send('approve');t.key(b'saved');t.until('等待批准',s)
     t.key(b'\x1b[200~y\n\x1b[201~');t.key(b'\r');assert not (work/'never.txt').exists()
     s=t.send('n');t.until('TOOL_DONE',s);s=t.key(b'\r');t.until('REPLY_saved',s)
-    s=t.send('read');t.until('TOOL_DONE',s);t.key(b'\x0f');t.key(b'k');t.key(b'k');t.key(b'\r');t.until('FULL_TOOL_RESULT');t.key(b'\x19')
+    s=t.send('read');t.until('TOOL_DONE',s);t.until_idle('read_file：完成',s)
+    t.key(b'\x0f');t.key(b'k');t.key(b'k');t.key(b'\r');t.until('FULL_TOOL_RESULT');t.key(b'\x19')
     end=time.time()+3
     while not (case/'copied').exists() and time.time()<end:t.read()
     assert 'FULL_TOOL_RESULT' in (case/'copied').read_text()

@@ -103,9 +103,9 @@ loglevel=warn
 
 ## 根目录包清单
 
-把根目录 `package.json` 改为下面的公共配置。它与当前仓库同步，包含第 01—34 章需要的脚本和依赖。学习第一章时先关注 `type`、`bin`、`lesson:01`、Commander 和 TypeScript；进入后续章节时，再回来看对应的 `lesson:02.N`—`lesson:34.N`、验收脚本、模型 SDK 和 `ignore`：
+把根目录 `package.json` 改为下面的公共配置。它与当前仓库同步，包含第 01—36 章需要的脚本和依赖。学习第一章时先关注 `type`、`bin`、`lesson:01`、Commander 和 TypeScript；进入后续章节时，再回来看对应的 `lesson:02.N`—`lesson:36.N`、验收脚本、模型 SDK 和 `ignore`：
 
-从空目录跟写时，包清单中出现一条脚本，不代表它依赖的文件已经创建。只完成第一章时，使用 `lesson:01`、`typecheck` 和下文的手动打包安装步骤；`verify` 需要完整配套仓库的章节与测试，`build` 和 `prepack` 当前也会选择尚未写到的 34.3。后面的 `check:*`、`exercise:*` 自动检查同样需要配套的 `tests/` 文件。
+从空目录跟写时，包清单中出现一条脚本，不代表它依赖的文件已经创建。只完成第一章时，使用 `lesson:01`、`typecheck` 和下文的手动打包安装步骤；`verify` 需要完整配套仓库的章节与测试，`build` 和 `prepack` 当前也会选择尚未写到的 36.3。后面的 `check:*`、`exercise:*` 自动检查同样需要配套的 `tests/` 文件。
 
 ```json
 {
@@ -125,7 +125,7 @@ loglevel=warn
     "node": ">=22.12.0"
   },
   "scripts": {
-    "build": "node scripts/compile.mjs 34.3 --prepare",
+    "build": "node scripts/compile.mjs 36.3 --prepare",
     "lesson:01": "node scripts/compile.mjs 01 --prepare",
     "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare",
     "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare",
@@ -183,8 +183,8 @@ loglevel=warn
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/compile.mjs 34.3",
-    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 34.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && npm run check:20 && npm run check:21 && npm run check:22 && npm run check:23 && npm run check:24 && npm run check:25 && npm run check:26 && npm run check:27 && npm run check:28 && npm run check:29 && npm run check:30 && npm run check:31 && npm run check:32 && npm run check:33 && npm run check:34 && node scripts/compile.mjs 34.3 && node -e \"if (!require('node:fs').existsSync('dist/diagnostics/watchdog.js')) throw new Error('默认构建未恢复到 34.3')\"",
+    "prepack": "node scripts/compile.mjs 36.3",
+    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 36.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && npm run check:20 && npm run check:21 && npm run check:22 && npm run check:23 && npm run check:24 && npm run check:25 && npm run check:26 && npm run check:27 && npm run check:28 && npm run check:29 && npm run check:30 && npm run check:31 && npm run check:32 && npm run check:33 && npm run check:34 && npm run check:35 && npm run check:36 && node scripts/compile.mjs 36.3 && node -e \"if (!require('node:fs').existsSync('dist/config/connection-profile.js')) throw new Error('默认构建未恢复到 36.3')\"",
     "check:11": "node tests/verify-chapter-11.mjs && python3 tests/verify-terminal-11.py",
     "exercise:11": "node tests/verify-exercise-11.mjs",
     "lesson:12.1": "node scripts/compile.mjs 12.1 --prepare",
@@ -283,7 +283,15 @@ loglevel=warn
     "lesson:34.1": "node scripts/compile.mjs 34.1 --prepare",
     "lesson:34.2": "node scripts/compile.mjs 34.2 --prepare",
     "lesson:34.3": "node scripts/compile.mjs 34.3 --prepare",
-    "check:34": "node tests/verify-chapter-34.mjs"
+    "check:34": "node tests/verify-chapter-34.mjs",
+    "lesson:35.1": "node scripts/compile.mjs 35.1 --prepare",
+    "lesson:35.2": "node scripts/compile.mjs 35.2 --prepare",
+    "lesson:35.3": "node scripts/compile.mjs 35.3 --prepare",
+    "check:35": "node tests/verify-chapter-35.mjs",
+    "lesson:36.1": "node scripts/compile.mjs 36.1 --prepare",
+    "lesson:36.2": "node scripts/compile.mjs 36.2 --prepare",
+    "lesson:36.3": "node scripts/compile.mjs 36.3 --prepare",
+    "check:36": "node tests/verify-chapter-36.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sandbox-runtime": "0.0.79",
@@ -323,13 +331,13 @@ loglevel=warn
 | `bin` | 声明命令名 `hello-my-agent` 对应的入口文件 `dist/cli.js` |
 | `files` | 指定将 `dist` 放入安装包；npm 还会包含包清单，以及已有的 README 和许可证 |
 | `npm run build` | 按锁文件安装依赖、编译 TypeScript，成功后自动注册本地命令 |
-| `npm run lesson:02.N`—`npm run lesson:34.N` | 选择、编译并注册对应小节；命令中不需要 `--` |
+| `npm run lesson:02.N`—`npm run lesson:36.N` | 选择、编译并注册对应小节；命令中不需要 `--` |
 | `npm run exercise:02`、`04`、`05`、`06`、`07`、`08`、`09`、`10`、`11`、`12` | 运行对应章的练习验收 |
-| `npm run check:03`—`npm run check:34` | 运行对应章的确定性验收 |
+| `npm run check:03`—`npm run check:36` | 运行对应章的确定性验收 |
 | `prepack` | 打包前只编译代码，不改变本地命令的指向 |
 | `private: true` | 防止误发布，仍可本地注册、打包和安装 |
 
-`build` 默认选择 34.3，`prepack` 也编译 34.3。小节脚本把编号交给 `scripts/compile.mjs`，按顺序运行 `npm ci`、编译和 `npm link`，成功后显示一行完成提示。安装失败时不会进入后续步骤。
+`build` 默认选择 36.3，`prepack` 也编译 36.3。小节脚本把编号交给 `scripts/compile.mjs`，按顺序运行 `npm ci`、编译和 `npm link`，成功后显示一行完成提示。安装失败时不会进入后续步骤。
 
 `--include=dev` 确保编译所需的开发依赖也会安装；`--ignore-scripts` 先跳过依赖安装和命令注册时的生命周期脚本。选择 26.2 及后续小节时，脚本会在安装后单独从源码重建固定版本的 `node-pty`，成功后才编译 TypeScript 和注册命令；前面的小节不执行这一步。`--no-audit` 和 `--no-fund` 省去审计和资助提示。每次构建都会按锁文件重新安装依赖，不需要手动清理 `node_modules`。
 
@@ -451,7 +459,7 @@ npm run lesson:01
 npm pack --ignore-scripts
 ```
 
-第一条命令保证 `dist` 中保存的是第一章产物。`--ignore-scripts` 让这次检查直接打包该产物，不再执行默认编译 34.3 的 `prepack`；否则从空目录只写到第一章时，npm 会尝试编译尚不存在的第三十四章源码。随后 npm 生成 `sherlockmen-hello-my-agent-0.1.0-dev.1.tgz`。这个文件名对应上面的包名和版本；如果修改了它们，后续命令也要使用实际生成的文件名。安装包包含 `dist/*.js`、`package.json`、`README.md` 和 `LICENSE`。
+第一条命令保证 `dist` 中保存的是第一章产物。`--ignore-scripts` 让这次检查直接打包该产物，不再执行默认编译 36.3 的 `prepack`；否则从空目录只写到第一章时，npm 会尝试编译尚不存在的第三十六章源码。随后 npm 生成 `sherlockmen-hello-my-agent-0.1.0-dev.1.tgz`。这个文件名对应上面的包名和版本；如果修改了它们，后续命令也要使用实际生成的文件名。安装包包含 `dist/*.js`、`package.json`、`README.md` 和 `LICENSE`。
 
 创建一个临时目录作为安装前缀，把包安装到那里：
 
