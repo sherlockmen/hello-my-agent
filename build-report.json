@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "chapters": 22,
-  "tutorialPages": 124,
-  "lessonPages": 72,
-  "exercisePages": 22,
-  "sourcePages": 691,
+  "chapters": 25,
+  "tutorialPages": 139,
+  "lessonPages": 81,
+  "exercisePages": 25,
+  "sourcePages": 740,
   "sourceIndexes": 26,
-  "imagePages": 90,
-  "referencedAssets": 199,
-  "gifReferences": 60,
+  "imagePages": 117,
+  "referencedAssets": 235,
+  "gifReferences": 69,
   "convertedMotionPlayers": 15,
-  "assetBytes": 245097102,
+  "assetBytes": 308115787,
   "generatedGifCovers": [
     "chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png",
     "chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png",
@@ -107,6 +107,21 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/22-web.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/23-model-adapters.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/24-attachments.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/25-subagents.md",
       "reason": "verification evidence"
     },
     {
@@ -217,6 +232,21 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/22-web.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/23-model-adapters.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/24-attachments.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/25-subagents.md",
       "reason": "verification evidence"
     },
     {
@@ -430,6 +460,42 @@
     "chapter-22-web/03-grounded-answers/assets/web-source-ledger-576f2f5985.gif",
     "chapter-22-web/03-grounded-answers/assets/web-source-ledger-cover-cba5b644ea.png",
     "chapter-22-web/03-grounded-answers/assets/web-source-ledger-flow-246263cbd3.png",
-    "chapter-22-web/03-grounded-answers/assets/web-source-ledger-storyboard-da024370bd.jpg"
+    "chapter-22-web/03-grounded-answers/assets/web-source-ledger-storyboard-da024370bd.jpg",
+    "chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-a953ff4fcb.gif",
+    "chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-cover-b1302dbccf.png",
+    "chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-flow-072bd8314a.png",
+    "chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-storyboard-5ecfe15855.jpg",
+    "chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-a3d1edff69.gif",
+    "chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-cover-98095edd64.png",
+    "chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-flow-9d9a6a1a31.png",
+    "chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-storyboard-ef3321f315.jpg",
+    "chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-281254df32.gif",
+    "chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-cover-cda11284ea.png",
+    "chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-flow-f458e96f69.png",
+    "chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-storyboard-d2d3aad626.jpg",
+    "chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-4404bd1a05.gif",
+    "chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-cover-b18c4e2932.png",
+    "chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-flow-7a288abfe3.png",
+    "chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-storyboard-f7561a2b72.jpg",
+    "chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-a7fef63ea2.gif",
+    "chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-cover-ac76723a9e.png",
+    "chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-flow-dc9c1661ec.png",
+    "chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-storyboard-8ecfe7f46d.jpg",
+    "chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-cover-fbdadc61d0.png",
+    "chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-f5d3312e54.gif",
+    "chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-flow-2901c1bfa2.png",
+    "chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-storyboard-0fb9007468.jpg",
+    "chapter-25-subagents/01-child-sessions/assets/child-history-result-8254c804fe.gif",
+    "chapter-25-subagents/01-child-sessions/assets/child-history-result-cover-cb5a95b239.png",
+    "chapter-25-subagents/01-child-sessions/assets/child-history-result-flow-69f95555f9.png",
+    "chapter-25-subagents/01-child-sessions/assets/child-history-result-storyboard-d79a252c0f.jpg",
+    "chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-8baf6f33e8.gif",
+    "chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-cover-21ce14d2c8.png",
+    "chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-flow-1742dd26f0.png",
+    "chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-storyboard-4a8b2513ca.jpg",
+    "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-58ab7e91c5.gif",
+    "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-cover-25449047bb.png",
+    "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-flow-0ea0900a4b.png",
+    "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-storyboard-8f7172e521.jpg"
   ]
 }

@@ -270,6 +270,42 @@
       ],
       "exercises": "chapter-22-web/EXERCISES.md",
       "other": []
+    },
+    {
+      "directory": "chapter-23-model-adapters",
+      "title": "第 23 章：让模型切换遵守同一套执行规则",
+      "overview": "chapter-23-model-adapters/README.md",
+      "lessons": [
+        "chapter-23-model-adapters/01-adapter-contract/README.md",
+        "chapter-23-model-adapters/02-model-switching/README.md",
+        "chapter-23-model-adapters/03-capabilities-errors/README.md"
+      ],
+      "exercises": "chapter-23-model-adapters/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-24-attachments",
+      "title": "第 24 章：让附件以可核对的身份进入上下文",
+      "overview": "chapter-24-attachments/README.md",
+      "lessons": [
+        "chapter-24-attachments/01-attachment-references/README.md",
+        "chapter-24-attachments/02-image-protocol/README.md",
+        "chapter-24-attachments/03-attachment-resume/README.md"
+      ],
+      "exercises": "chapter-24-attachments/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-25-subagents",
+      "title": "第 25 章：把局部任务交给独立的只读 Agent",
+      "overview": "chapter-25-subagents/README.md",
+      "lessons": [
+        "chapter-25-subagents/01-child-sessions/README.md",
+        "chapter-25-subagents/02-readonly-roles/README.md",
+        "chapter-25-subagents/03-child-observation/README.md"
+      ],
+      "exercises": "chapter-25-subagents/EXERCISES.md",
+      "other": []
     }
   ],
   "pages": [
@@ -6698,6 +6734,643 @@
       "title": "第 22 章：取得外部资料，再依据来源完成任务",
       "kind": "tutorial",
       "source": "chapter-22-web/README.md"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-cover-b1302dbccf.png.md",
+      "route": "#/content/chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-cover-b1302dbccf.png.md",
+      "title": "model-adapter-roundtrip-cover-b1302dbccf.png",
+      "kind": "image",
+      "source": "chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-cover-b1302dbccf.png"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-flow-072bd8314a.png.md",
+      "route": "#/content/chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-flow-072bd8314a.png.md",
+      "title": "model-adapter-roundtrip-flow-072bd8314a.png",
+      "kind": "image",
+      "source": "chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-flow-072bd8314a.png"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-storyboard-5ecfe15855.jpg.md",
+      "route": "#/content/chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-storyboard-5ecfe15855.jpg.md",
+      "title": "model-adapter-roundtrip-storyboard-5ecfe15855.jpg",
+      "kind": "image",
+      "source": "chapter-23-model-adapters/01-adapter-contract/assets/model-adapter-roundtrip-storyboard-5ecfe15855.jpg"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/01-adapter-contract/README.md",
+      "route": "#/content/chapter-23-model-adapters/01-adapter-contract/README.md",
+      "title": "23.1 让两种模型协议遵守同一个循环契约",
+      "kind": "tutorial",
+      "source": "chapter-23-model-adapters/01-adapter-contract/README.md"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/01-adapter-contract/src/config/load-config.ts.md",
+      "route": "#/content/chapter-23-model-adapters/01-adapter-contract/src/config/load-config.ts.md",
+      "title": "load-config.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/01-adapter-contract/src/config/load-config.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/01-adapter-contract/src/models/client.ts.md",
+      "route": "#/content/chapter-23-model-adapters/01-adapter-contract/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/01-adapter-contract/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/01-adapter-contract/src/models/protocol.ts.md",
+      "route": "#/content/chapter-23-model-adapters/01-adapter-contract/src/models/protocol.ts.md",
+      "title": "protocol.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/01-adapter-contract/src/models/protocol.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-cover-98095edd64.png.md",
+      "route": "#/content/chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-cover-98095edd64.png.md",
+      "title": "model-profile-switch-cover-98095edd64.png",
+      "kind": "image",
+      "source": "chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-cover-98095edd64.png"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-flow-9d9a6a1a31.png.md",
+      "route": "#/content/chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-flow-9d9a6a1a31.png.md",
+      "title": "model-profile-switch-flow-9d9a6a1a31.png",
+      "kind": "image",
+      "source": "chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-flow-9d9a6a1a31.png"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-storyboard-ef3321f315.jpg.md",
+      "route": "#/content/chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-storyboard-ef3321f315.jpg.md",
+      "title": "model-profile-switch-storyboard-ef3321f315.jpg",
+      "kind": "image",
+      "source": "chapter-23-model-adapters/02-model-switching/assets/model-profile-switch-storyboard-ef3321f315.jpg"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/02-model-switching/README.md",
+      "route": "#/content/chapter-23-model-adapters/02-model-switching/README.md",
+      "title": "23.2 在任务之间切换模型配置",
+      "kind": "tutorial",
+      "source": "chapter-23-model-adapters/02-model-switching/README.md"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/02-model-switching/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-23-model-adapters/02-model-switching/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/02-model-switching/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/02-model-switching/src/config/load-config.ts.md",
+      "route": "#/content/chapter-23-model-adapters/02-model-switching/src/config/load-config.ts.md",
+      "title": "load-config.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/02-model-switching/src/config/load-config.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/02-model-switching/src/models/client.ts.md",
+      "route": "#/content/chapter-23-model-adapters/02-model-switching/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/02-model-switching/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/02-model-switching/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-23-model-adapters/02-model-switching/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/02-model-switching/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/02-model-switching/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-23-model-adapters/02-model-switching/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/02-model-switching/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-cover-cda11284ea.png.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-cover-cda11284ea.png.md",
+      "title": "model-evidence-usage-cover-cda11284ea.png",
+      "kind": "image",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-cover-cda11284ea.png"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-flow-f458e96f69.png.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-flow-f458e96f69.png.md",
+      "title": "model-evidence-usage-flow-f458e96f69.png",
+      "kind": "image",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-flow-f458e96f69.png"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-storyboard-d2d3aad626.jpg.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-storyboard-d2d3aad626.jpg.md",
+      "title": "model-evidence-usage-storyboard-d2d3aad626.jpg",
+      "kind": "image",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/assets/model-evidence-usage-storyboard-d2d3aad626.jpg"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/README.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/README.md",
+      "title": "23.3 区分能力限制、请求错误与未知用量",
+      "kind": "tutorial",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/README.md"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/src/agent/events.ts.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/src/agent/events.ts.md",
+      "title": "events.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/src/agent/events.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/src/context/compaction.ts.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/src/context/compaction.ts.md",
+      "title": "compaction.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/src/context/compaction.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/src/models/client.ts.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/src/models/model-errors.ts.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/src/models/model-errors.ts.md",
+      "title": "model-errors.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/src/models/model-errors.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/src/models/protocol.ts.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/src/models/protocol.ts.md",
+      "title": "protocol.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/src/models/protocol.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/03-capabilities-errors/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-23-model-adapters/03-capabilities-errors/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/03-capabilities-errors/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/examples/verify-models.ts.md",
+      "route": "#/content/chapter-23-model-adapters/examples/verify-models.ts.md",
+      "title": "verify-models.ts",
+      "kind": "source",
+      "source": "chapter-23-model-adapters/examples/verify-models.ts"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/EXERCISES.md",
+      "route": "#/content/chapter-23-model-adapters/EXERCISES.md",
+      "title": "第 23 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-23-model-adapters/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-23-model-adapters/README.md",
+      "route": "#/content/chapter-23-model-adapters/README.md",
+      "title": "第 23 章：让模型切换遵守同一套执行规则",
+      "kind": "tutorial",
+      "source": "chapter-23-model-adapters/README.md"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-cover-b18c4e2932.png.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-cover-b18c4e2932.png.md",
+      "title": "attachment-reference-checks-cover-b18c4e2932.png",
+      "kind": "image",
+      "source": "chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-cover-b18c4e2932.png"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-flow-7a288abfe3.png.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-flow-7a288abfe3.png.md",
+      "title": "attachment-reference-checks-flow-7a288abfe3.png",
+      "kind": "image",
+      "source": "chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-flow-7a288abfe3.png"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-storyboard-f7561a2b72.jpg.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-storyboard-f7561a2b72.jpg.md",
+      "title": "attachment-reference-checks-storyboard-f7561a2b72.jpg",
+      "kind": "image",
+      "source": "chapter-24-attachments/01-attachment-references/assets/attachment-reference-checks-storyboard-f7561a2b72.jpg"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/README.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/README.md",
+      "title": "24.1 把一份本地文本文件附到下一条消息",
+      "kind": "tutorial",
+      "source": "chapter-24-attachments/01-attachment-references/README.md"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/01-attachment-references/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/src/attachments/store.ts.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/src/attachments/store.ts.md",
+      "title": "store.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/01-attachment-references/src/attachments/store.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/src/context/budget.ts.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/src/context/budget.ts.md",
+      "title": "budget.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/01-attachment-references/src/context/budget.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/src/models/client.ts.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/01-attachment-references/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/src/models/protocol.ts.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/src/models/protocol.ts.md",
+      "title": "protocol.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/01-attachment-references/src/models/protocol.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/01-attachment-references/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/01-attachment-references/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-24-attachments/01-attachment-references/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-24-attachments/01-attachment-references/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-cover-ac76723a9e.png.md",
+      "route": "#/content/chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-cover-ac76723a9e.png.md",
+      "title": "attachment-image-preflight-cover-ac76723a9e.png",
+      "kind": "image",
+      "source": "chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-cover-ac76723a9e.png"
+    },
+    {
+      "path": "content/chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-flow-dc9c1661ec.png.md",
+      "route": "#/content/chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-flow-dc9c1661ec.png.md",
+      "title": "attachment-image-preflight-flow-dc9c1661ec.png",
+      "kind": "image",
+      "source": "chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-flow-dc9c1661ec.png"
+    },
+    {
+      "path": "content/chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-storyboard-8ecfe7f46d.jpg.md",
+      "route": "#/content/chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-storyboard-8ecfe7f46d.jpg.md",
+      "title": "attachment-image-preflight-storyboard-8ecfe7f46d.jpg",
+      "kind": "image",
+      "source": "chapter-24-attachments/02-image-protocol/assets/attachment-image-preflight-storyboard-8ecfe7f46d.jpg"
+    },
+    {
+      "path": "content/chapter-24-attachments/02-image-protocol/README.md",
+      "route": "#/content/chapter-24-attachments/02-image-protocol/README.md",
+      "title": "24.2 把截图转换成模型能接收的图片内容",
+      "kind": "tutorial",
+      "source": "chapter-24-attachments/02-image-protocol/README.md"
+    },
+    {
+      "path": "content/chapter-24-attachments/02-image-protocol/src/attachments/image-format.ts.md",
+      "route": "#/content/chapter-24-attachments/02-image-protocol/src/attachments/image-format.ts.md",
+      "title": "image-format.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/02-image-protocol/src/attachments/image-format.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/02-image-protocol/src/attachments/store.ts.md",
+      "route": "#/content/chapter-24-attachments/02-image-protocol/src/attachments/store.ts.md",
+      "title": "store.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/02-image-protocol/src/attachments/store.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/02-image-protocol/src/models/protocol.ts.md",
+      "route": "#/content/chapter-24-attachments/02-image-protocol/src/models/protocol.ts.md",
+      "title": "protocol.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/02-image-protocol/src/models/protocol.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-cover-fbdadc61d0.png.md",
+      "route": "#/content/chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-cover-fbdadc61d0.png.md",
+      "title": "attachment-explicit-reattach-cover-fbdadc61d0.png",
+      "kind": "image",
+      "source": "chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-cover-fbdadc61d0.png"
+    },
+    {
+      "path": "content/chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-flow-2901c1bfa2.png.md",
+      "route": "#/content/chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-flow-2901c1bfa2.png.md",
+      "title": "attachment-explicit-reattach-flow-2901c1bfa2.png",
+      "kind": "image",
+      "source": "chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-flow-2901c1bfa2.png"
+    },
+    {
+      "path": "content/chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-storyboard-0fb9007468.jpg.md",
+      "route": "#/content/chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-storyboard-0fb9007468.jpg.md",
+      "title": "attachment-explicit-reattach-storyboard-0fb9007468.jpg",
+      "kind": "image",
+      "source": "chapter-24-attachments/03-attachment-resume/assets/attachment-explicit-reattach-storyboard-0fb9007468.jpg"
+    },
+    {
+      "path": "content/chapter-24-attachments/03-attachment-resume/README.md",
+      "route": "#/content/chapter-24-attachments/03-attachment-resume/README.md",
+      "title": "24.3 恢复会话时重新核对附件",
+      "kind": "tutorial",
+      "source": "chapter-24-attachments/03-attachment-resume/README.md"
+    },
+    {
+      "path": "content/chapter-24-attachments/03-attachment-resume/src/sessions/read-session.ts.md",
+      "route": "#/content/chapter-24-attachments/03-attachment-resume/src/sessions/read-session.ts.md",
+      "title": "read-session.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/03-attachment-resume/src/sessions/read-session.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/03-attachment-resume/src/sessions/save-session.ts.md",
+      "route": "#/content/chapter-24-attachments/03-attachment-resume/src/sessions/save-session.ts.md",
+      "title": "save-session.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/03-attachment-resume/src/sessions/save-session.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/examples/verify-attachments.ts.md",
+      "route": "#/content/chapter-24-attachments/examples/verify-attachments.ts.md",
+      "title": "verify-attachments.ts",
+      "kind": "source",
+      "source": "chapter-24-attachments/examples/verify-attachments.ts"
+    },
+    {
+      "path": "content/chapter-24-attachments/EXERCISES.md",
+      "route": "#/content/chapter-24-attachments/EXERCISES.md",
+      "title": "第 24 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-24-attachments/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-24-attachments/README.md",
+      "route": "#/content/chapter-24-attachments/README.md",
+      "title": "第 24 章：让附件以可核对的身份进入上下文",
+      "kind": "tutorial",
+      "source": "chapter-24-attachments/README.md"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/assets/child-history-result-cover-cb5a95b239.png.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/assets/child-history-result-cover-cb5a95b239.png.md",
+      "title": "child-history-result-cover-cb5a95b239.png",
+      "kind": "image",
+      "source": "chapter-25-subagents/01-child-sessions/assets/child-history-result-cover-cb5a95b239.png"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/assets/child-history-result-flow-69f95555f9.png.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/assets/child-history-result-flow-69f95555f9.png.md",
+      "title": "child-history-result-flow-69f95555f9.png",
+      "kind": "image",
+      "source": "chapter-25-subagents/01-child-sessions/assets/child-history-result-flow-69f95555f9.png"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/assets/child-history-result-storyboard-d79a252c0f.jpg.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/assets/child-history-result-storyboard-d79a252c0f.jpg.md",
+      "title": "child-history-result-storyboard-d79a252c0f.jpg",
+      "kind": "image",
+      "source": "chapter-25-subagents/01-child-sessions/assets/child-history-result-storyboard-d79a252c0f.jpg"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/README.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/README.md",
+      "title": "25.1 让一条独立的 Agent 循环处理局部任务",
+      "kind": "tutorial",
+      "source": "chapter-25-subagents/01-child-sessions/README.md"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/models/client.ts.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/subagents/runner.ts.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/subagents/runner.ts.md",
+      "title": "runner.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/subagents/runner.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/tools/delegate-task.ts.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/tools/delegate-task.ts.md",
+      "title": "delegate-task.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/tools/delegate-task.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/tools/registry.ts.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/tools/types.ts.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/tools/types.ts.md",
+      "title": "types.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/tools/types.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/01-child-sessions/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-25-subagents/01-child-sessions/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-25-subagents/01-child-sessions/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-cover-21ce14d2c8.png.md",
+      "route": "#/content/chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-cover-21ce14d2c8.png.md",
+      "title": "child-readonly-evidence-cover-21ce14d2c8.png",
+      "kind": "image",
+      "source": "chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-cover-21ce14d2c8.png"
+    },
+    {
+      "path": "content/chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-flow-1742dd26f0.png.md",
+      "route": "#/content/chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-flow-1742dd26f0.png.md",
+      "title": "child-readonly-evidence-flow-1742dd26f0.png",
+      "kind": "image",
+      "source": "chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-flow-1742dd26f0.png"
+    },
+    {
+      "path": "content/chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-storyboard-4a8b2513ca.jpg.md",
+      "route": "#/content/chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-storyboard-4a8b2513ca.jpg.md",
+      "title": "child-readonly-evidence-storyboard-4a8b2513ca.jpg",
+      "kind": "image",
+      "source": "chapter-25-subagents/02-readonly-roles/assets/child-readonly-evidence-storyboard-4a8b2513ca.jpg"
+    },
+    {
+      "path": "content/chapter-25-subagents/02-readonly-roles/README.md",
+      "route": "#/content/chapter-25-subagents/02-readonly-roles/README.md",
+      "title": "25.2 让只读角色真正只能读取材料",
+      "kind": "tutorial",
+      "source": "chapter-25-subagents/02-readonly-roles/README.md"
+    },
+    {
+      "path": "content/chapter-25-subagents/02-readonly-roles/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-25-subagents/02-readonly-roles/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/02-readonly-roles/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/02-readonly-roles/src/subagents/runner.ts.md",
+      "route": "#/content/chapter-25-subagents/02-readonly-roles/src/subagents/runner.ts.md",
+      "title": "runner.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/02-readonly-roles/src/subagents/runner.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-cover-25449047bb.png.md",
+      "route": "#/content/chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-cover-25449047bb.png.md",
+      "title": "child-cancel-cleanup-cover-25449047bb.png",
+      "kind": "image",
+      "source": "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-cover-25449047bb.png"
+    },
+    {
+      "path": "content/chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-flow-0ea0900a4b.png.md",
+      "route": "#/content/chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-flow-0ea0900a4b.png.md",
+      "title": "child-cancel-cleanup-flow-0ea0900a4b.png",
+      "kind": "image",
+      "source": "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-flow-0ea0900a4b.png"
+    },
+    {
+      "path": "content/chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-storyboard-8f7172e521.jpg.md",
+      "route": "#/content/chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-storyboard-8f7172e521.jpg.md",
+      "title": "child-cancel-cleanup-storyboard-8f7172e521.jpg",
+      "kind": "image",
+      "source": "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-storyboard-8f7172e521.jpg"
+    },
+    {
+      "path": "content/chapter-25-subagents/03-child-observation/README.md",
+      "route": "#/content/chapter-25-subagents/03-child-observation/README.md",
+      "title": "25.3 把子任务进度与终态交还父任务",
+      "kind": "tutorial",
+      "source": "chapter-25-subagents/03-child-observation/README.md"
+    },
+    {
+      "path": "content/chapter-25-subagents/03-child-observation/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-25-subagents/03-child-observation/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/03-child-observation/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/03-child-observation/src/agent/events.ts.md",
+      "route": "#/content/chapter-25-subagents/03-child-observation/src/agent/events.ts.md",
+      "title": "events.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/03-child-observation/src/agent/events.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/03-child-observation/src/subagents/runner.ts.md",
+      "route": "#/content/chapter-25-subagents/03-child-observation/src/subagents/runner.ts.md",
+      "title": "runner.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/03-child-observation/src/subagents/runner.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/03-child-observation/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-25-subagents/03-child-observation/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/03-child-observation/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/03-child-observation/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-25-subagents/03-child-observation/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/03-child-observation/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/03-child-observation/src/ui/tui/transcript.tsx.md",
+      "route": "#/content/chapter-25-subagents/03-child-observation/src/ui/tui/transcript.tsx.md",
+      "title": "transcript.tsx",
+      "kind": "source",
+      "source": "chapter-25-subagents/03-child-observation/src/ui/tui/transcript.tsx"
+    },
+    {
+      "path": "content/chapter-25-subagents/examples/verify-subagents.ts.md",
+      "route": "#/content/chapter-25-subagents/examples/verify-subagents.ts.md",
+      "title": "verify-subagents.ts",
+      "kind": "source",
+      "source": "chapter-25-subagents/examples/verify-subagents.ts"
+    },
+    {
+      "path": "content/chapter-25-subagents/EXERCISES.md",
+      "route": "#/content/chapter-25-subagents/EXERCISES.md",
+      "title": "第 25 章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-25-subagents/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-25-subagents/README.md",
+      "route": "#/content/chapter-25-subagents/README.md",
+      "title": "第 25 章：把局部任务交给独立的只读 Agent",
+      "kind": "tutorial",
+      "source": "chapter-25-subagents/README.md"
     },
     {
       "path": "content/docs/CODING-AGENT-GAP-REVIEW.md",
