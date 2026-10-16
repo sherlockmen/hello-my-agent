@@ -18,7 +18,7 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 `master` 保留源码、原生 Markdown 和配图；Docsify 外壳、插件和发布工具在 [codex/teaching-site](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site) 维护，`gh-pages` 只保存生成的网站。
 
-[从第一章开始](chapter-01-first-command/README.md) · [第三十五、三十六章已完成](chapter-35-agent-evaluation/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
+[从第一章开始](chapter-01-first-command/README.md) · [全部 36 章已完成](docs/PROGRESS.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
 
 第一次学习，先阅读[第一章的问题与原理](chapter-01-first-command/README.md)，到“动手构建”时再运行：
 
@@ -58,13 +58,13 @@ Node.js 要求 22.12.0 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、m
 | [第 10 章：第一个真正可用的 TUI](chapter-10-terminal-ui/README.md) | 怎样把输入、执行进展、审批和取消接到终端界面？ | [四个递进小节](chapter-10-terminal-ui/README.md)，已确认完成 |
 | [第 11 章：把终端变成可以编辑和浏览的工作区](chapter-11-terminal-workbench/README.md) | 怎样编辑长请求、找回旧输入、浏览结果，并适应终端变化？ | [五个递进小节](chapter-11-terminal-workbench/README.md)，已确认完成 |
 | [第 12 章：计划、执行与运行中干预](chapter-12-task-control/README.md) | 怎样先审阅修复方案，再执行、看进展、问清需求，并在运行中补充或改变要求？ | [五个递进小节](chapter-12-task-control/README.md)，已完成 |
-| [第 13 章：保存、查找与恢复会话](chapter-13-session-persistence/README.md) | 怎样留下可信的会话记录，并在后续接上已有讨论？ | 四节正文、实现、配图与练习已整理，待确认 |
+| [第 13 章：保存、查找与恢复会话](chapter-13-session-persistence/README.md) | 怎样留下可信的会话记录，并在后续接上已有讨论？ | 四节正文、实现、配图与练习已整理，已完成 |
 | [第 14 章：会话分支与文件检查点](chapter-14-session-checkpoints/README.md) | 怎样试另一条路线，并在看清影响后恢复文件？ | 三个递进小节，已完成 |
 | [第 15 章：计算与控制上下文预算](chapter-15-context-budget/README.md) | 怎样估算请求大小、保留完整日志，并在超预算时停止提交？ | 三个递进小节，已完成 |
 | [第 16 章：自动压缩并继续任务](chapter-16-context-compaction/README.md) | 怎样保留完整记录，缩短下一次请求，再继续原任务？ | 三个递进小节，已完成 |
 | [第 17 章：加载项目说明与规则](chapter-17-project-instructions/README.md) | 怎样找到适用的项目说明，保留来源，并带入模型请求？ | 三个递进小节，已完成 |
-| [第 18 章：保存可检查的长期记忆](chapter-18-long-term-memory/README.md) | 怎样保存项目知识，确认模型建议，并纠正或移除旧记忆？ | 三个递进小节，待确认 |
-| [第 19 章：按需加载 Skills](chapter-19-skills/README.md) | 怎样先发现技能，再按任务读取正文和参考资料？ | 三个递进小节，待确认 |
+| [第 18 章：保存可检查的长期记忆](chapter-18-long-term-memory/README.md) | 怎样保存项目知识，确认模型建议，并纠正或移除旧记忆？ | 三个递进小节，已完成 |
+| [第 19 章：按需加载 Skills](chapter-19-skills/README.md) | 怎样先发现技能，再按任务读取正文和参考资料？ | 三个递进小节，已完成 |
 | [第 20 章：用 Hooks 扩展生命周期](chapter-20-hooks/README.md) | 怎样让项目脚本在执行前检查、执行后反馈和结束时收尾？ | 三个递进小节，已完成 |
 | [第 21 章：接入并管理 MCP 工具](chapter-21-mcp/README.md) | 怎样发现、批准和调用外部工具，并管理连接的结束？ | 三个递进小节，已完成 |
 | [第 22 章：查询和引用外部资料](chapter-22-web/README.md) | 怎样获取有来源的资料，并让模型据此回答和说明依据？ | 三个递进小节，已完成 |
@@ -410,7 +410,7 @@ npm run exercise:12
 
 新章练习：[第三十五章](chapter-35-agent-evaluation/EXERCISES.md) · [第三十六章](chapter-36-release-and-upgrade/EXERCISES.md)。
 
-第 01—12、14—17、20—36 章已确认完成，共 33 / 36 章。第十三、十八、十九章待确认。npm 包尚未发布。
+第 01—36 章已确认完成，共 36 / 36 章。npm 包尚未发布。
 
 ## 许可证
 
