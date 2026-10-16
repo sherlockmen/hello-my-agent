@@ -18,7 +18,7 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 `master` 保留源码、原生 Markdown 和配图；Docsify 外壳、插件和发布工具在 [codex/teaching-site](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site) 维护，`gh-pages` 只保存生成的网站。
 
-[从第一章开始](chapter-01-first-command/README.md) · [当前章节：第二十六至二十八章](chapter-26-interactive-jobs/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
+[从第一章开始](chapter-01-first-command/README.md) · [当前章节：第二十九至三十一章](chapter-29-shared-tasks/README.md) · [课程进度](docs/PROGRESS.md) · [从空目录跟写](docs/SETUP.md)
 
 第一次学习，先阅读[第一章的问题与原理](chapter-01-first-command/README.md)，到“动手构建”时再运行：
 
@@ -74,6 +74,9 @@ Node.js 要求 22 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、macOS 
 | [第 26 章：命令还在运行，Agent 怎样继续工作](chapter-26-interactive-jobs/README.md) | 怎样保留后台进程，交出终端，并根据输出判断作业变化？ | 三个递进小节，已完成 |
 | [第 27 章：让互不依赖的工具同时工作](chapter-27-tool-concurrency/README.md) | 怎样限制同时执行的数量，等取消真正收尾，再把结果交回模型？ | 三个递进小节，已完成 |
 | [第 28 章：把并行修改放进独立工作区](chapter-28-isolated-workspaces/README.md) | 怎样隔离修改，审阅确定的版本，再整合和清理成果？ | 三个递进小节，已完成 |
+| [第 29 章：共享任务与 Agent 间消息](chapter-29-shared-tasks/README.md) | 怎样认领、续租和回收任务，让消息按身份送达？ | 三个递进小节，已完成 |
+| [第 30 章：定时与持续任务](chapter-30-scheduled-tasks/README.md) | 怎样保存调度规则、限制实际执行，并等待停止和恢复？ | 三个递进小节，已完成 |
+| [第 31 章：本地扩展包](chapter-31-extension-packages/README.md) | 怎样校验安装、显式启用能力，并按归属停用和卸载？ | 三个递进小节，已完成 |
 
 第十二章按顺序学习：[12.1 计划与执行模式](chapter-12-task-control/01-plan-mode/README.md) · [12.2 任务清单](chapter-12-task-control/02-task-list/README.md) · [12.3 澄清问题](chapter-12-task-control/03-clarify-questions/README.md) · [12.4 运行中补充与打断](chapter-12-task-control/04-live-input/README.md) · [12.5 队列编辑与撤回](chapter-12-task-control/05-manage-queue/README.md)。
 
@@ -300,6 +303,18 @@ hello-my-agent/
     01-worktree-base/      28.1 创建隔离工作区
     02-versioned-review/   28.2 审阅确定的版本
     03-integrate-and-cleanup/ 28.3 整合与保留成果
+  chapter-29-shared-tasks/  第 29 章：共享任务与消息
+    01-claim-and-lease/     29.1 认领与租约
+    02-dependencies-reclaim/ 29.2 依赖与失联回收
+    03-agent-messages/      29.3 消息与确认
+  chapter-30-scheduled-tasks/ 第 30 章：定时与持续任务
+    01-persistent-schedules/ 30.1 保存调度规则
+    02-runtime-dispatch/   30.2 预算与实际执行
+    03-stop-and-recover/   30.3 停止与恢复
+  chapter-31-extension-packages/ 第 31 章：本地扩展包
+    01-install-local-package/ 31.1 校验与安装
+    02-enable-capabilities/ 31.2 显式启用
+    03-disable-and-diagnose/ 31.3 停用与诊断
   docs/
     SETUP.md                环境与从空目录搭建
     EDITORIAL-WORKFLOW.md   主 Agent、作者子 Agent 与学习者读者的编审流程
@@ -321,7 +336,7 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](chapter-07-command-feedback/03-ripgrep-search/README.md#先准备系统-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十二章检查 Plan 限制、清单更新、问答配对、运行中补充、打断与队列编辑。第十三章检查保存顺序、同步完成、有效记录与残尾、独占锁与中断恢复、工作区、旧工具不重放、旧队列归属、本地管理和无覆盖导出。第十四章检查分支隔离、写入前检查点、恢复预览与冲突；第十五章检查请求估算、大结果日志与分段读取、请求前预算和协议输出上限。第十六章检查完整工具组、摘要候选验证、预算不足时压缩、取消与失败回退；第十七章检查项目根与目录作用范围、规则来源、读取限制及权限边界。第十八章检查记忆写入、项目隔离、显式确认、纠正与删除；第十九章检查技能发现、按需加载、资源路径与权限边界。第二十章检查脚本阻止、执行后反馈、结束收尾、超时与取消；第二十一章检查 MCP 初始化、发现、审批、调用、认证与关闭；第二十二章检查网页和搜索请求的限制、来源记录和失败反馈。第二十三章检查双协议契约、空闲切换、凭据归属、错误与缓存用量；第二十四章检查附件路径、内容摘要、两种协议的实际内容块与恢复；第二十五章检查独立子历史、只读限制、结果回传、预算和取消。第二十六章检查后台作业、真实 PTY 接管、输出就绪证据、主动通知与退出清理；第二十七章检查相邻只读段的有限并发、独立期限、实际收尾和结果配对；第二十八章检查独立工作区、版本审阅、整合冲突与保留清理。第十至二十六章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包前的 `prepack` 当前选择 `28.3`；学习时用各节自己的 `lesson` 命令选择版本。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](chapter-07-command-feedback/03-ripgrep-search/README.md#先准备系统-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十二章检查 Plan 限制、清单更新、问答配对、运行中补充、打断与队列编辑。第十三章检查保存顺序、同步完成、有效记录与残尾、独占锁与中断恢复、工作区、旧工具不重放、旧队列归属、本地管理和无覆盖导出。第十四章检查分支隔离、写入前检查点、恢复预览与冲突；第十五章检查请求估算、大结果日志与分段读取、请求前预算和协议输出上限。第十六章检查完整工具组、摘要候选验证、预算不足时压缩、取消与失败回退；第十七章检查项目根与目录作用范围、规则来源、读取限制及权限边界。第十八章检查记忆写入、项目隔离、显式确认、纠正与删除；第十九章检查技能发现、按需加载、资源路径与权限边界。第二十章检查脚本阻止、执行后反馈、结束收尾、超时与取消；第二十一章检查 MCP 初始化、发现、审批、调用、认证与关闭；第二十二章检查网页和搜索请求的限制、来源记录和失败反馈。第二十三章检查双协议契约、空闲切换、凭据归属、错误与缓存用量；第二十四章检查附件路径、内容摘要、两种协议的实际内容块与恢复；第二十五章检查独立子历史、只读限制、结果回传、预算和取消。第二十六章检查后台作业、真实 PTY 接管、输出就绪证据、主动通知与退出清理；第二十七章检查相邻只读段的有限并发、独立期限、实际收尾和结果配对；第二十八章检查独立工作区、版本审阅、整合冲突与保留清理。第二十九章检查真实只读 worker、租约清理、依赖阻塞、消息去重与确认；第三十章检查持久定义、独占服务、实际调度、预算、停止等待和崩溃恢复；第三十一章检查包边界、空闲启停、真实 Skills/Hooks/MCP 接线及资源归属。第十至二十六章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包前的 `prepack` 当前选择 `31.3`；学习时用各节自己的 `lesson` 命令选择版本。
 
 第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
@@ -346,6 +361,9 @@ npm run check:25
 npm run check:26
 npm run check:27
 npm run check:28
+npm run check:29
+npm run check:30
+npm run check:31
 ```
 
 完成 12.5 和[第十二章练习](chapter-12-task-control/EXERCISES.md)后，运行独立状态实验：
@@ -360,9 +378,9 @@ npm run exercise:12
 
 回看第十二章：[第十二章练习](chapter-12-task-control/EXERCISES.md) · [第十二章验证记录](docs/verification/12-task-control.md)。
 
-新章练习：[第二十六章](chapter-26-interactive-jobs/EXERCISES.md) · [第二十七章](chapter-27-tool-concurrency/EXERCISES.md) · [第二十八章](chapter-28-isolated-workspaces/EXERCISES.md)。
+新章练习：[第二十九章](chapter-29-shared-tasks/EXERCISES.md) · [第三十章](chapter-30-scheduled-tasks/EXERCISES.md) · [第三十一章](chapter-31-extension-packages/EXERCISES.md)。
 
-第 01—12、14—17、20—28 章已确认完成。第十三、十八、十九章待确认。npm 包尚未发布。
+第 01—12、14—17、20—28 章已确认完成。第十三、十八、十九、二十九至三十一章待确认。npm 包尚未发布。
 
 ## 许可证
 

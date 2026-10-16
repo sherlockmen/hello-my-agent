@@ -46,6 +46,9 @@ const currentPackageModules = [
   "subagents/runner", "tools/delegate-task",
   "processes/jobs", "processes/job-transport", "processes/takeover", "tools/job-tools",
   "agent/tool-batch", "workspaces/worktrees", "tools/worktree-tools",
+  "collaboration/coordinator", "collaboration/runner", "tools/shared-task-tools",
+  "schedules/store", "schedules/runtime", "schedules/commands",
+  "extensions/manifest", "extensions/manager", "extensions/commands",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {
