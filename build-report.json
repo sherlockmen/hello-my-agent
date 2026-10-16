@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "chapters": 25,
-  "tutorialPages": 139,
-  "lessonPages": 81,
-  "exercisePages": 25,
-  "sourcePages": 740,
+  "chapters": 28,
+  "tutorialPages": 154,
+  "lessonPages": 90,
+  "exercisePages": 28,
+  "sourcePages": 797,
   "sourceIndexes": 26,
-  "imagePages": 117,
-  "referencedAssets": 235,
-  "gifReferences": 69,
+  "imagePages": 144,
+  "referencedAssets": 271,
+  "gifReferences": 78,
   "convertedMotionPlayers": 15,
-  "assetBytes": 308115787,
+  "assetBytes": 365036787,
   "generatedGifCovers": [
     "chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png",
     "chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png",
@@ -122,6 +122,21 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/25-subagents.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/26-interactive-jobs.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/27-tool-concurrency.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/28-isolated-workspaces.md",
       "reason": "verification evidence"
     },
     {
@@ -247,6 +262,21 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/25-subagents.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/26-interactive-jobs.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/27-tool-concurrency.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/28-isolated-workspaces.md",
       "reason": "verification evidence"
     },
     {
@@ -496,6 +526,42 @@
     "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-58ab7e91c5.gif",
     "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-cover-25449047bb.png",
     "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-flow-0ea0900a4b.png",
-    "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-storyboard-8f7172e521.jpg"
+    "chapter-25-subagents/03-child-observation/assets/child-cancel-cleanup-storyboard-8f7172e521.jpg",
+    "chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-5ac55aacb5.gif",
+    "chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-cover-a369db0e64.png",
+    "chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-flow-f535ef9567.png",
+    "chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-storyboard-fa08a18e51.jpg",
+    "chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-983b522717.gif",
+    "chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-cover-ff67b5a416.png",
+    "chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-flow-b7ec0e2586.png",
+    "chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-storyboard-a23630a0dc.jpg",
+    "chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-cover-3c3596af6e.png",
+    "chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-d69d5f4263.gif",
+    "chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-flow-ff9ff1a9ff.png",
+    "chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-storyboard-b767f7b229.jpg",
+    "chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-7d968cfa16.gif",
+    "chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-cover-6f2ceb55be.png",
+    "chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-flow-4d604b444f.png",
+    "chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-storyboard-dadee023dd.jpg",
+    "chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-a42dc177ba.gif",
+    "chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-cover-1e015977c4.png",
+    "chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-flow-cdaf3954f7.png",
+    "chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-storyboard-88f82e052b.jpg",
+    "chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-941b57bf02.gif",
+    "chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-cover-db716066cc.png",
+    "chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-flow-cce98d8c66.png",
+    "chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-storyboard-037e1a80ac.jpg",
+    "chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-70a1d1c19a.gif",
+    "chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-cover-5f05cc19c6.png",
+    "chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-flow-2d44f72aa9.png",
+    "chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-storyboard-e962136a7a.jpg",
+    "chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-9f09250987.gif",
+    "chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-cover-f83129ebf9.png",
+    "chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-flow-6aaaa71788.png",
+    "chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-storyboard-a1ea4ffa1a.jpg",
+    "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-495de70b7a.gif",
+    "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-cover-c4a892f583.png",
+    "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-flow-c09116dd27.png",
+    "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-storyboard-2dc40ea40b.jpg"
   ]
 }

@@ -76,7 +76,7 @@ npm init -y
 ```
 
 ```bash
-npm install --save-exact commander@14.0.3 openai@7.15.0 @anthropic-ai/sdk@0.126.0 ignore@7.0.9 react@19.3.0 ink@7.1.1 ink-text-input@6.0.0 wrap-ansi@9.0.2 string-width@8.2.2 @modelcontextprotocol/sdk@1.32.1 zod@4.6.7
+npm install --save-exact commander@14.0.3 openai@7.15.0 @anthropic-ai/sdk@0.126.0 ignore@7.0.9 react@19.3.0 ink@7.1.1 ink-text-input@6.0.0 wrap-ansi@9.0.2 string-width@8.2.2 @modelcontextprotocol/sdk@1.32.1 zod@4.6.7 node-pty@1.1.0
 ```
 
 ```bash
@@ -87,7 +87,7 @@ npm install --save-dev --save-exact typescript@5.9.3 @types/node@22.20.3 @types/
 mkdir chapter-01-first-command
 ```
 
-Commander 处理命令行参数，OpenAI 与 Anthropic SDK 接入模型，`ignore` 按 `.gitignore` 规则过滤搜索结果。第十章开始使用 React 保存界面状态、Ink 绘制终端界面、`ink-text-input` 接收输入，`wrap-ansi` 按终端列宽折行。第十一章再用 `string-width` 测量中文、emoji 等文本所占的终端列宽，帮助光标定位和窗口变化后的排版。第二十一章使用官方 MCP SDK 连接外部工具服务，`zod` 支持 SDK 的运行时数据校验。这些都属于运行依赖，因此安装后的命令也会带上它们。
+Commander 处理命令行参数，OpenAI 与 Anthropic SDK 接入模型，`ignore` 按 `.gitignore` 规则过滤搜索结果。第十章开始使用 React 保存界面状态、Ink 绘制终端界面、`ink-text-input` 接收输入，`wrap-ansi` 按终端列宽折行。第十一章再用 `string-width` 测量中文、emoji 等文本所占的终端列宽，帮助光标定位和窗口变化后的排版。第二十一章使用官方 MCP SDK 连接外部工具服务，`zod` 支持 SDK 的运行时数据校验。第二十六章使用 `node-pty` 创建真实伪终端，它包含原生模块，进入 26.2 前还要完成本页末尾的[原生依赖准备](#第二十六章需要的真实-pty-依赖)。这些都属于运行依赖，因此安装后的命令也会带上它们。
 
 TypeScript 用于检查和编译代码，`@types/node` 与 `@types/react` 分别提供 Node 和 React 的类型声明，属于开发依赖。开发时和安装后都运行编译生成的 JavaScript。第一章暂时只使用其中的 Commander，后续章节再逐步接入其他依赖。
 
@@ -103,9 +103,9 @@ loglevel=warn
 
 ## 根目录包清单
 
-把根目录 `package.json` 改为下面的公共配置。它与当前仓库同步，包含第 01—25 章需要的脚本和依赖。学习第一章时先关注 `type`、`bin`、`lesson:01`、Commander 和 TypeScript；进入后续章节时，再回来看对应的 `lesson:02.N`—`lesson:25.N`、验收脚本、模型 SDK 和 `ignore`：
+把根目录 `package.json` 改为下面的公共配置。它与当前仓库同步，包含第 01—28 章需要的脚本和依赖。学习第一章时先关注 `type`、`bin`、`lesson:01`、Commander 和 TypeScript；进入后续章节时，再回来看对应的 `lesson:02.N`—`lesson:28.N`、验收脚本、模型 SDK 和 `ignore`：
 
-从空目录跟写时，包清单中出现一条脚本，不代表它依赖的文件已经创建。只完成第一章时，使用 `lesson:01`、`typecheck` 和下文的手动打包安装步骤；`verify` 需要完整配套仓库的章节与测试，`build` 和 `prepack` 当前也会选择尚未写到的 25.3。后面的 `check:*`、`exercise:*` 自动检查同样需要配套的 `tests/` 文件。
+从空目录跟写时，包清单中出现一条脚本，不代表它依赖的文件已经创建。只完成第一章时，使用 `lesson:01`、`typecheck` 和下文的手动打包安装步骤；`verify` 需要完整配套仓库的章节与测试，`build` 和 `prepack` 当前也会选择尚未写到的 28.3。后面的 `check:*`、`exercise:*` 自动检查同样需要配套的 `tests/` 文件。
 
 ```json
 {
@@ -125,7 +125,7 @@ loglevel=warn
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node scripts/compile.mjs 25.3 --prepare",
+    "build": "node scripts/compile.mjs 28.3 --prepare",
     "lesson:01": "node scripts/compile.mjs 01 --prepare",
     "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare",
     "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare",
@@ -183,8 +183,8 @@ loglevel=warn
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/compile.mjs 25.3",
-    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 25.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && npm run check:20 && npm run check:21 && npm run check:22 && npm run check:23 && npm run check:24 && npm run check:25 && node scripts/compile.mjs 25.3 && node -e \"if (!require('node:fs').existsSync('dist/subagents/runner.js')) throw new Error('默认构建未恢复到 25.3')\"",
+    "prepack": "node scripts/compile.mjs 28.3",
+    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 28.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && npm run check:20 && npm run check:21 && npm run check:22 && npm run check:23 && npm run check:24 && npm run check:25 && npm run check:26 && npm run check:27 && npm run check:28 && node scripts/compile.mjs 28.3 && node -e \"if (!require('node:fs').existsSync('dist/workspaces/worktrees.js')) throw new Error('默认构建未恢复到 28.3')\"",
     "check:11": "node tests/verify-chapter-11.mjs && python3 tests/verify-terminal-11.py",
     "exercise:11": "node tests/verify-exercise-11.mjs",
     "lesson:12.1": "node scripts/compile.mjs 12.1 --prepare",
@@ -246,7 +246,19 @@ loglevel=warn
     "lesson:25.1": "node scripts/compile.mjs 25.1 --prepare",
     "lesson:25.2": "node scripts/compile.mjs 25.2 --prepare",
     "lesson:25.3": "node scripts/compile.mjs 25.3 --prepare",
-    "check:25": "node tests/verify-chapter-25.mjs && python3 tests/verify-terminal-25.py"
+    "check:25": "node tests/verify-chapter-25.mjs && python3 tests/verify-terminal-25.py",
+    "lesson:26.1": "node scripts/compile.mjs 26.1 --prepare",
+    "lesson:26.2": "node scripts/compile.mjs 26.2 --prepare",
+    "check:26": "node tests/verify-chapter-26.mjs && python3 tests/verify-terminal-26.py",
+    "lesson:26.3": "node scripts/compile.mjs 26.3 --prepare",
+    "lesson:27.1": "node scripts/compile.mjs 27.1 --prepare",
+    "lesson:27.2": "node scripts/compile.mjs 27.2 --prepare",
+    "lesson:27.3": "node scripts/compile.mjs 27.3 --prepare",
+    "lesson:28.1": "node scripts/compile.mjs 28.1 --prepare",
+    "lesson:28.2": "node scripts/compile.mjs 28.2 --prepare",
+    "lesson:28.3": "node scripts/compile.mjs 28.3 --prepare",
+    "check:27": "node tests/verify-chapter-27.mjs",
+    "check:28": "node tests/verify-chapter-28.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.126.0",
@@ -255,6 +267,7 @@ loglevel=warn
     "ignore": "7.0.9",
     "ink": "7.1.1",
     "ink-text-input": "6.0.0",
+    "node-pty": "1.1.0",
     "openai": "7.15.0",
     "react": "19.3.0",
     "string-width": "8.2.2",
@@ -269,6 +282,9 @@ loglevel=warn
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sherlockmen/hello-my-agent.git"
+  },
+  "allowScripts": {
+    "node-pty@1.1.0": true
   }
 }
 ```
@@ -279,15 +295,15 @@ loglevel=warn
 | `bin` | 声明命令名 `hello-my-agent` 对应的入口文件 `dist/cli.js` |
 | `files` | 指定将 `dist` 放入安装包；npm 还会包含包清单，以及已有的 README 和许可证 |
 | `npm run build` | 按锁文件安装依赖、编译 TypeScript，成功后自动注册本地命令 |
-| `npm run lesson:02.N`—`npm run lesson:25.N` | 选择、编译并注册对应小节；命令中不需要 `--` |
+| `npm run lesson:02.N`—`npm run lesson:28.N` | 选择、编译并注册对应小节；命令中不需要 `--` |
 | `npm run exercise:02`、`04`、`05`、`06`、`07`、`08`、`09`、`10`、`11`、`12` | 运行对应章的练习验收 |
-| `npm run check:03`—`npm run check:22` | 运行对应章的确定性验收 |
+| `npm run check:03`—`npm run check:28` | 运行对应章的确定性验收 |
 | `prepack` | 打包前只编译代码，不改变本地命令的指向 |
 | `private: true` | 防止误发布，仍可本地注册、打包和安装 |
 
-`build` 默认选择 25.3，`prepack` 也编译 25.3。小节脚本把编号交给 `scripts/compile.mjs`，按顺序运行 `npm ci`、编译和 `npm link`，成功后显示一行完成提示。安装失败时不会进入后续步骤。
+`build` 默认选择 28.3，`prepack` 也编译 28.3。小节脚本把编号交给 `scripts/compile.mjs`，按顺序运行 `npm ci`、编译和 `npm link`，成功后显示一行完成提示。安装失败时不会进入后续步骤。
 
-`--include=dev` 确保编译所需的开发依赖也会安装；`--ignore-scripts` 跳过安装和注册时的生命周期脚本，当前依赖不需要这些脚本；`--no-audit` 和 `--no-fund` 省去这两步的审计和资助提示。每次构建都会按锁文件重新安装依赖，不需要手动清理 `node_modules`。
+`--include=dev` 确保编译所需的开发依赖也会安装；`--ignore-scripts` 先跳过依赖安装和命令注册时的生命周期脚本。选择 26.2 及后续小节时，脚本会在安装后单独从源码重建固定版本的 `node-pty`，成功后才编译 TypeScript 和注册命令；前面的小节不执行这一步。`--no-audit` 和 `--no-fund` 省去审计和资助提示。每次构建都会按锁文件重新安装依赖，不需要手动清理 `node_modules`。
 
 构建需要 `package-lock.json`，包清单与锁文件也必须一致。从空目录跟写时，下一步的 `npm install` 会生成或更新它。打包与验收使用已经安装的依赖，只执行同一份清理与编译脚本，不会切换本机命令。
 
@@ -407,7 +423,7 @@ npm run lesson:01
 npm pack --ignore-scripts
 ```
 
-第一条命令保证 `dist` 中保存的是第一章产物。`--ignore-scripts` 让这次检查直接打包该产物，不再执行默认编译 25.3 的 `prepack`；否则从空目录只写到第一章时，npm 会尝试编译尚不存在的第二十五章源码。随后 npm 生成 `sherlockmen-hello-my-agent-0.1.0-dev.1.tgz`。这个文件名对应上面的包名和版本；如果修改了它们，后续命令也要使用实际生成的文件名。安装包包含 `dist/*.js`、`package.json`、`README.md` 和 `LICENSE`。
+第一条命令保证 `dist` 中保存的是第一章产物。`--ignore-scripts` 让这次检查直接打包该产物，不再执行默认编译 28.3 的 `prepack`；否则从空目录只写到第一章时，npm 会尝试编译尚不存在的第二十八章源码。随后 npm 生成 `sherlockmen-hello-my-agent-0.1.0-dev.1.tgz`。这个文件名对应上面的包名和版本；如果修改了它们，后续命令也要使用实际生成的文件名。安装包包含 `dist/*.js`、`package.json`、`README.md` 和 `LICENSE`。
 
 创建一个临时目录作为安装前缀，把包安装到那里：
 
@@ -427,7 +443,7 @@ npm install --global --prefix "$agent_check_dir" --omit=dev --ignore-scripts "$a
 mkdir "$agent_check_dir/run-here"
 ```
 
-`--omit=dev` 跳过开发依赖；`--ignore-scripts` 禁止安装脚本运行，避免安装时重新编译、掩盖包内缺少运行文件的问题。当前运行依赖不需要安装脚本。
+`--omit=dev` 跳过开发依赖；`--ignore-scripts` 禁止安装脚本运行，避免安装时重新编译、掩盖包内缺少运行文件的问题。这个第一章安装探针只检查命令入口；26.2 及后续的 PTY 运行还需要按下文准备原生模块。
 
 下面三条命令都会在没有源码的临时目录中启动刚安装的命令。括号创建子 shell，所以目录切换和 `PATH` 修改不会影响当前终端：
 
@@ -491,3 +507,52 @@ brew install ripgrep
 Linux / WSL 可按 [ripgrep 官方安装说明](https://github.com/BurntSushi/ripgrep#installation)准备。确认命令可用后，再运行第七章的搜索示例、`npm run check:07` 或完整 `npm run verify`。
 
 第六章的匹配次数练习已经进入第七章代码。第七章的可选 `timeout_ms` 则在[章末练习](/content/chapter-07-command-feedback/EXERCISES.md)中完成，第八章会从该完成状态继续。
+
+## 第二十六章需要的真实 PTY 依赖
+
+26.1 的后台 pipe 使用 Node 内置模块。26.2 开始使用 `node-pty@1.1.0` 创建真实伪终端：它包含原生模块和启动辅助程序，TypeScript 编译成功还不能证明本机可以启动 PTY。`node-pty` 自身支持多个系统；本书命令管理采用 `/bin/sh` 与 POSIX 进程组，因此本章运行约定是 macOS / Linux。
+
+从前章自己跟写的项目进入 26.2 时，在项目根补装固定版本：
+
+```bash
+npm install --save-exact node-pty@1.1.0
+```
+
+在配套仓库运行 `npm run lesson:26.2` 或后续小节时，构建脚本会先用 `npm ci --ignore-scripts` 安装锁定依赖，再单独从源码重建 `node-pty`。原生构建失败就停下，不会把只有 TypeScript 编译成功的结果当作可以使用 PTY。后面每次选择这些快照都会执行这一步，所以先准备系统构建工具，再运行小节命令，不需要每节手动修改依赖权限或另跑 rebuild。
+
+macOS 需要 Python 与 Xcode Command Line Tools；可用 `xcode-select --install` 安装工具。Linux 需要 Python、make 和 C/C++ 编译器；Debian / Ubuntu 对应 `python3`、`make`、`build-essential`。构建还要取得与当前 Node 版本匹配的开发头文件。[node-gyp 官方准备说明](https://github.com/nodejs/node-gyp#installation)
+
+本书实测的 npm 12 默认限制依赖安装脚本。根包清单使用 `allowScripts` 批准固定的 `node-pty@1.1.0`；从空目录补装时，若提示脚本被跳过，执行下面的命令登记这个版本的批准，再运行小节构建。npm 旧版本若没有 `install-scripts` 子命令，按该版本的脚本策略处理。[npm 官方说明](https://docs.npmjs.com/cli/v12/commands/npm-install-scripts/)
+
+```bash
+npm install-scripts approve node-pty
+```
+
+构建脚本执行的原生重建相当于下面这条命令。排查原生依赖时，可以在项目根单独执行它；通常直接使用小节构建命令即可。
+
+```bash
+npm_config_build_from_source=true npm rebuild node-pty --foreground-scripts
+```
+
+本机 macOS arm64 上，1.1.0 的预构建启动辅助程序缺少可执行权限，普通 rebuild 会继续使用该产物；强制从源码构建后，下面的真实 PTY 检查通过。因此本书采用可重复的源码构建，程序不会在运行时修改依赖权限。若下载 Node 头文件超时，先解决下载，或按 node-gyp 的 `nodedir` 配置提供已安装且与当前 Node 版本匹配的头文件，再重试。`npm_config_nodedir` 的值应是本机相应开发文件的前缀目录，不应照搬别人的绝对路径。缺编译器、Python 或版本不匹配时，保留原生构建错误，按错误指向完成准备后继续。
+
+在项目根运行这个不调用模型的检查。`test -t 0` 检查子进程的标准输入是否真是终端；只有输出包含标记且 PTY 正常退出才通过。超时只结束本检查创建的进程。
+
+```bash
+node --input-type=module <<'NODE'
+import assert from 'node:assert/strict';
+import * as pty from 'node-pty';
+const child = pty.spawn('/bin/sh', ['-c', 'test -t 0 && printf "PTY_OK\\n"'], {
+  name: 'xterm-256color', cols: 80, rows: 24, cwd: process.cwd(), env: process.env,
+});
+let output = '';
+const timer = setTimeout(() => { child.kill(); process.exitCode = 1; }, 5000);
+child.onData(data => { output += data; });
+child.onExit(({ exitCode }) => {
+  clearTimeout(timer);
+  assert.equal(exitCode, 0, output);
+  assert.ok(output.includes('PTY_OK'), output);
+  console.log('真实 PTY 检查通过');
+});
+NODE
+```

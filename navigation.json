@@ -306,6 +306,42 @@
       ],
       "exercises": "chapter-25-subagents/EXERCISES.md",
       "other": []
+    },
+    {
+      "directory": "chapter-26-interactive-jobs",
+      "title": "第 26 章：命令还在运行，Agent 怎样继续工作",
+      "overview": "chapter-26-interactive-jobs/README.md",
+      "lessons": [
+        "chapter-26-interactive-jobs/01-background-jobs/README.md",
+        "chapter-26-interactive-jobs/02-pty-takeover/README.md",
+        "chapter-26-interactive-jobs/03-job-lifecycle/README.md"
+      ],
+      "exercises": "chapter-26-interactive-jobs/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-27-tool-concurrency",
+      "title": "第 27 章：让工具在可控范围内并行",
+      "overview": "chapter-27-tool-concurrency/README.md",
+      "lessons": [
+        "chapter-27-tool-concurrency/01-bounded-reads/README.md",
+        "chapter-27-tool-concurrency/02-cancel-and-cleanup/README.md",
+        "chapter-27-tool-concurrency/03-batch-results/README.md"
+      ],
+      "exercises": "chapter-27-tool-concurrency/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-28-isolated-workspaces",
+      "title": "第 28 章：让修改拥有独立工作区与可核对的版本",
+      "overview": "chapter-28-isolated-workspaces/README.md",
+      "lessons": [
+        "chapter-28-isolated-workspaces/01-worktree-base/README.md",
+        "chapter-28-isolated-workspaces/02-versioned-review/README.md",
+        "chapter-28-isolated-workspaces/03-integrate-and-cleanup/README.md"
+      ],
+      "exercises": "chapter-28-isolated-workspaces/EXERCISES.md",
+      "other": []
     }
   ],
   "pages": [
@@ -7371,6 +7407,699 @@
       "title": "第 25 章：把局部任务交给独立的只读 Agent",
       "kind": "tutorial",
       "source": "chapter-25-subagents/README.md"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-cover-a369db0e64.png.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-cover-a369db0e64.png.md",
+      "title": "job-background-lifecycle-cover-a369db0e64.png",
+      "kind": "image",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-cover-a369db0e64.png"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-flow-f535ef9567.png.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-flow-f535ef9567.png.md",
+      "title": "job-background-lifecycle-flow-f535ef9567.png",
+      "kind": "image",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-flow-f535ef9567.png"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-storyboard-fa08a18e51.jpg.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-storyboard-fa08a18e51.jpg.md",
+      "title": "job-background-lifecycle-storyboard-fa08a18e51.jpg",
+      "kind": "image",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/assets/job-background-lifecycle-storyboard-fa08a18e51.jpg"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/README.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/README.md",
+      "title": "26.1 让命令在后台继续运行",
+      "kind": "tutorial",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/README.md"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/cli.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/models/client.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/processes/jobs.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/processes/jobs.ts.md",
+      "title": "jobs.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/processes/jobs.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/processes/run-process.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/processes/run-process.ts.md",
+      "title": "run-process.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/processes/run-process.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/tools/job-tools.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/tools/job-tools.ts.md",
+      "title": "job-tools.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/tools/job-tools.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/tools/registry.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/tools/run-command.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/tools/run-command.ts.md",
+      "title": "run-command.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/tools/run-command.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/tools/types.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/tools/types.ts.md",
+      "title": "types.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/tools/types.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/01-background-jobs/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-26-interactive-jobs/01-background-jobs/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/01-background-jobs/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-cover-ff67b5a416.png.md",
+      "route": "#/content/chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-cover-ff67b5a416.png.md",
+      "title": "pty-terminal-owner-cover-ff67b5a416.png",
+      "kind": "image",
+      "source": "chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-cover-ff67b5a416.png"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-flow-b7ec0e2586.png.md",
+      "route": "#/content/chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-flow-b7ec0e2586.png.md",
+      "title": "pty-terminal-owner-flow-b7ec0e2586.png",
+      "kind": "image",
+      "source": "chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-flow-b7ec0e2586.png"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-storyboard-a23630a0dc.jpg.md",
+      "route": "#/content/chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-storyboard-a23630a0dc.jpg.md",
+      "title": "pty-terminal-owner-storyboard-a23630a0dc.jpg",
+      "kind": "image",
+      "source": "chapter-26-interactive-jobs/02-pty-takeover/assets/pty-terminal-owner-storyboard-a23630a0dc.jpg"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/02-pty-takeover/README.md",
+      "route": "#/content/chapter-26-interactive-jobs/02-pty-takeover/README.md",
+      "title": "26.2 把真实终端交给交互程序",
+      "kind": "tutorial",
+      "source": "chapter-26-interactive-jobs/02-pty-takeover/README.md"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/02-pty-takeover/src/processes/job-transport.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/02-pty-takeover/src/processes/job-transport.ts.md",
+      "title": "job-transport.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/02-pty-takeover/src/processes/job-transport.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/02-pty-takeover/src/processes/jobs.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/02-pty-takeover/src/processes/jobs.ts.md",
+      "title": "jobs.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/02-pty-takeover/src/processes/jobs.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/02-pty-takeover/src/processes/takeover.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/02-pty-takeover/src/processes/takeover.ts.md",
+      "title": "takeover.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/02-pty-takeover/src/processes/takeover.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/02-pty-takeover/src/tools/job-tools.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/02-pty-takeover/src/tools/job-tools.ts.md",
+      "title": "job-tools.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/02-pty-takeover/src/tools/job-tools.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/02-pty-takeover/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/02-pty-takeover/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/02-pty-takeover/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/02-pty-takeover/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-26-interactive-jobs/02-pty-takeover/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/02-pty-takeover/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-cover-3c3596af6e.png.md",
+      "route": "#/content/chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-cover-3c3596af6e.png.md",
+      "title": "job-readiness-evidence-cover-3c3596af6e.png",
+      "kind": "image",
+      "source": "chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-cover-3c3596af6e.png"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-flow-ff9ff1a9ff.png.md",
+      "route": "#/content/chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-flow-ff9ff1a9ff.png.md",
+      "title": "job-readiness-evidence-flow-ff9ff1a9ff.png",
+      "kind": "image",
+      "source": "chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-flow-ff9ff1a9ff.png"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-storyboard-b767f7b229.jpg.md",
+      "route": "#/content/chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-storyboard-b767f7b229.jpg.md",
+      "title": "job-readiness-evidence-storyboard-b767f7b229.jpg",
+      "kind": "image",
+      "source": "chapter-26-interactive-jobs/03-job-lifecycle/assets/job-readiness-evidence-storyboard-b767f7b229.jpg"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/03-job-lifecycle/README.md",
+      "route": "#/content/chapter-26-interactive-jobs/03-job-lifecycle/README.md",
+      "title": "26.3 作业生命周期：什么证据说明它能用了",
+      "kind": "tutorial",
+      "source": "chapter-26-interactive-jobs/03-job-lifecycle/README.md"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/03-job-lifecycle/src/processes/jobs.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/03-job-lifecycle/src/processes/jobs.ts.md",
+      "title": "jobs.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/03-job-lifecycle/src/processes/jobs.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/03-job-lifecycle/src/tools/job-tools.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/03-job-lifecycle/src/tools/job-tools.ts.md",
+      "title": "job-tools.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/03-job-lifecycle/src/tools/job-tools.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/03-job-lifecycle/src/ui/terminal.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/03-job-lifecycle/src/ui/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/03-job-lifecycle/src/ui/terminal.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/03-job-lifecycle/src/ui/tui/app.tsx.md",
+      "route": "#/content/chapter-26-interactive-jobs/03-job-lifecycle/src/ui/tui/app.tsx.md",
+      "title": "app.tsx",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/03-job-lifecycle/src/ui/tui/app.tsx"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/examples/verify-jobs.ts.md",
+      "route": "#/content/chapter-26-interactive-jobs/examples/verify-jobs.ts.md",
+      "title": "verify-jobs.ts",
+      "kind": "source",
+      "source": "chapter-26-interactive-jobs/examples/verify-jobs.ts"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/EXERCISES.md",
+      "route": "#/content/chapter-26-interactive-jobs/EXERCISES.md",
+      "title": "第26章练习与答案",
+      "kind": "tutorial",
+      "source": "chapter-26-interactive-jobs/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-26-interactive-jobs/README.md",
+      "route": "#/content/chapter-26-interactive-jobs/README.md",
+      "title": "第 26 章：命令还在运行，Agent 怎样继续工作",
+      "kind": "tutorial",
+      "source": "chapter-26-interactive-jobs/README.md"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-cover-6f2ceb55be.png.md",
+      "route": "#/content/chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-cover-6f2ceb55be.png.md",
+      "title": "tool-bounded-read-segments-cover-6f2ceb55be.png",
+      "kind": "image",
+      "source": "chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-cover-6f2ceb55be.png"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-flow-4d604b444f.png.md",
+      "route": "#/content/chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-flow-4d604b444f.png.md",
+      "title": "tool-bounded-read-segments-flow-4d604b444f.png",
+      "kind": "image",
+      "source": "chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-flow-4d604b444f.png"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-storyboard-dadee023dd.jpg.md",
+      "route": "#/content/chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-storyboard-dadee023dd.jpg.md",
+      "title": "tool-bounded-read-segments-storyboard-dadee023dd.jpg",
+      "kind": "image",
+      "source": "chapter-27-tool-concurrency/01-bounded-reads/assets/tool-bounded-read-segments-storyboard-dadee023dd.jpg"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/01-bounded-reads/README.md",
+      "route": "#/content/chapter-27-tool-concurrency/01-bounded-reads/README.md",
+      "title": "27.1 有界只读并发：两个人查资料，一个人改文件",
+      "kind": "tutorial",
+      "source": "chapter-27-tool-concurrency/01-bounded-reads/README.md"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/01-bounded-reads/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/01-bounded-reads/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/01-bounded-reads/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/01-bounded-reads/src/agent/events.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/01-bounded-reads/src/agent/events.ts.md",
+      "title": "events.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/01-bounded-reads/src/agent/events.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/01-bounded-reads/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/01-bounded-reads/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/01-bounded-reads/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/01-bounded-reads/src/agent/tool-batch.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/01-bounded-reads/src/agent/tool-batch.ts.md",
+      "title": "tool-batch.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/01-bounded-reads/src/agent/tool-batch.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/01-bounded-reads/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/01-bounded-reads/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/01-bounded-reads/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/01-bounded-reads/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/01-bounded-reads/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/01-bounded-reads/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-cover-1e015977c4.png.md",
+      "route": "#/content/chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-cover-1e015977c4.png.md",
+      "title": "tool-timeout-real-cleanup-cover-1e015977c4.png",
+      "kind": "image",
+      "source": "chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-cover-1e015977c4.png"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-flow-cdaf3954f7.png.md",
+      "route": "#/content/chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-flow-cdaf3954f7.png.md",
+      "title": "tool-timeout-real-cleanup-flow-cdaf3954f7.png",
+      "kind": "image",
+      "source": "chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-flow-cdaf3954f7.png"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-storyboard-88f82e052b.jpg.md",
+      "route": "#/content/chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-storyboard-88f82e052b.jpg.md",
+      "title": "tool-timeout-real-cleanup-storyboard-88f82e052b.jpg",
+      "kind": "image",
+      "source": "chapter-27-tool-concurrency/02-cancel-and-cleanup/assets/tool-timeout-real-cleanup-storyboard-88f82e052b.jpg"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/02-cancel-and-cleanup/README.md",
+      "route": "#/content/chapter-27-tool-concurrency/02-cancel-and-cleanup/README.md",
+      "title": "27.2 超时与清理：停止等待之前，先等操作收尾",
+      "kind": "tutorial",
+      "source": "chapter-27-tool-concurrency/02-cancel-and-cleanup/README.md"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/02-cancel-and-cleanup/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/02-cancel-and-cleanup/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/02-cancel-and-cleanup/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/02-cancel-and-cleanup/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/02-cancel-and-cleanup/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/02-cancel-and-cleanup/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/02-cancel-and-cleanup/src/agent/tool-batch.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/02-cancel-and-cleanup/src/agent/tool-batch.ts.md",
+      "title": "tool-batch.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/02-cancel-and-cleanup/src/agent/tool-batch.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/02-cancel-and-cleanup/src/tools/read-file.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/02-cancel-and-cleanup/src/tools/read-file.ts.md",
+      "title": "read-file.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/02-cancel-and-cleanup/src/tools/read-file.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/02-cancel-and-cleanup/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/02-cancel-and-cleanup/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/02-cancel-and-cleanup/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-cover-db716066cc.png.md",
+      "route": "#/content/chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-cover-db716066cc.png.md",
+      "title": "tool-results-batch-barrier-cover-db716066cc.png",
+      "kind": "image",
+      "source": "chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-cover-db716066cc.png"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-flow-cce98d8c66.png.md",
+      "route": "#/content/chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-flow-cce98d8c66.png.md",
+      "title": "tool-results-batch-barrier-flow-cce98d8c66.png",
+      "kind": "image",
+      "source": "chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-flow-cce98d8c66.png"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-storyboard-037e1a80ac.jpg.md",
+      "route": "#/content/chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-storyboard-037e1a80ac.jpg.md",
+      "title": "tool-results-batch-barrier-storyboard-037e1a80ac.jpg",
+      "kind": "image",
+      "source": "chapter-27-tool-concurrency/03-batch-results/assets/tool-results-batch-barrier-storyboard-037e1a80ac.jpg"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/03-batch-results/README.md",
+      "route": "#/content/chapter-27-tool-concurrency/03-batch-results/README.md",
+      "title": "27.3 结果屏障：先完成的可以先显示，模型等整批观察",
+      "kind": "tutorial",
+      "source": "chapter-27-tool-concurrency/03-batch-results/README.md"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/03-batch-results/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/03-batch-results/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/03-batch-results/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/03-batch-results/src/agent/events.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/03-batch-results/src/agent/events.ts.md",
+      "title": "events.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/03-batch-results/src/agent/events.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/03-batch-results/src/agent/tool-batch.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/03-batch-results/src/agent/tool-batch.ts.md",
+      "title": "tool-batch.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/03-batch-results/src/agent/tool-batch.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/03-batch-results/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/03-batch-results/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/03-batch-results/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/03-batch-results/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/03-batch-results/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/03-batch-results/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/examples/verify-tool-batches.ts.md",
+      "route": "#/content/chapter-27-tool-concurrency/examples/verify-tool-batches.ts.md",
+      "title": "verify-tool-batches.ts",
+      "kind": "source",
+      "source": "chapter-27-tool-concurrency/examples/verify-tool-batches.ts"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/EXERCISES.md",
+      "route": "#/content/chapter-27-tool-concurrency/EXERCISES.md",
+      "title": "第27章练习：怎样证明并发没有丢掉顺序、资源和结果",
+      "kind": "tutorial",
+      "source": "chapter-27-tool-concurrency/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-27-tool-concurrency/README.md",
+      "route": "#/content/chapter-27-tool-concurrency/README.md",
+      "title": "第 27 章：让工具在可控范围内并行",
+      "kind": "tutorial",
+      "source": "chapter-27-tool-concurrency/README.md"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-cover-5f05cc19c6.png.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-cover-5f05cc19c6.png.md",
+      "title": "worktree-fixed-base-cover-5f05cc19c6.png",
+      "kind": "image",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-cover-5f05cc19c6.png"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-flow-2d44f72aa9.png.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-flow-2d44f72aa9.png.md",
+      "title": "worktree-fixed-base-flow-2d44f72aa9.png",
+      "kind": "image",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-flow-2d44f72aa9.png"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-storyboard-e962136a7a.jpg.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-storyboard-e962136a7a.jpg.md",
+      "title": "worktree-fixed-base-storyboard-e962136a7a.jpg",
+      "kind": "image",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/assets/worktree-fixed-base-storyboard-e962136a7a.jpg"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/README.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/README.md",
+      "title": "28.1 独立工作区：从同一提交出发，各自修改与提交",
+      "kind": "tutorial",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/README.md"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/src/models/client.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/src/models/client.ts.md",
+      "title": "client.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/src/models/client.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/src/permissions/policy.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/src/permissions/policy.ts.md",
+      "title": "policy.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/src/permissions/policy.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/src/tools/registry.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/src/tools/registry.ts.md",
+      "title": "registry.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/src/tools/registry.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/src/tools/types.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/src/tools/types.ts.md",
+      "title": "types.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/src/tools/types.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/src/tools/worktree-tools.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/src/tools/worktree-tools.ts.md",
+      "title": "worktree-tools.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/src/tools/worktree-tools.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/src/ui/tui/state.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/src/ui/tui/state.ts.md",
+      "title": "state.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/src/ui/tui/state.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/01-worktree-base/src/workspaces/worktrees.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/01-worktree-base/src/workspaces/worktrees.ts.md",
+      "title": "worktrees.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/01-worktree-base/src/workspaces/worktrees.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-cover-f83129ebf9.png.md",
+      "route": "#/content/chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-cover-f83129ebf9.png.md",
+      "title": "worktree-versioned-review-cover-f83129ebf9.png",
+      "kind": "image",
+      "source": "chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-cover-f83129ebf9.png"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-flow-6aaaa71788.png.md",
+      "route": "#/content/chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-flow-6aaaa71788.png.md",
+      "title": "worktree-versioned-review-flow-6aaaa71788.png",
+      "kind": "image",
+      "source": "chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-flow-6aaaa71788.png"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-storyboard-a1ea4ffa1a.jpg.md",
+      "route": "#/content/chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-storyboard-a1ea4ffa1a.jpg.md",
+      "title": "worktree-versioned-review-storyboard-a1ea4ffa1a.jpg",
+      "kind": "image",
+      "source": "chapter-28-isolated-workspaces/02-versioned-review/assets/worktree-versioned-review-storyboard-a1ea4ffa1a.jpg"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/02-versioned-review/README.md",
+      "route": "#/content/chapter-28-isolated-workspaces/02-versioned-review/README.md",
+      "title": "28.2 评审固定版本：批准的是哪两条提交之间的变化",
+      "kind": "tutorial",
+      "source": "chapter-28-isolated-workspaces/02-versioned-review/README.md"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/02-versioned-review/src/tools/worktree-tools.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/02-versioned-review/src/tools/worktree-tools.ts.md",
+      "title": "worktree-tools.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/02-versioned-review/src/tools/worktree-tools.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/02-versioned-review/src/ui/teaching-trace.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/02-versioned-review/src/ui/teaching-trace.ts.md",
+      "title": "teaching-trace.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/02-versioned-review/src/ui/teaching-trace.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/02-versioned-review/src/workspaces/worktrees.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/02-versioned-review/src/workspaces/worktrees.ts.md",
+      "title": "worktrees.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/02-versioned-review/src/workspaces/worktrees.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-cover-c4a892f583.png.md",
+      "route": "#/content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-cover-c4a892f583.png.md",
+      "title": "worktree-integrate-cleanup-cover-c4a892f583.png",
+      "kind": "image",
+      "source": "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-cover-c4a892f583.png"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-flow-c09116dd27.png.md",
+      "route": "#/content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-flow-c09116dd27.png.md",
+      "title": "worktree-integrate-cleanup-flow-c09116dd27.png",
+      "kind": "image",
+      "source": "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-flow-c09116dd27.png"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-storyboard-2dc40ea40b.jpg.md",
+      "route": "#/content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-storyboard-2dc40ea40b.jpg.md",
+      "title": "worktree-integrate-cleanup-storyboard-2dc40ea40b.jpg",
+      "kind": "image",
+      "source": "chapter-28-isolated-workspaces/03-integrate-and-cleanup/assets/worktree-integrate-cleanup-storyboard-2dc40ea40b.jpg"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/README.md",
+      "route": "#/content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/README.md",
+      "title": "28.3 整合与清理：先证明成果进入目标，再删除工作目录",
+      "kind": "tutorial",
+      "source": "chapter-28-isolated-workspaces/03-integrate-and-cleanup/README.md"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/src/tools/worktree-tools.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/src/tools/worktree-tools.ts.md",
+      "title": "worktree-tools.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/03-integrate-and-cleanup/src/tools/worktree-tools.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/src/workspaces/worktrees.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/03-integrate-and-cleanup/src/workspaces/worktrees.ts.md",
+      "title": "worktrees.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/03-integrate-and-cleanup/src/workspaces/worktrees.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/examples/verify-worktrees.ts.md",
+      "route": "#/content/chapter-28-isolated-workspaces/examples/verify-worktrees.ts.md",
+      "title": "verify-worktrees.ts",
+      "kind": "source",
+      "source": "chapter-28-isolated-workspaces/examples/verify-worktrees.ts"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/EXERCISES.md",
+      "route": "#/content/chapter-28-isolated-workspaces/EXERCISES.md",
+      "title": "第28章练习：怎样证明成果属于正确的目录与版本",
+      "kind": "tutorial",
+      "source": "chapter-28-isolated-workspaces/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-28-isolated-workspaces/README.md",
+      "route": "#/content/chapter-28-isolated-workspaces/README.md",
+      "title": "第 28 章：让修改拥有独立工作区与可核对的版本",
+      "kind": "tutorial",
+      "source": "chapter-28-isolated-workspaces/README.md"
     },
     {
       "path": "content/docs/CODING-AGENT-GAP-REVIEW.md",

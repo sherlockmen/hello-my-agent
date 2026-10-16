@@ -22,7 +22,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "node scripts/compile.mjs 25.3 --prepare",
+    "build": "node scripts/compile.mjs 28.3 --prepare",
     "lesson:01": "node scripts/compile.mjs 01 --prepare",
     "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare",
     "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare",
@@ -80,8 +80,8 @@
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/compile.mjs 25.3",
-    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 25.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && npm run check:20 && npm run check:21 && npm run check:22 && npm run check:23 && npm run check:24 && npm run check:25 && node scripts/compile.mjs 25.3 && node -e \"if (!require('node:fs').existsSync('dist/subagents/runner.js')) throw new Error('默认构建未恢复到 25.3')\"",
+    "prepack": "node scripts/compile.mjs 28.3",
+    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 28.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && npm run check:20 && npm run check:21 && npm run check:22 && npm run check:23 && npm run check:24 && npm run check:25 && npm run check:26 && npm run check:27 && npm run check:28 && node scripts/compile.mjs 28.3 && node -e \"if (!require('node:fs').existsSync('dist/workspaces/worktrees.js')) throw new Error('默认构建未恢复到 28.3')\"",
     "check:11": "node tests/verify-chapter-11.mjs && python3 tests/verify-terminal-11.py",
     "exercise:11": "node tests/verify-exercise-11.mjs",
     "lesson:12.1": "node scripts/compile.mjs 12.1 --prepare",
@@ -143,7 +143,19 @@
     "lesson:25.1": "node scripts/compile.mjs 25.1 --prepare",
     "lesson:25.2": "node scripts/compile.mjs 25.2 --prepare",
     "lesson:25.3": "node scripts/compile.mjs 25.3 --prepare",
-    "check:25": "node tests/verify-chapter-25.mjs && python3 tests/verify-terminal-25.py"
+    "check:25": "node tests/verify-chapter-25.mjs && python3 tests/verify-terminal-25.py",
+    "lesson:26.1": "node scripts/compile.mjs 26.1 --prepare",
+    "lesson:26.2": "node scripts/compile.mjs 26.2 --prepare",
+    "check:26": "node tests/verify-chapter-26.mjs && python3 tests/verify-terminal-26.py",
+    "lesson:26.3": "node scripts/compile.mjs 26.3 --prepare",
+    "lesson:27.1": "node scripts/compile.mjs 27.1 --prepare",
+    "lesson:27.2": "node scripts/compile.mjs 27.2 --prepare",
+    "lesson:27.3": "node scripts/compile.mjs 27.3 --prepare",
+    "lesson:28.1": "node scripts/compile.mjs 28.1 --prepare",
+    "lesson:28.2": "node scripts/compile.mjs 28.2 --prepare",
+    "lesson:28.3": "node scripts/compile.mjs 28.3 --prepare",
+    "check:27": "node tests/verify-chapter-27.mjs",
+    "check:28": "node tests/verify-chapter-28.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.126.0",
@@ -152,6 +164,7 @@
     "ignore": "7.0.9",
     "ink": "7.1.1",
     "ink-text-input": "6.0.0",
+    "node-pty": "1.1.0",
     "openai": "7.15.0",
     "react": "19.3.0",
     "string-width": "8.2.2",
@@ -166,6 +179,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sherlockmen/hello-my-agent.git"
+  },
+  "allowScripts": {
+    "node-pty@1.1.0": true
   }
 }
 ```
