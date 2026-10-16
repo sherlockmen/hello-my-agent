@@ -1,0 +1,38 @@
+# ci.yml
+
+`chapter-36-release-and-upgrade/02-release-gates/release/ci.yml`
+
+<a href="./content/chapter-36-release-and-upgrade/02-release-gates/release/ci.yml" download>下载原始文件</a>
+
+```yaml
+# 保存为 .github/workflows/package-check.yml 后，才会由 GitHub Actions 执行。
+# 本模板仅检查，不持有发布权限，也没有 npm publish 步骤。
+name: Check installable package
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22.23.2'
+          cache: npm
+      - run: npm install --global npm@12.0.2
+      - run: sudo apt-get update && sudo apt-get install -y bubblewrap socat zsh
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm rebuild node-pty --foreground-scripts
+        env:
+          npm_config_build_from_source: 'true'
+      - run: npm run typecheck
+      - run: npm run check:35
+      - run: npm run check:36
+      - run: mkdir -p "$RUNNER_TEMP/release"
+      - run: npm pack --json --pack-destination "$RUNNER_TEMP/release" > "$RUNNER_TEMP/release/pack.json"
+      - run: node dist/cli.js release-check "$RUNNER_TEMP/release/pack.json"
+```

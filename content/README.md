@@ -18,7 +18,7 @@ CLI 是在终端中通过命令和选项操作的程序；TUI 是在终端中持
 
 `master` 保留源码、原生 Markdown 和配图；Docsify 外壳、插件和发布工具在 [codex/teaching-site](https://github.com/sherlockmen/hello-my-agent/tree/codex/teaching-site) 维护，`gh-pages` 只保存生成的网站。
 
-[从第一章开始](/content/chapter-01-first-command/README.md) · [当前章节：第三十二至三十四章](/content/chapter-32-code-intelligence/README.md) · [课程进度](/content/docs/PROGRESS.md) · [从空目录跟写](/content/docs/SETUP.md)
+[从第一章开始](/content/chapter-01-first-command/README.md) · [第三十五、三十六章已完成](/content/chapter-35-agent-evaluation/README.md) · [课程进度](/content/docs/PROGRESS.md) · [从空目录跟写](/content/docs/SETUP.md)
 
 第一次学习，先阅读[第一章的问题与原理](/content/chapter-01-first-command/README.md)，到“动手构建”时再运行：
 
@@ -80,6 +80,8 @@ Node.js 要求 22.12.0 或以上；目前已在 Node.js 22.23.2、npm 12.0.2、m
 | [第 32 章：接入代码诊断与语言服务](/content/chapter-32-code-intelligence/README.md) | 怎样取得项目检查、定义与引用，以及对应当前内容的诊断？ | 三个递进小节，已完成 |
 | [第 33 章：接入真实执行隔离](/content/chapter-33-execution-sandbox/README.md) | 怎样约束 shell 进程的实际访问，并用越界实验核对限制？ | 三个递进小节，已完成 |
 | [第 34 章：让故障可定位、可恢复](/content/chapter-34-reliability/README.md) | 怎样关联运行日志、有限重试模型请求，并等待无进展任务真正收尾？ | 三个递进小节，已完成 |
+| [第 35 章：用固定任务验证 Agent 能力](/content/chapter-35-agent-evaluation/README.md) | 怎样用真实结果判分，回归故障与终端行为，并记录在线实验？ | 已完成，含三个递进小节 |
+| [第 36 章：安装、发布与升级](/content/chapter-36-release-and-upgrade/README.md) | 怎样验证安装包、重复发布检查，并安全读取旧配置与会话？ | 已完成，含三个递进小节 |
 
 第十二章按顺序学习：[12.1 计划与执行模式](/content/chapter-12-task-control/01-plan-mode/README.md) · [12.2 任务清单](/content/chapter-12-task-control/02-task-list/README.md) · [12.3 澄清问题](/content/chapter-12-task-control/03-clarify-questions/README.md) · [12.4 运行中补充与打断](/content/chapter-12-task-control/04-live-input/README.md) · [12.5 队列编辑与撤回](/content/chapter-12-task-control/05-manage-queue/README.md)。
 
@@ -330,6 +332,14 @@ hello-my-agent/
     01-correlated-logs/     34.1 关联运行日志
     02-safe-retries/        34.2 有限模型请求重试
     03-stop-and-diagnose/   34.3 无进展停止与诊断
+  chapter-35-agent-evaluation/ 第 35 章：固定任务评测
+    01-fixed-tasks/         35.1 固定样本与客观判分
+    02-failure-and-terminal/ 35.2 故障与终端回归
+    03-live-model-benchmark/ 35.3 显式真实模型评测
+  chapter-36-release-and-upgrade/ 第 36 章：安装、发布与升级
+    01-package-and-install/ 36.1 安装包与运行依赖
+    02-release-gates/       36.2 发布检查
+    03-config-and-session-upgrade/ 36.3 配置与会话兼容
   docs/
     SETUP.md                环境与从空目录搭建
     EDITORIAL-WORKFLOW.md   主 Agent、作者子 Agent 与学习者读者的编审流程
@@ -351,7 +361,7 @@ hello-my-agent/
 npm run verify
 ```
 
-`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](/content/chapter-07-command-feedback/03-ripgrep-search/README.md?id=%E5%85%88%E5%87%86%E5%A4%87%E7%B3%BB%E7%BB%9F-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十二章检查 Plan 限制、清单更新、问答配对、运行中补充、打断与队列编辑。第十三章检查保存顺序、同步完成、有效记录与残尾、独占锁与中断恢复、工作区、旧工具不重放、旧队列归属、本地管理和无覆盖导出。第十四章检查分支隔离、写入前检查点、恢复预览与冲突；第十五章检查请求估算、大结果日志与分段读取、请求前预算和协议输出上限。第十六章检查完整工具组、摘要候选验证、预算不足时压缩、取消与失败回退；第十七章检查项目根与目录作用范围、规则来源、读取限制及权限边界。第十八章检查记忆写入、项目隔离、显式确认、纠正与删除；第十九章检查技能发现、按需加载、资源路径与权限边界。第二十章检查脚本阻止、执行后反馈、结束收尾、超时与取消；第二十一章检查 MCP 初始化、发现、审批、调用、认证与关闭；第二十二章检查网页和搜索请求的限制、来源记录和失败反馈。第二十三章检查双协议契约、空闲切换、凭据归属、错误与缓存用量；第二十四章检查附件路径、内容摘要、两种协议的实际内容块与恢复；第二十五章检查独立子历史、只读限制、结果回传、预算和取消。第二十六章检查后台作业、真实 PTY 接管、输出就绪证据、主动通知与退出清理；第二十七章检查相邻只读段的有限并发、独立期限、实际收尾和结果配对；第二十八章检查独立工作区、版本审阅、整合冲突与保留清理。第二十九章检查真实只读 worker、租约清理、依赖阻塞、消息去重与确认；第三十章检查持久定义、独占服务、实际调度、预算、停止等待和崩溃恢复；第三十一章检查包边界、空闲启停、真实 Skills/Hooks/MCP 接线及资源归属。第三十二章检查真实语言服务的定位、内容同步和诊断归属；第三十三章检查实际文件与网络限制、pipe/PTY 接入和独立边界自检；第三十四章检查日志白名单、模型重试分类、工具不重放、取消等待和成果保留。第十至二十六章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包前的 `prepack` 当前选择 `34.3`；学习时用各节自己的 `lesson` 命令选择版本。
+`verify` 会检查类型、构建、生成 `.tgz` 安装包，并在临时目录安装和验证。第二章检查 Agent 核心、协议、历史与取消规则；第三章检查工具参数、路径边界、调用 ID、错误反馈、轮次上限和双协议工具消息；第四章检查文件发现、忽略规则、内容搜索、结果上限与分段读取；第五章检查权限优先级、终端审批和会话范围；第六章检查差异预览、唯一替换、写入前复核和备份；第七章检查实际命令反馈、进程停止、取消与 rg 搜索；第八章检查流式协议、工具参数完整性、中断历史与继续输入；第九章检查任务结束状态、事件顺序、消费取消与 JSONL 输出；第十章检查界面状态、真实终端输入与审批、取消后续聊、终端恢复和输出选择。模型请求使用本地模拟接口，不需要真实密钥；第七章还需要系统中的 `rg`，准备方法见 [07.3](/content/chapter-07-command-feedback/03-ripgrep-search/README.md?id=%E5%85%88%E5%87%86%E5%A4%87%E7%B3%BB%E7%BB%9F-rg)。第十一章检查编辑、历史与补全、滚动、复制、外部编辑器和尺寸变化。第十二章检查 Plan 限制、清单更新、问答配对、运行中补充、打断与队列编辑。第十三章检查保存顺序、同步完成、有效记录与残尾、独占锁与中断恢复、工作区、旧工具不重放、旧队列归属、本地管理和无覆盖导出。第十四章检查分支隔离、写入前检查点、恢复预览与冲突；第十五章检查请求估算、大结果日志与分段读取、请求前预算和协议输出上限。第十六章检查完整工具组、摘要候选验证、预算不足时压缩、取消与失败回退；第十七章检查项目根与目录作用范围、规则来源、读取限制及权限边界。第十八章检查记忆写入、项目隔离、显式确认、纠正与删除；第十九章检查技能发现、按需加载、资源路径与权限边界。第二十章检查脚本阻止、执行后反馈、结束收尾、超时与取消；第二十一章检查 MCP 初始化、发现、审批、调用、认证与关闭；第二十二章检查网页和搜索请求的限制、来源记录和失败反馈。第二十三章检查双协议契约、空闲切换、凭据归属、错误与缓存用量；第二十四章检查附件路径、内容摘要、两种协议的实际内容块与恢复；第二十五章检查独立子历史、只读限制、结果回传、预算和取消。第二十六章检查后台作业、真实 PTY 接管、输出就绪证据、主动通知与退出清理；第二十七章检查相邻只读段的有限并发、独立期限、实际收尾和结果配对；第二十八章检查独立工作区、版本审阅、整合冲突与保留清理。第二十九章检查真实只读 worker、租约清理、依赖阻塞、消息去重与确认；第三十章检查持久定义、独占服务、实际调度、预算、停止等待和崩溃恢复；第三十一章检查包边界、空闲启停、真实 Skills/Hooks/MCP 接线及资源归属。第三十二章检查真实语言服务的定位、内容同步和诊断归属；第三十三章检查实际文件与网络限制、pipe/PTY 接入和独立边界自检；第三十四章检查日志白名单、模型重试分类、工具不重放、取消等待和成果保留。第三十五章检查固定回放、真实文件与测试判分、故障预期、终端探针、双协议在线入口及用量归属；第三十六章检查包文件表、源码之外的临时安装与读改测、补全、配置优先级、迁移提交边界和旧会话不重放。第十至二十六章的终端检查需要 macOS / Linux / WSL 和 Python 3 标准库。只需检查类型时，可以运行 `npm run typecheck`。运行 Agent 时仍然直接输入 `hello-my-agent`。默认 `build` 和打包前的 `prepack` 当前选择 `36.3`；学习时用各节自己的 `lesson` 命令选择版本。
 
 第一章练习增加的 `--doctor` 会从第二章开始保留，用于查看 Node 版本、运行平台和当前工作目录。第二章练习增加的 `/reset` 会从第三章开始保留，用于清空当前会话历史。
 
@@ -382,6 +392,8 @@ npm run check:31
 npm run check:32
 npm run check:33
 npm run check:34
+npm run check:35
+npm run check:36
 ```
 
 完成 12.5 和[第十二章练习](/content/chapter-12-task-control/EXERCISES.md)后，运行独立状态实验：
@@ -396,9 +408,9 @@ npm run exercise:12
 
 回看第十二章：[第十二章练习](/content/chapter-12-task-control/EXERCISES.md) · 第十二章验证记录。
 
-新章练习：[第三十二章](/content/chapter-32-code-intelligence/EXERCISES.md) · [第三十三章](/content/chapter-33-execution-sandbox/EXERCISES.md) · [第三十四章](/content/chapter-34-reliability/EXERCISES.md)。
+新章练习：[第三十五章](/content/chapter-35-agent-evaluation/EXERCISES.md) · [第三十六章](/content/chapter-36-release-and-upgrade/EXERCISES.md)。
 
-第 01—12、14—17、20—34 章已确认完成。第十三、十八、十九章待确认。npm 包尚未发布。
+第 01—12、14—17、20—36 章已确认完成，共 33 / 36 章。第十三、十八、十九章待确认。npm 包尚未发布。
 
 ## 许可证
 

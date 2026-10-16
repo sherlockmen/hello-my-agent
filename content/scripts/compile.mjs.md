@@ -133,9 +133,15 @@ const targets = {
   "34.1": "chapter-34-reliability/01-correlated-logs/src",
   "34.2": "chapter-34-reliability/02-safe-retries/src",
   "34.3": "chapter-34-reliability/03-stop-and-diagnose/src",
+  "35.1": "chapter-35-agent-evaluation/01-fixed-tasks/src",
+  "35.2": "chapter-35-agent-evaluation/02-failure-and-terminal/src",
+  "35.3": "chapter-35-agent-evaluation/03-live-model-benchmark/src",
+  "36.1": "chapter-36-release-and-upgrade/01-package-and-install/src",
+  "36.2": "chapter-36-release-and-upgrade/02-release-gates/src",
+  "36.3": "chapter-36-release-and-upgrade/03-config-and-session-upgrade/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "34.3";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "36.3";
 const source = targets[target];
 
 if (!source) {

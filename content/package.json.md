@@ -22,7 +22,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "build": "node scripts/compile.mjs 34.3 --prepare",
+    "build": "node scripts/compile.mjs 36.3 --prepare",
     "lesson:01": "node scripts/compile.mjs 01 --prepare",
     "lesson:02.1": "node scripts/compile.mjs 02.1 --prepare",
     "lesson:02.2": "node scripts/compile.mjs 02.2 --prepare",
@@ -80,8 +80,8 @@
     "check:02.3": "node tests/verify-install.mjs 3",
     "check:02.4": "node tests/verify-install.mjs 4",
     "typecheck": "tsc --noEmit",
-    "prepack": "node scripts/compile.mjs 34.3",
-    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 34.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && npm run check:20 && npm run check:21 && npm run check:22 && npm run check:23 && npm run check:24 && npm run check:25 && npm run check:26 && npm run check:27 && npm run check:28 && npm run check:29 && npm run check:30 && npm run check:31 && npm run check:32 && npm run check:33 && npm run check:34 && node scripts/compile.mjs 34.3 && node -e \"if (!require('node:fs').existsSync('dist/diagnostics/watchdog.js')) throw new Error('默认构建未恢复到 34.3')\"",
+    "prepack": "node scripts/compile.mjs 36.3",
+    "verify": "npm run typecheck && npm run check:tutorial && node scripts/compile.mjs 36.3 && node tests/verify-install.mjs && node tests/verify-chapter-03.mjs && node tests/verify-chapter-04.mjs && node tests/verify-chapter-05.mjs && node tests/verify-chapter-06.mjs && node tests/verify-exercise-06.mjs && node tests/verify-chapter-07.mjs && node tests/verify-exercise-07.mjs && node tests/verify-chapter-08.mjs && node tests/verify-exercise-08.mjs && node tests/verify-chapter-09.mjs && node tests/verify-exercise-09.mjs && npm run check:10 && node tests/verify-exercise-10.mjs && npm run check:11 && npm run exercise:11 && npm run check:12 && npm run exercise:12 && npm run check:13 && npm run check:14 && npm run check:15 && npm run check:16 && npm run check:17 && npm run check:18 && npm run check:19 && npm run check:20 && npm run check:21 && npm run check:22 && npm run check:23 && npm run check:24 && npm run check:25 && npm run check:26 && npm run check:27 && npm run check:28 && npm run check:29 && npm run check:30 && npm run check:31 && npm run check:32 && npm run check:33 && npm run check:34 && npm run check:35 && npm run check:36 && node scripts/compile.mjs 36.3 && node -e \"if (!require('node:fs').existsSync('dist/config/connection-profile.js')) throw new Error('默认构建未恢复到 36.3')\"",
     "check:11": "node tests/verify-chapter-11.mjs && python3 tests/verify-terminal-11.py",
     "exercise:11": "node tests/verify-exercise-11.mjs",
     "lesson:12.1": "node scripts/compile.mjs 12.1 --prepare",
@@ -180,7 +180,15 @@
     "lesson:34.1": "node scripts/compile.mjs 34.1 --prepare",
     "lesson:34.2": "node scripts/compile.mjs 34.2 --prepare",
     "lesson:34.3": "node scripts/compile.mjs 34.3 --prepare",
-    "check:34": "node tests/verify-chapter-34.mjs"
+    "check:34": "node tests/verify-chapter-34.mjs",
+    "lesson:35.1": "node scripts/compile.mjs 35.1 --prepare",
+    "lesson:35.2": "node scripts/compile.mjs 35.2 --prepare",
+    "lesson:35.3": "node scripts/compile.mjs 35.3 --prepare",
+    "check:35": "node tests/verify-chapter-35.mjs",
+    "lesson:36.1": "node scripts/compile.mjs 36.1 --prepare",
+    "lesson:36.2": "node scripts/compile.mjs 36.2 --prepare",
+    "lesson:36.3": "node scripts/compile.mjs 36.3 --prepare",
+    "check:36": "node tests/verify-chapter-36.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sandbox-runtime": "0.0.79",

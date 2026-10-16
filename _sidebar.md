@@ -178,6 +178,16 @@
   - [34.2 只重试可以安全重发的请求](/content/chapter-34-reliability/02-safe-retries/README.md)
   - [34.3 停止无进展任务并保留成果](/content/chapter-34-reliability/03-stop-and-diagnose/README.md)
   - [练习与答案](/content/chapter-34-reliability/EXERCISES.md)
+- [第 35 章：用固定任务验证 Agent 能力](/content/chapter-35-agent-evaluation/README.md)
+  - [35.1 固定任务与离线回放](/content/chapter-35-agent-evaluation/01-fixed-tasks/README.md)
+  - [35.2 故障与终端回归](/content/chapter-35-agent-evaluation/02-failure-and-terminal/README.md)
+  - [35.3 显式运行真实模型评测](/content/chapter-35-agent-evaluation/03-live-model-benchmark/README.md)
+  - [练习与答案](/content/chapter-35-agent-evaluation/EXERCISES.md)
+- [第 36 章：安装、发布与升级](/content/chapter-36-release-and-upgrade/README.md)
+  - [36.1 安装包必须离开源码也能工作](/content/chapter-36-release-and-upgrade/01-package-and-install/README.md)
+  - [36.2 上传之前，先让发布准备可重复](/content/chapter-36-release-and-upgrade/02-release-gates/README.md)
+  - [36.3 新程序怎样继续使用旧配置和旧会话？](/content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/README.md)
+  - [练习与答案](/content/chapter-36-release-and-upgrade/EXERCISES.md)
 
 - 课程与参考资料
   - [连续课程大纲：36 章，从命令入口到完整发布](/content/docs/planning/COURSE.md)

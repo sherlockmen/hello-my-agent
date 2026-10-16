@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "chapters": 34,
-  "tutorialPages": 191,
-  "lessonPages": 108,
-  "exercisePages": 34,
-  "sourcePages": 896,
+  "chapters": 36,
+  "tutorialPages": 201,
+  "lessonPages": 114,
+  "exercisePages": 36,
+  "sourcePages": 923,
   "sourceIndexes": 26,
-  "imagePages": 198,
-  "referencedAssets": 343,
-  "gifReferences": 96,
+  "imagePages": 216,
+  "referencedAssets": 367,
+  "gifReferences": 102,
   "convertedMotionPlayers": 15,
-  "assetBytes": 495914925,
+  "assetBytes": 533817807,
   "generatedGifCovers": [
     "chapter-11-terminal-workbench/01-editable-draft/assets/edit-draft-2ffe5ac91b.gif.cover.png",
     "chapter-11-terminal-workbench/01-editable-draft/assets/problem-scenario-b84292ccf7.gif.cover.png",
@@ -167,6 +167,16 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/34-reliability.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/35-agent-evaluation.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/36-release-and-upgrade.md",
       "reason": "verification evidence"
     },
     {
@@ -342,6 +352,16 @@
     {
       "from": "docs/PROGRESS.md",
       "target": "docs/verification/34-reliability.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/35-agent-evaluation.md",
+      "reason": "verification evidence"
+    },
+    {
+      "from": "docs/PROGRESS.md",
+      "target": "docs/verification/36-release-and-upgrade.md",
       "reason": "verification evidence"
     },
     {
@@ -694,6 +714,30 @@
     "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-6d1986971d.gif",
     "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-cover-6079330069.png",
     "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-flow-ffe339c5af.png",
-    "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-storyboard-786215e5dd.jpg"
+    "chapter-34-reliability/03-stop-and-diagnose/assets/watchdog-stop-wait-storyboard-786215e5dd.jpg",
+    "chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-cover-3feea78b22.png",
+    "chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-fe34bdbc64.gif",
+    "chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-flow-c5996e607f.png",
+    "chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-storyboard-6ff50e0435.jpg",
+    "chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-a438b8fd26.gif",
+    "chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-cover-96bd56dd7c.png",
+    "chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-flow-40c0ba2fc3.png",
+    "chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-storyboard-68f3797d1c.jpg",
+    "chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-a2fe58fb28.gif",
+    "chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-cover-a2dc8d8d1c.png",
+    "chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-flow-a0cf2dd95c.png",
+    "chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-storyboard-c8279ea873.jpg",
+    "chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-5ebac9e9d0.gif",
+    "chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-cover-d5477c7f5a.png",
+    "chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-flow-71a4fd11da.png",
+    "chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-storyboard-bca321be6f.jpg",
+    "chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-38e4442c21.gif",
+    "chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-cover-0f4bea98f6.png",
+    "chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-flow-0079d21356.png",
+    "chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-storyboard-7b06b4e5dc.jpg",
+    "chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-cover-ed978d9058.png",
+    "chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-d848f35e2e.gif",
+    "chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-flow-cb895bc5ab.png",
+    "chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-storyboard-036eb500cb.jpg"
   ]
 }

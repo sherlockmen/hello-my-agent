@@ -414,6 +414,30 @@
       ],
       "exercises": "chapter-34-reliability/EXERCISES.md",
       "other": []
+    },
+    {
+      "directory": "chapter-35-agent-evaluation",
+      "title": "第 35 章：用固定任务验证 Agent 能力",
+      "overview": "chapter-35-agent-evaluation/README.md",
+      "lessons": [
+        "chapter-35-agent-evaluation/01-fixed-tasks/README.md",
+        "chapter-35-agent-evaluation/02-failure-and-terminal/README.md",
+        "chapter-35-agent-evaluation/03-live-model-benchmark/README.md"
+      ],
+      "exercises": "chapter-35-agent-evaluation/EXERCISES.md",
+      "other": []
+    },
+    {
+      "directory": "chapter-36-release-and-upgrade",
+      "title": "第 36 章：安装、发布与升级",
+      "overview": "chapter-36-release-and-upgrade/README.md",
+      "lessons": [
+        "chapter-36-release-and-upgrade/01-package-and-install/README.md",
+        "chapter-36-release-and-upgrade/02-release-gates/README.md",
+        "chapter-36-release-and-upgrade/03-config-and-session-upgrade/README.md"
+      ],
+      "exercises": "chapter-36-release-and-upgrade/EXERCISES.md",
+      "other": []
     }
   ],
   "pages": [
@@ -9502,6 +9526,391 @@
       "title": "第 34 章：让故障可定位、可恢复",
       "kind": "tutorial",
       "source": "chapter-34-reliability/README.md"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-cover-3feea78b22.png.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-cover-3feea78b22.png.md",
+      "title": "fixed-task-real-grading-cover-3feea78b22.png",
+      "kind": "image",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-cover-3feea78b22.png"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-flow-c5996e607f.png.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-flow-c5996e607f.png.md",
+      "title": "fixed-task-real-grading-flow-c5996e607f.png",
+      "kind": "image",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-flow-c5996e607f.png"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-storyboard-6ff50e0435.jpg.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-storyboard-6ff50e0435.jpg.md",
+      "title": "fixed-task-real-grading-storyboard-6ff50e0435.jpg",
+      "kind": "image",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/assets/fixed-task-real-grading-storyboard-6ff50e0435.jpg"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/README.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/README.md",
+      "title": "35.1 固定任务与离线回放",
+      "kind": "tutorial",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/README.md"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/src/agent/agent-loop.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/src/agent/agent-loop.ts.md",
+      "title": "agent-loop.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/src/agent/agent-loop.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/src/agent/run-options.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/src/agent/run-options.ts.md",
+      "title": "run-options.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/src/agent/run-options.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/src/cli.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/checks.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/checks.ts.md",
+      "title": "checks.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/checks.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/command.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/command.ts.md",
+      "title": "command.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/command.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/fixtures.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/fixtures.ts.md",
+      "title": "fixtures.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/fixtures.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/replay.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/replay.ts.md",
+      "title": "replay.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/replay.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/runner.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/runner.ts.md",
+      "title": "runner.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/01-fixed-tasks/src/evaluation/runner.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-cover-96bd56dd7c.png.md",
+      "route": "#/content/chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-cover-96bd56dd7c.png.md",
+      "title": "failure-facts-terminal-cover-96bd56dd7c.png",
+      "kind": "image",
+      "source": "chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-cover-96bd56dd7c.png"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-flow-40c0ba2fc3.png.md",
+      "route": "#/content/chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-flow-40c0ba2fc3.png.md",
+      "title": "failure-facts-terminal-flow-40c0ba2fc3.png",
+      "kind": "image",
+      "source": "chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-flow-40c0ba2fc3.png"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-storyboard-68f3797d1c.jpg.md",
+      "route": "#/content/chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-storyboard-68f3797d1c.jpg.md",
+      "title": "failure-facts-terminal-storyboard-68f3797d1c.jpg",
+      "kind": "image",
+      "source": "chapter-35-agent-evaluation/02-failure-and-terminal/assets/failure-facts-terminal-storyboard-68f3797d1c.jpg"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/02-failure-and-terminal/README.md",
+      "route": "#/content/chapter-35-agent-evaluation/02-failure-and-terminal/README.md",
+      "title": "35.2 故障与终端回归",
+      "kind": "tutorial",
+      "source": "chapter-35-agent-evaluation/02-failure-and-terminal/README.md"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/02-failure-and-terminal/src/cli.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/02-failure-and-terminal/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/02-failure-and-terminal/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/command.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/command.ts.md",
+      "title": "command.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/command.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/replay.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/replay.ts.md",
+      "title": "replay.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/replay.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/runner.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/runner.ts.md",
+      "title": "runner.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/runner.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/terminal.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/terminal.ts.md",
+      "title": "terminal.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/02-failure-and-terminal/src/evaluation/terminal.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-cover-a2dc8d8d1c.png.md",
+      "route": "#/content/chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-cover-a2dc8d8d1c.png.md",
+      "title": "explicit-live-comparison-cover-a2dc8d8d1c.png",
+      "kind": "image",
+      "source": "chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-cover-a2dc8d8d1c.png"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-flow-a0cf2dd95c.png.md",
+      "route": "#/content/chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-flow-a0cf2dd95c.png.md",
+      "title": "explicit-live-comparison-flow-a0cf2dd95c.png",
+      "kind": "image",
+      "source": "chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-flow-a0cf2dd95c.png"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-storyboard-c8279ea873.jpg.md",
+      "route": "#/content/chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-storyboard-c8279ea873.jpg.md",
+      "title": "explicit-live-comparison-storyboard-c8279ea873.jpg",
+      "kind": "image",
+      "source": "chapter-35-agent-evaluation/03-live-model-benchmark/assets/explicit-live-comparison-storyboard-c8279ea873.jpg"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/03-live-model-benchmark/README.md",
+      "route": "#/content/chapter-35-agent-evaluation/03-live-model-benchmark/README.md",
+      "title": "35.3 显式运行真实模型评测",
+      "kind": "tutorial",
+      "source": "chapter-35-agent-evaluation/03-live-model-benchmark/README.md"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/03-live-model-benchmark/src/cli.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/03-live-model-benchmark/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/03-live-model-benchmark/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/03-live-model-benchmark/src/evaluation/command.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/03-live-model-benchmark/src/evaluation/command.ts.md",
+      "title": "command.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/03-live-model-benchmark/src/evaluation/command.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/03-live-model-benchmark/src/evaluation/runner.ts.md",
+      "route": "#/content/chapter-35-agent-evaluation/03-live-model-benchmark/src/evaluation/runner.ts.md",
+      "title": "runner.ts",
+      "kind": "source",
+      "source": "chapter-35-agent-evaluation/03-live-model-benchmark/src/evaluation/runner.ts"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/EXERCISES.md",
+      "route": "#/content/chapter-35-agent-evaluation/EXERCISES.md",
+      "title": "第 35 章练习：增加一个独立判分点",
+      "kind": "tutorial",
+      "source": "chapter-35-agent-evaluation/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-35-agent-evaluation/README.md",
+      "route": "#/content/chapter-35-agent-evaluation/README.md",
+      "title": "第 35 章：用固定任务验证 Agent 能力",
+      "kind": "tutorial",
+      "source": "chapter-35-agent-evaluation/README.md"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-cover-d5477c7f5a.png.md",
+      "route": "#/content/chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-cover-d5477c7f5a.png.md",
+      "title": "tarball-outside-source-cover-d5477c7f5a.png",
+      "kind": "image",
+      "source": "chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-cover-d5477c7f5a.png"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-flow-71a4fd11da.png.md",
+      "route": "#/content/chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-flow-71a4fd11da.png.md",
+      "title": "tarball-outside-source-flow-71a4fd11da.png",
+      "kind": "image",
+      "source": "chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-flow-71a4fd11da.png"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-storyboard-bca321be6f.jpg.md",
+      "route": "#/content/chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-storyboard-bca321be6f.jpg.md",
+      "title": "tarball-outside-source-storyboard-bca321be6f.jpg",
+      "kind": "image",
+      "source": "chapter-36-release-and-upgrade/01-package-and-install/assets/tarball-outside-source-storyboard-bca321be6f.jpg"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/01-package-and-install/README.md",
+      "route": "#/content/chapter-36-release-and-upgrade/01-package-and-install/README.md",
+      "title": "36.1 安装包必须离开源码也能工作",
+      "kind": "tutorial",
+      "source": "chapter-36-release-and-upgrade/01-package-and-install/README.md"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/01-package-and-install/src/cli.ts.md",
+      "route": "#/content/chapter-36-release-and-upgrade/01-package-and-install/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/01-package-and-install/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/01-package-and-install/src/config/connection-profile.ts.md",
+      "route": "#/content/chapter-36-release-and-upgrade/01-package-and-install/src/config/connection-profile.ts.md",
+      "title": "connection-profile.ts",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/01-package-and-install/src/config/connection-profile.ts"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/01-package-and-install/src/config/load-config.ts.md",
+      "route": "#/content/chapter-36-release-and-upgrade/01-package-and-install/src/config/load-config.ts.md",
+      "title": "load-config.ts",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/01-package-and-install/src/config/load-config.ts"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/01-package-and-install/src/evaluation/command.ts.md",
+      "route": "#/content/chapter-36-release-and-upgrade/01-package-and-install/src/evaluation/command.ts.md",
+      "title": "command.ts",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/01-package-and-install/src/evaluation/command.ts"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/01-package-and-install/src/release/completion.ts.md",
+      "route": "#/content/chapter-36-release-and-upgrade/01-package-and-install/src/release/completion.ts.md",
+      "title": "completion.ts",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/01-package-and-install/src/release/completion.ts"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-cover-0f4bea98f6.png.md",
+      "route": "#/content/chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-cover-0f4bea98f6.png.md",
+      "title": "release-gates-separated-cover-0f4bea98f6.png",
+      "kind": "image",
+      "source": "chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-cover-0f4bea98f6.png"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-flow-0079d21356.png.md",
+      "route": "#/content/chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-flow-0079d21356.png.md",
+      "title": "release-gates-separated-flow-0079d21356.png",
+      "kind": "image",
+      "source": "chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-flow-0079d21356.png"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-storyboard-7b06b4e5dc.jpg.md",
+      "route": "#/content/chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-storyboard-7b06b4e5dc.jpg.md",
+      "title": "release-gates-separated-storyboard-7b06b4e5dc.jpg",
+      "kind": "image",
+      "source": "chapter-36-release-and-upgrade/02-release-gates/assets/release-gates-separated-storyboard-7b06b4e5dc.jpg"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/02-release-gates/README.md",
+      "route": "#/content/chapter-36-release-and-upgrade/02-release-gates/README.md",
+      "title": "36.2 上传之前，先让发布准备可重复",
+      "kind": "tutorial",
+      "source": "chapter-36-release-and-upgrade/02-release-gates/README.md"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/02-release-gates/release/ci.yml.md",
+      "route": "#/content/chapter-36-release-and-upgrade/02-release-gates/release/ci.yml.md",
+      "title": "ci.yml",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/02-release-gates/release/ci.yml"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/02-release-gates/src/cli.ts.md",
+      "route": "#/content/chapter-36-release-and-upgrade/02-release-gates/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/02-release-gates/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/02-release-gates/src/release/check-package.ts.md",
+      "route": "#/content/chapter-36-release-and-upgrade/02-release-gates/src/release/check-package.ts.md",
+      "title": "check-package.ts",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/02-release-gates/src/release/check-package.ts"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-cover-ed978d9058.png.md",
+      "route": "#/content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-cover-ed978d9058.png.md",
+      "title": "config-rename-session-facts-cover-ed978d9058.png",
+      "kind": "image",
+      "source": "chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-cover-ed978d9058.png"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-flow-cb895bc5ab.png.md",
+      "route": "#/content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-flow-cb895bc5ab.png.md",
+      "title": "config-rename-session-facts-flow-cb895bc5ab.png",
+      "kind": "image",
+      "source": "chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-flow-cb895bc5ab.png"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-storyboard-036eb500cb.jpg.md",
+      "route": "#/content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-storyboard-036eb500cb.jpg.md",
+      "title": "config-rename-session-facts-storyboard-036eb500cb.jpg",
+      "kind": "image",
+      "source": "chapter-36-release-and-upgrade/03-config-and-session-upgrade/assets/config-rename-session-facts-storyboard-036eb500cb.jpg"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/README.md",
+      "route": "#/content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/README.md",
+      "title": "36.3 新程序怎样继续使用旧配置和旧会话？",
+      "kind": "tutorial",
+      "source": "chapter-36-release-and-upgrade/03-config-and-session-upgrade/README.md"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/src/cli.ts.md",
+      "route": "#/content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/src/cli.ts.md",
+      "title": "cli.ts",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/03-config-and-session-upgrade/src/cli.ts"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/src/config/connection-profile.ts.md",
+      "route": "#/content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/src/config/connection-profile.ts.md",
+      "title": "connection-profile.ts",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/03-config-and-session-upgrade/src/config/connection-profile.ts"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/src/config/migrate-config.ts.md",
+      "route": "#/content/chapter-36-release-and-upgrade/03-config-and-session-upgrade/src/config/migrate-config.ts.md",
+      "title": "migrate-config.ts",
+      "kind": "source",
+      "source": "chapter-36-release-and-upgrade/03-config-and-session-upgrade/src/config/migrate-config.ts"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/EXERCISES.md",
+      "route": "#/content/chapter-36-release-and-upgrade/EXERCISES.md",
+      "title": "第 36 章练习：别把空模块当成完整交付",
+      "kind": "tutorial",
+      "source": "chapter-36-release-and-upgrade/EXERCISES.md"
+    },
+    {
+      "path": "content/chapter-36-release-and-upgrade/README.md",
+      "route": "#/content/chapter-36-release-and-upgrade/README.md",
+      "title": "第 36 章：安装、发布与升级",
+      "kind": "tutorial",
+      "source": "chapter-36-release-and-upgrade/README.md"
     },
     {
       "path": "content/docs/CODING-AGENT-GAP-REVIEW.md",
