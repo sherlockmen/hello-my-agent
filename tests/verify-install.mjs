@@ -44,6 +44,8 @@ const currentPackageModules = [
   "hooks/lifecycle", "mcp/client", "web/client",
   "models/protocol", "models/model-errors", "attachments/store", "attachments/image-format",
   "subagents/runner", "tools/delegate-task",
+  "processes/jobs", "processes/job-transport", "processes/takeover", "tools/job-tools",
+  "agent/tool-batch", "workspaces/worktrees", "tools/worktree-tools",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {
@@ -55,9 +57,9 @@ const cwd = join(sandbox, "unrelated project");
 mkdirSync(cwd);
 
 // 同步命令只用于编译/安装；调用模型的检查使用异步子进程，避免阻塞本地 HTTP 服务。
-function run(command, args, workdir, expectedStatus = 0) {
+function run(command, args, workdir, expectedStatus = 0, environment = {}) {
   const result = spawnSync(command, args, {
-    cwd: workdir, env: isolatedEnv(), encoding: "utf8", timeout: 120_000,
+    cwd: workdir, env: isolatedEnv(environment), encoding: "utf8", timeout: 120_000,
     shell: process.platform === "win32",
   });
   if (result.error) throw result.error;
@@ -110,6 +112,28 @@ async function verifyPackage(project, step, label, moduleOverride) {
     join(destination, archive.filename)], destination);
   const installedModules = run(npm, ["root", "--global", "--prefix", prefix], destination).stdout.trim();
   const installed = join(installedModules, ...pkg.name.split("/"));
+  if (moduleOverride && pkg.dependencies["node-pty"]) {
+    // 安装时跳过生命周期后，显式构建原生运行依赖，再验证真正的 PTY；tsc 不能代替它。
+    assert.equal(JSON.parse(readFileSync(join(installed, "node_modules/node-pty/package.json"), "utf8")).version,
+      pkg.dependencies["node-pty"]);
+    // 临时全局安装没有项目锁文件；只为已核对版本的 node-pty 在此私有前缀批准构建。
+    run(npm, ["rebuild", "node-pty", "--global", "--prefix", prefix,
+      "--foreground-scripts", "--allow-scripts=node-pty"], destination, 0, {
+      npm_config_build_from_source: "true",
+      ...(process.env.npm_config_nodedir ? { npm_config_nodedir: process.env.npm_config_nodedir } : {}),
+    });
+    if (process.platform !== "win32") run(process.execPath, ["--input-type=module", "-e", `
+      import assert from 'node:assert/strict';
+      const {spawn} = await import(${JSON.stringify(join(installed, "node_modules/node-pty/lib/index.js"))});
+      const child = spawn(process.execPath, ['-e', 'console.log("INSTALLED_PTY:"+process.stdin.isTTY+":"+process.stdout.isTTY)'],
+        {cwd: ${JSON.stringify(cwd)}, env: process.env});
+      let output = ''; child.onData(value => { output += value; });
+      await new Promise((resolve, reject) => child.onExit(value => {
+        try { assert.equal(value.exitCode, 0); assert.match(output, /INSTALLED_PTY:true:true/); resolve(); }
+        catch (error) { reject(error); }
+      }));
+    `], cwd);
+  }
   for (const name of ["chapter-01-first-command", chapter]) assert.ok(!existsSync(join(installed, name)));
   for (const dep of ["typescript", "@types/node"]) assert.ok(!existsSync(join(installed, "node_modules", dep)));
   // 动态加载的 TUI 也必须只靠安装包的运行依赖载入；文本模式不会触发这条 import。

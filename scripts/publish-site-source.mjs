@@ -88,13 +88,13 @@ function selectSource(report) {
     if (path.startsWith('docs/')) assert.ok(publicDocs.includes(path), `文档不在公开清单：${path}`);
     if (path.startsWith('chapter-') && (path.includes('/assets/') || imagePattern.test(path))) assert.ok(assets.has(path), `图片未被网站引用：${path}`);
   }
-  for (const chapter of [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]) assert.ok(files.includes(`tests/verify-chapter-${chapter}.mjs`));
+  for (const chapter of [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]) assert.ok(files.includes(`tests/verify-chapter-${chapter}.mjs`));
   assert.ok(files.includes('tests/verify-terminal-14.py'));
   assert.ok(files.includes('tests/verify-terminal-15.py'));
   assert.ok(files.includes('tests/verify-terminal-16.py'));
   assert.ok(files.includes('tests/verify-terminal-17.py'));
   assert.ok(files.includes('tests/verify-terminal-13.py'));
-  for (const chapter of [23, 24, 25]) assert.ok(files.includes(`tests/verify-terminal-${chapter}.py`));
+  for (const chapter of [23, 24, 25, 26]) assert.ok(files.includes(`tests/verify-terminal-${chapter}.py`));
   assert.ok(files.includes('tui-approval-demo.txt'));
   assert.ok(files.some(path => path.startsWith('tests/') && path.endsWith('.py')));
   assert.ok(files.includes('scripts/publish-site-source.mjs'));
@@ -136,13 +136,13 @@ function verifySnapshot(snapshot, expected) {
   symlinkSync(dependencies, join(snapshot, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir');
   try {
     run(process.execPath, ['node_modules/typescript/bin/tsc', '--noEmit'], snapshot);
-    for (const chapter of [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]) run(process.execPath, [`tests/verify-chapter-${chapter}.mjs`], snapshot);
+    for (const chapter of [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]) run(process.execPath, [`tests/verify-chapter-${chapter}.mjs`], snapshot);
   } finally {
     rmSync(join(snapshot, 'node_modules'), { force: true });
     rmSync(join(snapshot, 'dist'), { recursive: true, force: true });
     rmSync(join(snapshot, 'site-dist'), { recursive: true, force: true });
   }
-  return { websiteRebuild: true, websiteFixtures: true, typecheck: true, chapter13: true, chapter14: true, chapter15: true, chapter16: true, chapter17: true, chapter18: true, chapter19: true, chapter20: true, chapter21: true, chapter22: true, chapter23: true, chapter24: true, chapter25: true };
+  return { websiteRebuild: true, websiteFixtures: true, typecheck: true, chapter13: true, chapter14: true, chapter15: true, chapter16: true, chapter17: true, chapter18: true, chapter19: true, chapter20: true, chapter21: true, chapter22: true, chapter23: true, chapter24: true, chapter25: true, chapter26: true, chapter27: true, chapter28: true };
 }
 
 let temporary;
@@ -188,7 +188,7 @@ try {
     repository: 'sherlockmen/hello-my-agent', branch, commit, checkOnly, checkedAt: new Date().toISOString(),
     checks, files: manifest,
   }, null, 2) + '\n');
-  console.log(`✓ ${files.length} 份公开源码通过网站重建、TypeScript 和第十三至二十五章验收${checkOnly ? '（未推送）' : `，已发布到 ${branch} ${commit.slice(0, 8)}`}。`);
+  console.log(`✓ ${files.length} 份公开源码通过网站重建、TypeScript 和第十三至二十八章验收${checkOnly ? '（未推送）' : `，已发布到 ${branch} ${commit.slice(0, 8)}`}。`);
 } catch (error) {
   console.error(`源码发布失败：${error.message}`);
   process.exitCode = 1;
