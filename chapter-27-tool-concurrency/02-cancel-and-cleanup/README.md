@@ -86,7 +86,7 @@
 @@ -10,11 +10,16 @@
   */
  import type { ToolCall } from "../tools/registry.js";
- 
+
 -// [NEW 27.1] 新工具默认串行；load_skill 改已加载集合，必须先完成再读资源。
 +// [KEEP 来自 27.1] 新工具默认串行；load_skill 改已加载集合，必须先完成再读资源。
  const PARALLEL_READS = new Set(["read_file", "glob", "grep", "read_tool_result", "read_job", "read_skill_resource"]);
@@ -101,7 +101,7 @@
 +  onFailure?: (item: BatchItem, failure: BatchFailure) => void;
 +};
  export const isParallelRead = (call: ToolCall): boolean => PARALLEL_READS.has(call.name);
- 
+
  /**
 @@ -25,10 +30,21 @@
    if (!Number.isSafeInteger(value) || value < 1 || value > 4) throw new Error("toolConcurrency 必须为 1..4 的整数");
@@ -116,7 +116,7 @@
 +  if (!Number.isSafeInteger(ms) || ms < 1 || ms > 60_000) throw new Error("工具期限必须为 1..60000 毫秒的整数");
 +  return ms;
 +}
- 
+
  /**
 - * 发放前检查取消；容量必须等执行函数真正 settle 才归还。
 - * 当前相邻读取段收尾后才进入下一段或单项串行屏障。
@@ -268,7 +268,7 @@
 -// [NEW 27.1] 原单项权限链由调度器调用，相邻白名单读取才共用有限容量。
 +// [KEEP 来自 27.1] 原单项权限链由调度器调用，相邻白名单读取才共用有限容量。
  import { runToolBatch } from "./tool-batch.js";
- 
+
  const MAX_MODEL_CALLS = 8;
 @@ -189,7 +190,7 @@
        observer: event => { if (event.type === "child_state") emitAgentEvent(observer, event); },
@@ -281,7 +281,7 @@
      const previous = approvalTail;
 @@ -218,7 +219,7 @@
    let compactionAttempts = 0;
- 
+
    // [KEEP 来自 08.3] 中断时区分“已开始但没结果”和“尚未开始”的调用。
 -  // [CHANGED 27.1] 并发时可能同时有多个尚未返回结果的调用。
 +  // [KEEP 来自 27.1] 并发时可能同时有多个尚未返回结果的调用。
@@ -290,7 +290,7 @@
      // [KEEP 来自 18.1] 首次估算前刷新；本项任务后续请求继续共用这份记忆快照。
 @@ -331,7 +332,9 @@
        if (modelCall === maxModelCalls) break;
- 
+
        turn.push({ role: "assistant", content: result.text, toolCalls: result.toolCalls });
 -      // [NEW 27.1] 先固定编号，后续完成乱序不会改变调用身份；副作用与依赖工具是屏障。
 +      // [KEEP 来自 27.1] 先固定编号，后续完成乱序不会改变调用身份；副作用与依赖工具是屏障。
@@ -325,7 +325,7 @@
 +        },
 +      });
      }
- 
+
      if (options.childDepth) throw new ChildBudgetError("子任务已用尽模型决策次数，尚未得到完整最终回答。");
 ```
 
@@ -407,7 +407,7 @@
 +    // [NEW 27.2] 不让 Promise 的返回早于文件描述符关闭。
 +    await closed;
    }
- 
+
    if (lineNumber === 0 && input.offset === 1) {
 ```
 

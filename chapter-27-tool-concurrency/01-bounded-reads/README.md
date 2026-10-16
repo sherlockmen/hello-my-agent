@@ -208,7 +208,7 @@ export async function runToolBatch(
 - * 运行观察：真实网页结果进入下一次模型输入；未知或缺少编号会附本地反馈，真实编号配错结论仍需人工核实。
 + * 运行观察：读取按调用身份显示进度；串行屏障等待当前读取段收尾，本批观察齐全后模型才继续。
   */
- 
+
  // [KEEP 来自 20.1] 钩子在原审批完成后运行，不能创造批准。
 @@ -122,6 +125,8 @@
  import type { PreparedToolCall } from "../tools/types.js";
@@ -216,9 +216,9 @@ export async function runToolBatch(
  import type { RunOptions } from "./run-options.js";
 +// [NEW 27.1] 原单项权限链由调度器调用，相邻白名单读取才共用有限容量。
 +import { runToolBatch } from "./tool-batch.js";
- 
+
  const MAX_MODEL_CALLS = 8;
- 
+
 @@ -148,7 +153,7 @@
   * 本函数不会撤销已执行的操作，也不会把聊天、问答或模型承诺当成批准。
   */
@@ -255,7 +255,7 @@ export async function runToolBatch(
    const turn: Message[] = [{ role: "user", content: input, ...(attachments?.length ? { attachments } : {}) }];
 @@ -204,7 +218,8 @@
    let compactionAttempts = 0;
- 
+
    // [KEEP 来自 08.3] 中断时区分“已开始但没结果”和“尚未开始”的调用。
 -  let executingCallId: string | undefined;
 +  // [CHANGED 27.1] 并发时可能同时有多个尚未返回结果的调用。
@@ -265,7 +265,7 @@ export async function runToolBatch(
      await model.memory?.refresh(signal);
 @@ -316,29 +331,31 @@
        if (modelCall === maxModelCalls) break;
- 
+
        turn.push({ role: "assistant", content: result.text, toolCalls: result.toolCalls });
 -      for (const call of result.toolCalls) {
 -        signal.throwIfAborted();
@@ -467,7 +467,7 @@ export async function runToolBatch(
 +      }, (item, state) => emitAgentEvent(observer, { type: "tool_state", ...item, state }),
 +      { concurrency: options.toolConcurrency, serial: Boolean(model.hooks) });
      }
- 
+
      if (options.childDepth) throw new ChildBudgetError("子任务已用尽模型决策次数，尚未得到完整最终回答。");
 @@ -503,7 +524,7 @@
        for (const call of message.toolCalls ?? []) {
@@ -531,7 +531,7 @@ export async function runToolBatch(
   * 学习目标：分清本地输入估算、服务商用量与费用估计；本文件负责传递已经发生的模型、权限和工具事件。
   * 输入：runAgent 的开始/结束通知，或 Agent Loop 已发生的过程事件。
 @@ -30,10 +30,10 @@
- 
+
  // [KEEP 来自 08.1] 原有观察通道增加文字片段，TUI 与文本界面可消费同一种事件。
  // [KEEP 来自 09.1] 整轮任务开始与结束也使用事件通知。
 -// [CHANGED 25.3] 定义子任务身份、角色、状态与说明的观察事件。
@@ -581,7 +581,7 @@ export async function runToolBatch(
 - * 运行观察：抓取完成后轨迹展示真实来源与结果大小；失败沿原工具显示，摘要不能替代交给模型的实际正文。
 + * 运行观察：工具状态与整批事件决定轨迹行；摘要不改变原工具结果或下一次模型输入。
   */
- 
+
  import type { AgentEvent } from "../agent/events.js";
 @@ -143,7 +143,7 @@
   * - 显示规则：工具状态来自元数据，参数与摘要经过字段筛选、控制字符处理和长度限制。
@@ -595,7 +595,7 @@ export async function runToolBatch(
 @@ -241,6 +241,8 @@
      ];
    }
- 
+
 +  // [NEW 27.1] 排队/运行/终态属于同一调用，结果正文仍由 tool_finish 展示。
 +  if (event.type === "tool_state") return [`[工具 #${event.sequence} ${event.call.id}] ${event.call.name}: ${event.state}`];
    const tool = describeToolCall(event.call);
@@ -621,7 +621,7 @@ export async function runToolBatch(
   * 输入：上一份 RunView 与下一条 AgentEvent；事件按 streamAgentRun 的顺序送达。
 @@ -27,7 +27,7 @@
  import { formatTeachingTrace } from "../teaching-trace.js";
- 
+
  // [KEEP 来自 10.2] RunView 继续保存显示数据，不替代模型历史。
 -// [CHANGED 25.3] 按子会话编号保存最新显示状态。
 +// [KEEP 来自 25.3] 按子会话编号保存最新显示状态。

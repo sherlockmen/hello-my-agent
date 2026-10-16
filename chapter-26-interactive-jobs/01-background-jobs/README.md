@@ -292,7 +292,7 @@ export async function jobCommand(text: string, jobs?: JobManager): Promise<strin
 +      // [KEEP 来自 20.1] 钩子专用JSON输入不读取聊天stdin；其他调用仍得到EOF。
        stdio: [input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
      });
- 
+
 @@ -115,7 +116,7 @@
        bytes += Math.min(remaining, chunk.length);
        if (chunk.length > remaining) stop("output_limit");
@@ -479,7 +479,7 @@ export async function readJob(json: string, jobs: JobManager | undefined, signal
  import { callWeb, parseWebCall } from "../web/client.js";
  import { callMcp } from "../mcp/client.js";
 @@ -54,8 +56,9 @@
- 
+
  // [KEEP 来自 06.1] write_file 进入模型可见的工具列表，但只能走准备与审批通道。
  // [KEEP 来自 06.2] edit_file 与 write_file 共用准备、审批和执行入口。
 -// [CHANGED 25.1] 接纳委派定义，真实运行交由循环处理。
@@ -536,7 +536,7 @@ export async function readJob(json: string, jobs: JobManager | undefined, signal
    // [KEEP 来自 05.3] 策略会查询已批准记录，但每次仍先执行 deny 检查。
 @@ -186,12 +185,15 @@
    if (!input) return { action: "deny", reason: "工具参数不是有效的 JSON 对象" };
- 
+
    // [KEEP 来自 12.1] Plan 的硬拒绝早于预览和审批，会话授权也不能跳过。
 -  if (mode === "plan" && ["write_file", "edit_file", "run_command", "propose_memory"].includes(call.name)) {
 +  if (mode === "plan" && ["write_file", "edit_file", "run_command", "propose_memory", "start_job", "stop_job"].includes(call.name)) {
@@ -613,7 +613,7 @@ export async function readJob(json: string, jobs: JobManager | undefined, signal
   */
 -// [CHANGED 25.1] 按当前角色筛选工具定义和角色提示。
  export type ModelRequestScope = { allowedTools?: readonly string[]; rolePrompt?: string };
- 
+
  export interface Model {
 +  // [NEW 26.1] 单轮结束保留registry；整次CLI退出才close。
 +  readonly jobs?: import("../processes/jobs.js").JobManager;
@@ -833,7 +833,7 @@ export async function readJob(json: string, jobs: JobManager | undefined, signal
 +    // [NEW 26.1] 退出等待自有作业清理；即使close失败也关闭MCP。
 +    } finally { try { await model.jobs?.close(); } finally { await mcp?.close(); } }
    });
- 
+
  // [KEEP 来自 02.2] 请求返回 Promise，parseAsync 会等待默认操作结束。
 ```
 

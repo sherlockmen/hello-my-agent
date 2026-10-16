@@ -245,7 +245,7 @@ export async function takeoverJob(jobs: JobManager, id: string, signal: AbortSig
 -import { StringDecoder } from "node:string_decoder";
  import { ToolError } from "../errors.js";
 -import { processEnvironment } from "./run-process.js";
- 
+
 -// [NEW 26.1] JobID 是本实例的引用，PID 仅供观察，不能作为外部控制入口。
 +// [KEEP 来自 26.1] JobID 是本实例的引用，PID 仅供观察，不能作为外部控制入口。
  export type JobSnapshot = {
@@ -263,7 +263,7 @@ export async function takeoverJob(jobs: JobManager, id: string, signal: AbortSig
 +export type JobInput = { command: string; cwd: string; timeoutMs: number; transport?: "pipe" | "pty" };
 +type Entry = { snapshot: JobSnapshot; child: Transport; owner?: symbol; done: Promise<JobSnapshot>;
    stop: (reason: NonNullable<JobSnapshot["stopReason"]>) => void };
- 
+
  /** 管理一个 CLI 会话创建的 POSIX 进程；已登记后台任务不绑定单轮模型信号。 */
  export class JobManager {
    private readonly entries = new Map<string, Entry>();
@@ -399,7 +399,7 @@ export async function takeoverJob(jobs: JobManager, id: string, signal: AbortSig
 @@ -7,17 +7,17 @@
  import { prepareRunCommand } from "./run-command.js";
  import type { PreparedToolCall, ToolExecutionResult } from "./types.js";
- 
+
 -// [NEW 26.1] start_job 与 run_command 的等待退出语义各自明确。
 +// [KEEP 来自 26.1] start_job 与 run_command 的等待退出语义各自明确。
  export const startJobDefinition = {

@@ -91,7 +91,7 @@ CLI退出不会自动走清理流程，重启也不会恢复旧登记的控制�
  import { lstat, mkdtemp, realpath } from "node:fs/promises";
 @@ -19,13 +21,14 @@
  import type { PreparedToolCall, ToolExecutionResult } from "../tools/types.js";
- 
+
  // [KEEP 来自 28.1] ID和分支由本实例生成，路径只从本地登记表取得。
 -// [NEW 28.2] 记录评审比较双方和预览摘要，不存可复用执行授权。
 +// [KEEP 来自 28.2] 记录评审比较双方和预览摘要，不存可复用执行授权。

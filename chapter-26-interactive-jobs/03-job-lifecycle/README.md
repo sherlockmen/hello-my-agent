@@ -102,7 +102,7 @@
  import { EventEmitter } from "node:events";
 @@ -11,7 +15,10 @@
  import { ToolError } from "../errors.js";
- 
+
  // [KEEP 来自 26.1] JobID 是本实例的引用，PID 仅供观察，不能作为外部控制入口。
 +// [CHANGED 26.3] 进程状态与输出就绪分别记录；历史证据不会随尾日志淘汰。
  export type JobSnapshot = {
@@ -124,13 +124,13 @@
 +
 +// [NEW 26.3] 通知只供本地显示；不会伪造工具结果或自动触发模型请求。
 +export type JobNotice = { type: "ready" | "ended"; job: JobSnapshot };
- 
+
  /** 管理一个 CLI 会话创建的 POSIX 进程；已登记后台任务不绑定单轮模型信号。 */
  export class JobManager {
 @@ -36,6 +46,15 @@
          || limits.history < limits.active) throw new ToolError("作业限额必须为正整数，历史限额不能小于活跃限额。");
    }
- 
+
 +  // [NEW 26.3] 观察者异常不能妨碍进程清理；解除订阅后不会再收到本会话通知。
 +  subscribe(listener: (notice: JobNotice) => void): () => void {
 +    this.output.on("notice", listener); return () => { this.output.off("notice", listener); };
@@ -219,14 +219,14 @@
        stop("start_cancelled"); await done;
 @@ -152,8 +188,9 @@
  }
- 
+
  /** 有界状态和日志同时给模型/本地命令；state=running 仅证明进程已启动。 */
 +// [CHANGED 26.3] 展示就绪证据和时间，不从PID或退出码推测服务可用。
  export function describeJob(job: JobSnapshot): string {
 -  return `JobID: ${job.id}\nPID: ${job.pid ?? "无"}\n状态: ${job.state}\n退出码: ${job.exitCode ?? "无"}\n信号: ${job.signal ?? "无"}\n停止原因: ${job.stopReason ?? "无"}\n日志尾部 (${job.retainedBytes} bytes，已丢弃 ${job.droppedBytes} bytes):\n${job.log || "（空）"}`;
 +  return `JobID: ${job.id}\nPID: ${job.pid ?? "无"}\n状态: ${job.state}\n就绪: ${job.readiness}\n声明标记: ${JSON.stringify(job.readyText)}\n就绪时刻: ${job.readyAt ?? "无"}\n输出证据: ${JSON.stringify(job.evidence)}\n退出码: ${job.exitCode ?? "无"}\n信号: ${job.signal ?? "无"}\n停止原因: ${job.stopReason ?? "无"}\n日志尾部 (${job.retainedBytes} bytes，已丢弃 ${job.droppedBytes} bytes):\n${job.log || "（空）"}`;
  }
- 
+
  /** 人类本地查询和停止不进入模型上下文；不从聊天文字推导批准。 */
 ```
 

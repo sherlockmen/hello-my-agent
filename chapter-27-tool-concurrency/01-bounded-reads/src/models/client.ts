@@ -245,4 +245,3 @@ function requestParts(mode: ExecutionMode, projectPrompt = "", external: ToolDef
     : " 当前为执行模式：按用户任务实施修改，仍需遵守每次工具的本地权限与审批规则。");
   return { prompt: prompt + projectPrompt, definitions: allowedTools ? definitions.filter(tool => allowedTools.includes(tool.name)) : definitions };
 }
-

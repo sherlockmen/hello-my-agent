@@ -395,7 +395,7 @@ export async function prepareWorktree(name: string, json: string, worktrees: Wor
      if (options.childDepth || ++childCount > 3) throw new ToolError("每轮最多三个只读子任务，子任务不能继续委派。");
      return runSubagent(model, argumentsJson, childSignal, { parentSessionId, sessionDirectory: options.childSessionDirectory, requestApproval, depth: options.childDepth ?? 0,
 @@ -334,7 +336,7 @@
- 
+
        // [KEEP 来自 27.1] 先固定编号，后续完成乱序不会改变调用身份；副作用与依赖工具是屏障。
        const items = result.toolCalls.map((call, index) => ({ call, sequence: toolSequence + index + 1 }));
 -      // [NEW 27.3] 无法配对的响应尚未进入历史，也没有工具开始。
@@ -497,7 +497,7 @@ export async function prepareWorktree(name: string, json: string, worktrees: Wor
  import { createProtocolAdapter, SUMMARY_PROMPT, type ModelProfile } from "./protocol.js";
 @@ -96,8 +98,10 @@
  export type ModelRequestScope = { allowedTools?: readonly string[]; rolePrompt?: string };
- 
+
  export interface Model {
 -  // [NEW 26.1] 单轮结束保留registry；整次CLI退出才close。
 +  // [KEEP 来自 26.1] 单轮结束保留registry；整次CLI退出才close。
@@ -558,7 +558,7 @@ export async function prepareWorktree(name: string, json: string, worktrees: Wor
 @@ -23,6 +23,8 @@
   * 观察：网页请求在 Plan 被拒绝，在执行模式每次审批；上次批准不会给下一 URL 或查询授权。
   */
- 
+
 +// [NEW 28.1] 副作用集合由实际登记的工作区工具生成，不给会话记住权限。
 +import { worktreeMutations } from "../tools/worktree-tools.js";
  import { realpath } from "node:fs/promises";
@@ -566,7 +566,7 @@ export async function prepareWorktree(name: string, json: string, worktrees: Wor
  import { toolDefinitions, type ToolCall } from "../tools/registry.js";
 @@ -185,13 +187,16 @@
    if (!input) return { action: "deny", reason: "工具参数不是有效的 JSON 对象" };
- 
+
    // [KEEP 来自 12.1] Plan 的硬拒绝早于预览和审批，会话授权也不能跳过。
 -  if (mode === "plan" && ["write_file", "edit_file", "run_command", "propose_memory", "start_job", "stop_job"].includes(call.name)) {
 +  if (mode === "plan" && (worktreeMutations.has(call.name) || ["write_file", "edit_file", "run_command", "propose_memory", "start_job", "stop_job"].includes(call.name))) {
@@ -724,7 +724,7 @@ export async function prepareWorktree(name: string, json: string, worktrees: Wor
 @@ -189,7 +194,7 @@
      return [`模型 < 第 ${event.call} 次决策`, `  返回：${result}`];
    }
- 
+
 -  // [NEW 27.3] 单项完成事件可乱序，整批收齐后才继续模型。
 +  // [KEEP 来自 27.3] 单项完成事件可乱序，整批收齐后才继续模型。
    if (event.type === "tool_batch_finish") return [`[工具批 ${event.call}] ${event.results} 项观察已收齐${event.interrupted ? "；本轮中断" : "，交回模型"}`];

@@ -115,7 +115,7 @@
  function deadline(value: number | undefined, fallback: number): number {
 @@ -41,7 +54,7 @@
  }
- 
+
  /**
 - * [CHANGED 27.2] 超期只发出停止请求，始终 await 执行函数 settle 后归还容量。
 + * [KEEP 来自 27.2] 超期只发出停止请求，始终 await 执行函数 settle 后归还容量。
@@ -193,13 +193,13 @@
  // [KEEP 来自 27.1] 原单项权限链由调度器调用，相邻白名单读取才共用有限容量。
 -import { runToolBatch } from "./tool-batch.js";
 +import { runToolBatch, validateBatch } from "./tool-batch.js";
- 
+
  const MAX_MODEL_CALLS = 8;
- 
+
 @@ -331,13 +332,18 @@
        // 最后一次模型机会仍要求工具时，结果已不可能再反馈给模型，因此不执行无用操作。
        if (modelCall === maxModelCalls) break;
- 
+
 +      // [KEEP 来自 27.1] 先固定编号，后续完成乱序不会改变调用身份；副作用与依赖工具是屏障。
 +      const items = result.toolCalls.map((call, index) => ({ call, sequence: toolSequence + index + 1 }));
 +      // [NEW 27.3] 无法配对的响应尚未进入历史，也没有工具开始。
@@ -310,7 +310,7 @@
 +      if (batchFailed) throw batchError;
 +
      }
- 
+
      if (options.childDepth) throw new ChildBudgetError("子任务已用尽模型决策次数，尚未得到完整最终回答。");
 ```
 
@@ -366,7 +366,7 @@
 @@ -189,6 +189,8 @@
      return [`模型 < 第 ${event.call} 次决策`, `  返回：${result}`];
    }
- 
+
 +  // [NEW 27.3] 单项完成事件可乱序，整批收齐后才继续模型。
 +  if (event.type === "tool_batch_finish") return [`[工具批 ${event.call}] ${event.results} 项观察已收齐${event.interrupted ? "；本轮中断" : "，交回模型"}`];
    if (event.type === "permission_check") {
@@ -375,7 +375,7 @@
 @@ -241,7 +243,7 @@
      ];
    }
- 
+
 -  // [NEW 27.1] 排队/运行/终态属于同一调用，结果正文仍由 tool_finish 展示。
 +  // [KEEP 来自 27.1] 排队/运行/终态属于同一调用，结果正文仍由 tool_finish 展示。
    if (event.type === "tool_state") return [`[工具 #${event.sequence} ${event.call.id}] ${event.call.name}: ${event.state}`];

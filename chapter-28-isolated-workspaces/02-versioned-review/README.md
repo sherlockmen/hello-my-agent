@@ -96,7 +96,7 @@ SHA只标识已经提交的文件树，不能代表目录里的未提交内容�
  import { runProcess, type ProcessResult } from "../processes/run-process.js";
  import { prepareRunCommand } from "../tools/run-command.js";
  import type { PreparedToolCall, ToolExecutionResult } from "../tools/types.js";
- 
+
 -// [NEW 28.1] 本文件以下实现均为本节新增；ID和分支由本实例生成，路径只从本地登记表取得。
 +// [KEEP 来自 28.1] ID和分支由本实例生成，路径只从本地登记表取得。
 +// [NEW 28.2] 记录评审比较双方和预览摘要，不存可复用执行授权。
@@ -184,7 +184,7 @@ SHA只标识已经提交的文件树，不能代表目录里的未提交内容�
  import { ToolError } from "../errors.js";
  import { WorktreeManager, worktreeResult } from "../workspaces/worktrees.js";
  import type { PreparedToolCall, ToolDefinition, ToolExecutionResult } from "./types.js";
- 
+
 -// [NEW 28.1] 本文件以下实现均为本节新增； 模型只能引用管理器返回的UUID，不能指定任意worktree目录。
 +// [KEEP 来自 28.1] 模型只能引用管理器返回的UUID，不能指定任意worktree目录。
  const idProperty = { type: "string", description: "本次CLI创建的WorktreeID" };
