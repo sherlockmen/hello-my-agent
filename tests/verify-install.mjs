@@ -52,6 +52,8 @@ const currentPackageModules = [
   "language-service/client", "code-command", "tools/check-project", "tools/code-intelligence",
   "sandbox/policy", "sandbox/runtime", "sandbox/diagnostics",
   "diagnostics/logger", "diagnostics/watchdog", "diagnostics/config", "models/retry",
+  "evaluation/fixtures", "evaluation/checks", "evaluation/replay", "evaluation/runner", "evaluation/command", "evaluation/terminal",
+  "config/connection-profile", "release/completion", "release/check-package", "config/migrate-config",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {
