@@ -16,6 +16,13 @@ export function isolatedEnv(extra = {}) {
   return { PATH: process.env.PATH, HOME: process.env.HOME, ...extra };
 }
 
+// 两种 SDK 都允许纯文字使用内容块；验收比较文字，同时保留原始请求检查协议字段。
+function textContent(content) {
+  if (typeof content === "string") return content;
+  assert.ok(Array.isArray(content));
+  return content.map((block) => { assert.equal(block.type, "text"); assert.equal(typeof block.text, "string"); return block.text; }).join("");
+}
+
 /** 异步启动 CLI，让本进程仍能响应 SDK 的 HTTP 请求；超时会停止子进程。 */
 export function runCli(cli, args, cwd, env = {}, input = "", onStart = () => {}) {
   return new Promise((resolve, reject) => {
@@ -50,7 +57,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
     const body = JSON.parse(raw);
     requests.push({ url: request.url, headers: request.headers, body });
     const anthropic = request.url.endsWith("/messages");
-    const last = body.messages.at(-1).content;
+    const last = textContent(body.messages.at(-1).content);
     const failure = /^\[(401|403|404|429|500)\]$/.exec(last);
     response.setHeader("content-type", "application/json");
     if (last === "[wait]") {
@@ -63,7 +70,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
       response.end(JSON.stringify({ error: { type: "test_error", message: `不要打印这段：${secret}` } }));
       return;
     }
-    const first = body.messages.find((message) => message.role === "user").content;
+    const first = textContent(body.messages.find((message) => message.role === "user").content);
     const text = last === "[empty]" ? "" : last === "记得吗" ? `记得：${first}` : `收到：${last}`;
     const truncated = last === "[limit]";
     const usage = body.model === "no-usage" ? undefined : anthropic
@@ -144,11 +151,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
         assert.equal(first.body.max_tokens, 2048);
         assert.deepEqual(second.body.messages.map((message) => message.role), ["user", "assistant", "user"]);
       }
-      const previousAssistantContent = second.body.messages.at(-2).content;
-      const previousAssistantText = typeof previousAssistantContent === "string"
-        ? previousAssistantContent
-        : previousAssistantContent.find((block) => block.type === "text")?.text;
-      assert.equal(previousAssistantText, "收到：记住青柠");
+      assert.equal(textContent(second.body.messages.at(-2).content), "收到：记住青柠");
 
       // 单次提问从 02.2 一直保留到完成版，不能因为增加终端交互而消失。
       requests.length = 0;
@@ -168,9 +171,9 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
       requests.length = 0;
       const retry = await invoke(["--provider", provider], "[401]\n恢复了\n/exit\n");
       assert.equal(retry.status, 0);
-      assert.match(retry.stderr, /认证失败/);
+      assert.match(retry.stderr, /认证(?:或访问权限)?失败/);
       assert.equal(requests.length, 2);
-      const recovered = requests[1].body.messages.filter((m) => m.role !== "system");
+      const recovered = requests[1].body.messages.filter((m) => m.role !== "system").map((m) => ({ ...m, content: textContent(m.content) }));
       if (streaming) {
         assert.equal(recovered[0].content, "[401]");
         const status = recovered[1].content;
@@ -195,7 +198,7 @@ export async function verifyChat(cli, cwd, { reset = false, progress = false, st
         assert.equal(cleared.status, 0);
         assert.match(splitOutput ? cleared.stderr : cleared.stdout, /已清空当前对话/);
         assert.equal(requests.length, 2);
-        assert.deepEqual(requests[1].body.messages.filter((m) => m.role !== "system"), [{ role: "user", content: "新内容" }]);
+        assert.deepEqual(requests[1].body.messages.filter((m) => m.role !== "system").map((m) => ({ ...m, content: textContent(m.content) })), [{ role: "user", content: "新内容" }]);
       }
     }
 

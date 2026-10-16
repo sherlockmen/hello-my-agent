@@ -42,6 +42,8 @@ const currentPackageModules = [
   "memory/store", "memory/commands", "tools/propose-memory",
   "skills/catalog", "tools/skill-tools",
   "hooks/lifecycle", "mcp/client", "web/client",
+  "models/protocol", "models/model-errors", "attachments/store", "attachments/image-format",
+  "subagents/runner", "tools/delegate-task",
 ];
 const requestedStep = process.argv[2] === undefined ? null : Number(process.argv[2]);
 if (requestedStep !== null && ![3, 4].includes(requestedStep)) {

@@ -90,9 +90,18 @@ const targets = {
   "22.1": "chapter-22-web/01-fetch-page/src",
   "22.2": "chapter-22-web/02-search-sources/src",
   "22.3": "chapter-22-web/03-grounded-answers/src",
+  "23.1": "chapter-23-model-adapters/01-adapter-contract/src",
+  "23.2": "chapter-23-model-adapters/02-model-switching/src",
+  "23.3": "chapter-23-model-adapters/03-capabilities-errors/src",
+  "24.1": "chapter-24-attachments/01-attachment-references/src",
+  "24.2": "chapter-24-attachments/02-image-protocol/src",
+  "24.3": "chapter-24-attachments/03-attachment-resume/src",
+  "25.1": "chapter-25-subagents/01-child-sessions/src",
+  "25.2": "chapter-25-subagents/02-readonly-roles/src",
+  "25.3": "chapter-25-subagents/03-child-observation/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "22.3";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "25.3";
 const source = targets[target];
 
 if (!source) {
