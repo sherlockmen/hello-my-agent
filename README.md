@@ -380,7 +380,7 @@ npm run exercise:12
 
 新章练习：[第二十九章](chapter-29-shared-tasks/EXERCISES.md) · [第三十章](chapter-30-scheduled-tasks/EXERCISES.md) · [第三十一章](chapter-31-extension-packages/EXERCISES.md)。
 
-第 01—12、14—17、20—28 章已确认完成。第十三、十八、十九、二十九至三十一章待确认。npm 包尚未发布。
+第 01—12、14—17、20—31 章已确认完成。第十三、十八、十九章待确认。npm 包尚未发布。
 
 ## 许可证
 
