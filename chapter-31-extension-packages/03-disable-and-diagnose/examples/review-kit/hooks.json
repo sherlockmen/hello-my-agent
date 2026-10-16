@@ -1,0 +1,1 @@
+{"before_tool":[{"command":"node","args":["./dist/hook.js"],"timeout_ms":1000}]}

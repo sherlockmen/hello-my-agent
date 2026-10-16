@@ -1,0 +1,1 @@
+{"servers":[{"name":"notes","transport":"stdio","command":"node","args":["./dist/server.js"]}]}

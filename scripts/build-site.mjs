@@ -269,7 +269,7 @@ export function buildSite({ root = projectRoot, output = join(root, "site-dist")
     const lessons = [...pages.keys()].filter((path) => path.startsWith(`${directory}/`) && /^\d+-[^/]+\/README\.md$/.test(path.slice(directory.length + 1)))
       .sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
     const exercises = `${directory}/EXERCISES.md`;
-    const other = tutorialPages.filter((path) => path.startsWith(`${directory}/`) && path !== overview && path !== exercises && !lessons.includes(path));
+    const other = tutorialPages.filter((path) => path.startsWith(`${directory}/`) && !path.includes("/examples/") && path !== overview && path !== exercises && !lessons.includes(path));
     return { directory, title: pages.get(overview)?.title ?? directory, overview, lessons, exercises: pages.has(exercises) ? exercises : null, other };
   });
   const sidebar = [

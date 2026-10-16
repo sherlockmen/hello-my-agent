@@ -28,6 +28,8 @@ try {
   ].join("\n"));
   put("chapter-01-fixture/01-example/README.md", "# Lesson 1.1\n\n[Parent](../README.md)\n");
   put("chapter-01-fixture/EXERCISES.md", "# Exercises\n");
+  put("chapter-01-fixture/examples/review-kit/skills/SKILL.md", "# Example Skill\n");
+  put("chapter-01-fixture/examples/README.md", "# Example commands\n");
   put("chapter-01-fixture/src/index.ts", 'export const greeting: string = "hello";\n');
   put("chapter-01-fixture/src/nested/view.tsx", "export const View = () => <div>Hello</div>;\n");
   for (const name of ["cover.png", "move.gif", "story.jpg", "ordinary.gif", "still.png"]) put(`chapter-01-fixture/assets/${name}`, `Fixture ${name}`);
@@ -68,6 +70,9 @@ try {
     assert.equal(existsSync(join(root, "site-dist", excluded)), false, `Excluded path was published: ${excluded}`);
   }
   const manifest = JSON.parse(get("navigation.json"));
+  assert.deepEqual(manifest.chapters[0].other, [], "Example package files must not become lessons or pagination stops");
+  assert.ok(existsSync(join(root, "site-dist/content/chapter-01-fixture/examples/review-kit/skills/SKILL.md")), "Example material remains readable by its direct link");
+  assert.doesNotMatch(get("_sidebar.md"), /Example Skill|Example commands/);
   for (const page of manifest.pages) {
     assert.ok(existsSync(join(root, "site-dist", page.path)), `Missing manifest page ${page.path}`);
     assert.ok(page.route.startsWith("#/content/"), "Manifest must retain directly navigable hash URLs");

@@ -1,0 +1,8 @@
+{
+  "id": "review-kit",
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "skills": "skills",
+  "hooks": "hooks.json",
+  "mcp": "mcp.json"
+}

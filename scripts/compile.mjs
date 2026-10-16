@@ -108,9 +108,18 @@ const targets = {
   "28.1": "chapter-28-isolated-workspaces/01-worktree-base/src",
   "28.2": "chapter-28-isolated-workspaces/02-versioned-review/src",
   "28.3": "chapter-28-isolated-workspaces/03-integrate-and-cleanup/src",
+  "29.1": "chapter-29-shared-tasks/01-claim-and-lease/src",
+  "29.2": "chapter-29-shared-tasks/02-dependencies-reclaim/src",
+  "29.3": "chapter-29-shared-tasks/03-agent-messages/src",
+  "30.1": "chapter-30-scheduled-tasks/01-persistent-schedules/src",
+  "30.2": "chapter-30-scheduled-tasks/02-runtime-dispatch/src",
+  "30.3": "chapter-30-scheduled-tasks/03-stop-and-recover/src",
+  "31.1": "chapter-31-extension-packages/01-install-local-package/src",
+  "31.2": "chapter-31-extension-packages/02-enable-capabilities/src",
+  "31.3": "chapter-31-extension-packages/03-disable-and-diagnose/src",
 };
 const args = process.argv.slice(2);
-const target = args.find((arg) => !arg.startsWith("--")) ?? "28.3";
+const target = args.find((arg) => !arg.startsWith("--")) ?? "31.3";
 const source = targets[target];
 
 if (!source) {
