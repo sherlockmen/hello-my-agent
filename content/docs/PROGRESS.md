@@ -6,9 +6,9 @@
 
 ## 当前进度
 
-- **已确认完成：33 / 36 章（91.7%）。**
-- **第 01—12、14—17、20—36 章已确认完成。** 第 13 章已整理，等待阅读确认。
-- 第 14—17、20—22 章已于 2026-10-15 确认完成，第 23—36 章已于 2026-10-16 确认完成；第 13 章四节、第 18、19 章各三节待确认。第 35、36 章六节正文、完整 TypeScript 快照、练习和六套配图已按先正文后配图整理，按本次通知标记完成；源码、教学网站与 Pages 分支继续分别维护。
+- **已确认完成：36 / 36 章（100%）。**
+- **第 01—36 章已全部确认完成。**
+- 第 13、18、19 章及其 10 个小节已于 2026-10-16 按本次通知标记完成；其余章节保留原确认日期。master 保留源码、原生 Markdown 和正式配图，Docsify 与生成网站分别在教学网站和 Pages 分支维护。
 - 章节完成状态由你的明确通知更新；已有代码或检查通过不自动计入已完成。
 
 ## 第 02 章小节进度
@@ -141,14 +141,14 @@
 
 ## 第 13 章小节进度
 
-第十三章从 12.5 的完整 TypeScript 快照继续，沿“保存 → 读取可信记录 → 恢复 → 查找与导出”串起四节。先写原理正文，再补配图；保留 13.1 已有图文，并为读取、恢复、锁与管理补充图解。实际检查证据见验证记录。本章等待阅读确认；全书确认完成数见本表开头。
+第十三章从 12.5 的完整 TypeScript 快照继续，沿“保存 → 读取可信记录 → 恢复 → 查找与导出”串起四节。先写原理正文，再补配图；保留 13.1 已有图文，并为读取、恢复、锁与管理补充图解。实际检查证据见验证记录。本章已于 2026-10-16 按用户通知标记为已完成，四个小节一并更新。
 
 | 小节 | 内容 | 正式源码数 | 状态 |
 | --- | --- | --- | --- |
-| 13.1 | [会话保存](/content/chapter-13-session-persistence/01-save-session/README.md) | 40 | 待确认 |
-| 13.2 | [读取可信记录](/content/chapter-13-session-persistence/02-read-records/README.md) | 41 | 待确认 |
-| 13.3 | [恢复会话](/content/chapter-13-session-persistence/03-resume-session/README.md) | 41 | 待确认 |
-| 13.4 | [查找与导出会话](/content/chapter-13-session-persistence/04-manage-sessions/README.md) | 42 | 待确认 |
+| 13.1 | [会话保存](/content/chapter-13-session-persistence/01-save-session/README.md) | 40 | 已完成 |
+| 13.2 | [读取可信记录](/content/chapter-13-session-persistence/02-read-records/README.md) | 41 | 已完成 |
+| 13.3 | [恢复会话](/content/chapter-13-session-persistence/03-resume-session/README.md) | 41 | 已完成 |
+| 13.4 | [查找与导出会话](/content/chapter-13-session-persistence/04-manage-sessions/README.md) | 42 | 已完成 |
 
 ## 第 14 章小节进度
 
@@ -192,23 +192,23 @@
 
 ## 第 18 章小节进度
 
-本章从 17.3 的完整快照继续，依次实现显式保存、模型候选审批和旧记忆管理。每项任务读取固定记忆快照；来源记录、有效状态与会话历史分别管理。正文冷读、连续跟写、练习、核心与真实终端检查通过，见验证记录。本章等待用户确认。
+本章从 17.3 的完整快照继续，依次实现显式保存、模型候选审批和旧记忆管理。每项任务读取固定记忆快照；来源记录、有效状态与会话历史分别管理。正文冷读、连续跟写、练习、核心与真实终端检查通过，见验证记录。本章已于 2026-10-16 按用户通知标记为已完成，三个小节一并更新。
 
 | 小节 | 内容 | 正式源码数 | 状态 |
 | --- | --- | --- | --- |
-| 18.1 | [显式保存项目记忆](/content/chapter-18-long-term-memory/01-save-memory/README.md) | 51 | 待确认 |
-| 18.2 | [让模型提出记忆候选](/content/chapter-18-long-term-memory/02-propose-memory/README.md) | 52 | 待确认 |
-| 18.3 | [检查与纠正记忆](/content/chapter-18-long-term-memory/03-manage-memory/README.md) | 52 | 待确认 |
+| 18.1 | [显式保存项目记忆](/content/chapter-18-long-term-memory/01-save-memory/README.md) | 51 | 已完成 |
+| 18.2 | [让模型提出记忆候选](/content/chapter-18-long-term-memory/02-propose-memory/README.md) | 52 | 已完成 |
+| 18.3 | [检查与纠正记忆](/content/chapter-18-long-term-memory/03-manage-memory/README.md) | 52 | 已完成 |
 
 ## 第 19 章小节进度
 
-本章完整继承 18.3，依次提供技能目录、用户手动加载和模型按需读取工具。元信息、正文与资源逐步取得，技能文字不能改变工具权限。正文冷读、连续跟写、练习、核心与真实终端检查通过，见验证记录。本章等待用户确认。
+本章完整继承 18.3，依次提供技能目录、用户手动加载和模型按需读取工具。元信息、正文与资源逐步取得，技能文字不能改变工具权限。正文冷读、连续跟写、练习、核心与真实终端检查通过，见验证记录。本章已于 2026-10-16 按用户通知标记为已完成，三个小节一并更新。
 
 | 小节 | 内容 | 正式源码数 | 状态 |
 | --- | --- | --- | --- |
-| 19.1 | [发现技能目录](/content/chapter-19-skills/01-discover-skills/README.md) | 53 | 待确认 |
-| 19.2 | [按需加载技能正文](/content/chapter-19-skills/02-load-on-demand/README.md) | 53 | 待确认 |
-| 19.3 | [让模型选择技能与资源](/content/chapter-19-skills/03-model-skill-tools/README.md) | 54 | 待确认 |
+| 19.1 | [发现技能目录](/content/chapter-19-skills/01-discover-skills/README.md) | 53 | 已完成 |
+| 19.2 | [按需加载技能正文](/content/chapter-19-skills/02-load-on-demand/README.md) | 53 | 已完成 |
+| 19.3 | [让模型选择技能与资源](/content/chapter-19-skills/03-model-skill-tools/README.md) | 54 | 已完成 |
 
 ## 第 20 章小节进度
 
@@ -386,8 +386,8 @@
 | --- | --- | --- | --- |
 | 第一部分：先让 Agent 完成一次编码任务 | 01—08 | 普通终端中的读取、搜索、权限、修改、测试与取消。 | 8 / 8 |
 | 第二部分：把 Agent 做成真正可用的 TUI | 09—12 | 可观察执行、审批操作、补充要求与打断任务的终端界面。 | 4 / 4 |
-| 第三部分：管理会话、上下文与项目知识 | 13—18 | 查找和恢复任务，管理分支、检查点、上下文与记忆。 | 4 / 6 |
-| 第四部分：扩展工具、知识与模型能力 | 19—24 | Skills、Hooks、MCP、资料查询、多模型与附件。 | 5 / 6 |
+| 第三部分：管理会话、上下文与项目知识 | 13—18 | 查找和恢复任务，管理分支、检查点、上下文与记忆。 | 6 / 6 |
+| 第四部分：扩展工具、知识与模型能力 | 19—24 | Skills、Hooks、MCP、资料查询、多模型与附件。 | 6 / 6 |
 | 第五部分：子 Agent、交互进程与任务协作 | 25—30 | 可跟进、接管、取消和整合的子任务、命令进程与协作。 | 6 / 6 |
 | 第六部分：把项目做成可以安装和长期使用的产品 | 31—36 | 扩展分发、诊断、隔离、故障恢复、评测与 npm 发布。 | 6 / 6 |
 
@@ -419,18 +419,18 @@
 
 | 章 | 章节与主要内容 | 验收项 | 状态 | 完成日期 |
 | --- | --- | --- | --- | --- |
-| 13 | **[保存、查找与恢复会话](/content/chapter-13-session-persistence/README.md)**：会话 ID、JSONL、格式版本、锁、中断标记、列表、命名、搜索、恢复、导出与工作区信息。 | 崩溃后读取有效记录；识别目录/工作区变化；恢复不重复执行工具。 | 待确认 | — |
+| 13 | **[保存、查找与恢复会话](/content/chapter-13-session-persistence/README.md)**：会话 ID、JSONL、格式版本、锁、中断标记、列表、命名、搜索、恢复、导出与工作区信息。 | 崩溃后读取有效记录；识别目录/工作区变化；恢复不重复执行工具。 | 已完成 | 2026-10-16 |
 | 14 | **[会话分支与文件检查点](/content/chapter-14-session-checkpoints/README.md)**：会话分支、文件检查点、TUI 改动查看与恢复范围、对话恢复和文件恢复的区别。 | 分支不改变原会话；外部修改导致的恢复冲突可见；说明不可撤销的副作用。 | 已完成 | 2026-10-15 |
 | 15 | **[计算与控制上下文预算](/content/chapter-15-context-budget/README.md)**：上下文窗口、Token 估计与实际用量、输出预留、大结果裁剪、完整日志引用和预算显示。 | 大日志不挤满上下文；原始结果可定位；区分估算、实际用量和费用估计。 | 已完成 | 2026-10-15 |
 | 16 | **[自动压缩并继续任务](/content/chapter-16-context-compaction/README.md)**：历史摘要、近期消息、任务与约束保留、工具消息配对、失败回退、取消与压缩状态。 | 压缩后继续原任务；关键约束保留；失败保留原记录且界面可操作。 | 已完成 | 2026-10-15 |
 | 17 | **[加载项目说明与规则](/content/chapter-17-project-instructions/README.md)**：项目根、目录范围、来源顺序、加载预算、固定快照与工具权限。 | 子目录启动仍加载适用规则；来源可查；项目文字不能扩大权限或自行启用脚本。 | 已完成 | 2026-10-15 |
-| 18 | **[保存可检查的长期记忆](/content/chapter-18-long-term-memory/README.md)**：显式保存、模型提出建议、来源与范围、查看、编辑、删除和失效。 | 新会话能用有效知识；过期内容可纠正；重要写入可见、受控、可追溯。 | 待确认 | — |
+| 18 | **[保存可检查的长期记忆](/content/chapter-18-long-term-memory/README.md)**：显式保存、模型提出建议、来源与范围、查看、编辑、删除和失效。 | 新会话能用有效知识；过期内容可纠正；重要写入可见、受控、可追溯。 | 已完成 | 2026-10-16 |
 
 ## 第四部分：扩展工具、知识与模型能力（19—24）
 
 | 章 | 章节与主要内容 | 验收项 | 状态 | 完成日期 |
 | --- | --- | --- | --- | --- |
-| 19 | **[按需加载 Skills](/content/chapter-19-skills/README.md)**：技能发现、元信息、正文和资源按需加载、手动调用、TUI 展示来源。 | 不在启动时灌入全部正文；按任务加载；技能文字不自动获得额外权限。 | 待确认 | — |
+| 19 | **[按需加载 Skills](/content/chapter-19-skills/README.md)**：技能发现、元信息、正文和资源按需加载、手动调用、TUI 展示来源。 | 不在启动时灌入全部正文；按任务加载；技能文字不自动获得额外权限。 | 已完成 | 2026-10-16 |
 | 20 | **[用 Hooks 扩展生命周期](/content/chapter-20-hooks/README.md)**：执行前后与结束钩子、输入输出、阻止、超时、错误和项目脚本显式启用。 | 检查结果进入反馈；失败可诊断；超时不挂死主循环。 | 已完成 | 2026-10-15 |
 | 21 | **[接入并管理 MCP 工具](/content/chapter-21-mcp/README.md)**：MCP SDK、本地 stdio/远端 HTTP、命名、认证、发现、断线、关闭、工具定义按需加载和连接状态。 | 调用经过统一权限入口；同名工具不混淆；处理定义变化；认证错误明确。 | 已完成 | 2026-10-15 |
 | 22 | **[查询和引用外部资料](/content/chapter-22-web/README.md)**：Web Fetch、搜索接口或 MCP、来源信息、大小/时间/重定向限制和不可信网页指令。 | 根据真实资料修正代码并引用；失败可诊断；网页不能改变执行权限。 | 已完成 | 2026-10-15 |
@@ -505,14 +505,14 @@
 | 第十一章正文、代码与练习 | 已确认完成 | [正文](/content/chapter-11-terminal-workbench/README.md)、[完成版源码](/content/chapter-11-terminal-workbench/05-terminal-layout/src/_index.md)、[练习](/content/chapter-11-terminal-workbench/EXERCISES.md) |
 | 第十二章正文、代码、动图与练习 | 已确认完成 | [正文](/content/chapter-12-task-control/README.md)、[完成版源码](/content/chapter-12-task-control/05-manage-queue/src/_index.md)、[练习](/content/chapter-12-task-control/EXERCISES.md) |
 | 第十二章任务控制验证与审读 | 核心、终端、双协议、安装和练习检查通过；未调用真实模型 | 验证记录 |
-| 第十三章正文、代码、配图与练习 | 四节完整快照与练习已整理，原理和新增配图通过独立冷读；待用户确认 | [章节首页](/content/chapter-13-session-persistence/README.md)、[读取](/content/chapter-13-session-persistence/02-read-records/README.md)、[恢复](/content/chapter-13-session-persistence/03-resume-session/README.md)、[管理](/content/chapter-13-session-persistence/04-manage-sessions/README.md)、[练习](/content/chapter-13-session-persistence/EXERCISES.md) |
+| 第十三章正文、代码、配图与练习 | 四节完整快照与练习已整理，原理和新增配图通过独立冷读；2026-10-16 按用户通知确认完成 | [章节首页](/content/chapter-13-session-persistence/README.md)、[读取](/content/chapter-13-session-persistence/02-read-records/README.md)、[恢复](/content/chapter-13-session-persistence/03-resume-session/README.md)、[管理](/content/chapter-13-session-persistence/04-manage-sessions/README.md)、[练习](/content/chapter-13-session-persistence/EXERCISES.md) |
 | 第十三章工程验证 | 类型、教程标记、保存顺序、85 项记录与锁检查、恢复和管理 CLI、真实 PTY 及临时安装检查通过；未调用真实模型 | 验证记录 |
 | 第十四章正文、代码、配图与练习 | 三个独立快照、练习与三套动图／完整分镜已整理，正文通过独立冷读；已确认完成 | [章节首页](/content/chapter-14-session-checkpoints/README.md)、[练习](/content/chapter-14-session-checkpoints/EXERCISES.md)、验证记录 |
 | 第十五章正文、代码、配图与练习 | 三个独立快照、练习与三套动图／完整分镜已整理，正文通过独立冷读；已确认完成 | [章节首页](/content/chapter-15-context-budget/README.md)、[练习](/content/chapter-15-context-budget/EXERCISES.md)、验证记录 |
 | 第十六章正文、代码、配图与练习 | 三节正文、独立 TypeScript 快照、三套动图与练习已整理；已确认完成 | [章节首页](/content/chapter-16-context-compaction/README.md)、[练习](/content/chapter-16-context-compaction/EXERCISES.md)、验证记录 |
 | 第十七章正文、代码、配图与练习 | 三节正文、独立 TypeScript 快照、三套动图与练习已整理；已确认完成 | [章节首页](/content/chapter-17-project-instructions/README.md)、[练习](/content/chapter-17-project-instructions/EXERCISES.md)、验证记录 |
-| 第十八章正文、代码、练习与配图 | 三节正文、独立 TypeScript 快照与练习，以及三套动图、流程图和完整分镜已整理；正文冷读、连续跟写、工程与终端检查通过，待用户确认 | [章节首页](/content/chapter-18-long-term-memory/README.md)、[练习](/content/chapter-18-long-term-memory/EXERCISES.md)、验证记录 |
-| 第十九章正文、代码、练习与配图 | 三节正文、独立 TypeScript 快照与练习，以及三套动图、流程图和完整分镜已整理；正文冷读、连续跟写、工程与终端检查通过，待用户确认 | [章节首页](/content/chapter-19-skills/README.md)、[练习](/content/chapter-19-skills/EXERCISES.md)、验证记录 |
+| 第十八章正文、代码、练习与配图 | 三节正文、独立 TypeScript 快照与练习，以及三套动图、流程图和完整分镜已整理；正文冷读、连续跟写、工程与终端检查通过，2026-10-16 按用户通知确认完成 | [章节首页](/content/chapter-18-long-term-memory/README.md)、[练习](/content/chapter-18-long-term-memory/EXERCISES.md)、验证记录 |
+| 第十九章正文、代码、练习与配图 | 三节正文、独立 TypeScript 快照与练习，以及三套动图、流程图和完整分镜已整理；正文冷读、连续跟写、工程与终端检查通过，2026-10-16 按用户通知确认完成 | [章节首页](/content/chapter-19-skills/README.md)、[练习](/content/chapter-19-skills/EXERCISES.md)、验证记录 |
 | 第二十章正文、代码、练习与配图 | 三节正文、独立 TypeScript 快照、练习与配图已整理；2026-10-15 按用户通知确认完成 | [章节首页](/content/chapter-20-hooks/README.md)、[练习](/content/chapter-20-hooks/EXERCISES.md)、验证记录 |
 | 第二十一章正文、代码、练习与配图 | 三节正文、独立 TypeScript 快照、练习与配图已整理；2026-10-15 按用户通知确认完成 | [章节首页](/content/chapter-21-mcp/README.md)、[练习](/content/chapter-21-mcp/EXERCISES.md)、验证记录 |
 | 第二十二章正文、代码、练习与配图 | 三节正文、独立 TypeScript 快照、练习与配图已整理；2026-10-15 按用户通知确认完成 | [章节首页](/content/chapter-22-web/README.md)、[练习](/content/chapter-22-web/EXERCISES.md)、验证记录 |
@@ -592,6 +592,9 @@
 | 2026-10-16 | 第 34 章：让故障可定位、可恢复 | 同上 | 三节正文、独立 TypeScript 快照、配图、练习、公开跟写、安装与网页检查已具备 |
 | 2026-10-16 | 第 35 章：用固定任务验证 Agent 能力 | 用户明确要求“将35、36章标记为已完成并提交上去，教学网站也同步更新” | 三节正文、完整 TypeScript 快照、练习、三套配图、独立公开跟写与全书分段回归已具备 |
 | 2026-10-16 | 第 36 章：安装、发布与升级 | 同上 | 三节正文、完整 TypeScript 快照、练习、三套配图、真实安装包运行与旧数据兼容检查已具备 |
+| 2026-10-16 | 第 13 章：保存、查找与恢复会话 | 用户明确要求“将13、18、19章也标记为已完成并提交，教学网站同步更新” | 四节正文、完整 TypeScript 快照、配图、练习与既有验证记录已具备 |
+| 2026-10-16 | 第 18 章：保存可检查的长期记忆 | 同上 | 三节正文、完整 TypeScript 快照、配图、练习与既有验证记录已具备 |
+| 2026-10-16 | 第 19 章：按需加载 Skills | 同上 | 三节正文、完整 TypeScript 快照、配图、练习与既有验证记录已具备 |
 
 2026-09-16：第二章按配置、模型、Agent Loop、终端与错误职责拆分，入口保留第一章的命令规则。源码与教程标明沿用、新增和修改；第 03 章在同一核心上补入工具循环。此调整不改变章节完成状态。
 
@@ -614,3 +617,5 @@
 - 2026-10-16：第 32—34 章已分别提交并推送至三个分支，公开 Pages 内容已核对。第 35、36 章六节正文、完整 TypeScript 快照和练习先经独立冷读及公开连续跟写，再补齐六套可控动图、流程图与分镜；保持待确认，尚未提交或公开发布这两章。
 
 - 2026-10-16：根据用户明确通知，第 35、36 章及六个小节标记已完成，总确认数更新为 33 / 36，第六部分为 6 / 6；本次同步源码、教学网站与 Pages 分支。master 保留源码、原生 Markdown 和正式配图，Docsify 与生成网站分别维护。第 13、18、19 章仍待确认；npm 包和章节标签尚未发布。
+
+- 2026-10-16：根据用户明确通知，第 13、18、19 章及其 10 个小节标记已完成，确认总数更新为 36 / 36（100%）；第三、第四部分均为 6 / 6。同步更新教学网站，master 继续保留源码、原生 Markdown 与正式配图，Docsify 与生成网站分别维护。npm 包和章节标签尚未发布。
